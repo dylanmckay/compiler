@@ -4,3 +4,7 @@ name = "compiler"
 version = "0.0.1"
 authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
+
+[dependencies]
+num = "*"
+bit-vec = "*"
