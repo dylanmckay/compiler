@@ -68,7 +68,7 @@ impl lang::Function for Function
         self.basicblocks.iter()
     }
 
-    fn signature<'a>(&'a self) -> &'a lang::function::Signature<ir::Type> {
+    fn signature<'a>(&'a self) -> &'a lang::Signature<ir::Type> {
         &self.signature
     }
 }
