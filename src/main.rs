@@ -35,9 +35,9 @@ fn main() {
                                                                                .add(inst_add2)
                                                                                .add(inst_ret);
 
-//    let function_ty = ir::types::Function::new(op_ty.upcast(), Vec::new());
-  //  let function = ir::Function::empty(ir::Name::named("main".to_owned()), function_ty).add(basicblock.clone())
-//                                                                                       .add(basicblock.clone());
+    let sig = ir::types::Signature::new().ret(op_ty.upcast());
+    let function = ir::Function::empty(ir::Name::named("main".to_owned()), sig).add(basicblock.clone())
+                                                                               .add(basicblock.clone());
 
-    println!("{}", basicblock);
+    println!("{}", function);
 }

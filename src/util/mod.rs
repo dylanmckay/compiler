@@ -44,7 +44,7 @@ macro_rules! impl_upcast {
         impl ::util::Upcast<$parent> for $ty
         {
             fn upcast(self) -> $parent {
-                unimplemented!();
+                $parent::$ty(self)
             }
         }
     };

@@ -2,6 +2,7 @@
 use ir::{self,types,Value,Name,BasicBlock};
 use std::{self,fmt};
 use lang;
+use util;
 
 #[derive(Clone,Debug)]
 pub struct Function
@@ -44,18 +45,21 @@ impl ir::ValueTrait for Function
 impl fmt::Display for Function
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-/*        try!("define ".fmt(fmt));
-        try!(self.ty.ret.fmt(fmt));
-        try!(" @".fmt(fmt));
-        try!(self.name.fmt(fmt));
-        try!("() {\n".fmt(fmt));
+        try!("define ".fmt(fmt));
+
+        try!(util::fmt_comma_separated_values(self.signature.return_types.iter(), fmt));
+        
+        try!(write!(fmt, " @{}(", self.name));
+
+        try!(util::fmt_comma_separated_values(self.signature.param_types.iter(), fmt));
+
+        try!(") {\n".fmt(fmt));
 
         for bb in self.basicblocks.iter() {
             try!(bb.fmt(fmt));
         }
 
-        "}\n".fmt(fmt)*/
-        unimplemented!();
+        "}\n".fmt(fmt)
     }
 }
 
