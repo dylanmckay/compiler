@@ -1,5 +1,5 @@
 
-use ir::types::{Void, Integer, Float, Vector, Array, Struct, Function, Label};
+use ir::types::{Void, Integer, Float, Vector, Array, Struct, Signature, Label};
 use lang;
 use util::IntegerKind;
 
@@ -25,7 +25,7 @@ pub enum Type
     Array(Array),
     Struct(Struct),
 
-    Function(Function),
+    Signature(Signature),
     Label(Label),
 }
 
@@ -94,7 +94,7 @@ impl TypeTrait for Type
             &Type::Vector(ref ty) => { ty.size() },
             &Type::Array(ref ty) => { ty.size() },
             &Type::Struct(ref ty) => { ty.size() },
-            &Type::Function(ref ty) => { ty.size() },
+            &Type::Signature(ref ty) => { ty.size() },
             &Type::Label(ref ty) => { ty.size() },
         }
     }
@@ -127,7 +127,7 @@ impl fmt::Display for Type
             &Type::Struct(ref ty) => {
                 ty.fmt(fmt)
             },
-            &Type::Function(ref ty) => {
+            &Type::Signature(ref ty) => {
                 ty.fmt(fmt)
             },
             &Type::Label(ref ty) => {

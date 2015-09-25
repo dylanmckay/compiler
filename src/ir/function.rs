@@ -7,24 +7,24 @@ use lang;
 pub struct Function
 {
     pub name: Name,
-    pub ty: types::Function,
+    pub signature: types::Signature,
     pub basicblocks: Vec<BasicBlock>,
 }
 
 impl Function
 {
     pub fn new(name: Name,
-               ty: types::Function,
+               signature: types::Signature,
                basicblocks: Vec<BasicBlock>) -> Function {
         Function {
             name: name,
-            ty: ty,
+            signature: signature,
             basicblocks: basicblocks,
         }
     }
 
-    pub fn empty(name: Name, ty: types::Function) -> Function {
-        Function::new(name, ty, Vec::new())
+    pub fn empty(name: Name, signature: types::Signature) -> Function {
+        Function::new(name, signature, Vec::new())
     }
 
     pub fn add(mut self, basicblock: BasicBlock) -> Function {
@@ -37,7 +37,7 @@ impl ir::ValueTrait for Function
 {
     fn ty(&self) -> ir::Type {
         use ir::TypeTrait;
-        self.ty.clone().upcast()
+        self.signature.clone().upcast()
     }
 }
 
@@ -69,7 +69,7 @@ impl lang::Function for Function
     }
 
     fn signature<'a>(&'a self) -> &'a lang::function::Signature<ir::Type> {
-        &self.ty.signature
+        &self.signature
     }
 }
 

@@ -1,6 +1,6 @@
 
-use std::{self,fmt};
 use lang;
+use std::{self,fmt};
 
 /// A function signature.
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -30,6 +30,15 @@ impl<T: lang::Type> Signature<T>
     }
 }
 
+impl<T: lang::Type> fmt::Display for Signature<T>
+{
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        unimplemented!();
+    }
+}
+
+impl<T: lang::Type> lang::Type for Signature<T> { }
+
 /// A function.
 pub trait Function : Sized + fmt::Display {
     type BasicBlock: lang::BasicBlock;
@@ -44,5 +53,4 @@ pub trait Function : Sized + fmt::Display {
               T: Function {
         unimplemented!();
     }
-    
 }

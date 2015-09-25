@@ -7,6 +7,6 @@ pub mod ty;
 
 pub use self::instruction::Instruction;
 pub use self::basicblock::BasicBlock;
-pub use self::function::Function;
+pub use self::function::{Signature,Function};
 pub use self::module::Module;
 pub use self::ty::Type;
