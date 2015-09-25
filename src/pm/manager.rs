@@ -32,13 +32,9 @@ impl Manager
         });
     }
 
-    pub fn run_module<M>(&self, module: M)
+    pub fn run<M>(&self, module: &mut M)
         where M: lang::Module {
 
-    }
-
-    pub fn run_function<F>(&self, function: F)
-        where F: lang::Function {
 
     }
 }

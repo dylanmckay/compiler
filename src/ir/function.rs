@@ -72,6 +72,9 @@ impl lang::Function for Function
         self.basicblocks.iter()
     }
 
+    fn basic_blocks_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,BasicBlock> {
+        self.basicblocks.iter_mut()
+    }
     fn signature<'a>(&'a self) -> &'a lang::Signature<ir::Type> {
         &self.signature
     }

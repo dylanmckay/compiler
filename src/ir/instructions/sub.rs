@@ -1,19 +1,18 @@
-
 use ir::{self,Instruction,InstructionTrait,Value,ValueTrait};
 use std::fmt;
 
 #[derive(Clone,Debug)]
-pub struct Add
+pub struct Sub
 {
     ty:  Box<ir::Type>,
     lhs: Box<ir::Value>,
     rhs: Box<ir::Value>,
 }
 
-impl Add
+impl Sub
 {
     pub fn new(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Self {
-        Add {
+        Sub {
             ty: Box::new(ty),
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
@@ -21,13 +20,13 @@ impl Add
     }
 }
 
-impl InstructionTrait for Add { }
+impl InstructionTrait for Sub { }
 
-impl fmt::Display for Add
+impl fmt::Display for Sub
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "add {} {}, {}", self.ty, self.lhs, self.rhs)
+        write!(fmt, "sub {} {}, {}", self.ty, self.lhs, self.rhs)
     }
 }
 
-impl_upcast!(Add,Instruction);
+impl_upcast!(Sub,Instruction);

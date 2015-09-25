@@ -59,6 +59,10 @@ impl lang::BasicBlock for BasicBlock
     fn instructions<'a>(&'a self) -> std::slice::Iter<'a, ir::Instruction> {
         self.body.iter()
     }
+
+    fn instructions_mut<'a>(&'a mut self) -> std::slice::IterMut<'a, ir::Instruction> {
+        self.body.iter_mut()
+    }
 }
 
 impl_upcast!(BasicBlock,Value);

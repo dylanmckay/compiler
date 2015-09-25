@@ -12,6 +12,13 @@ pub trait InstructionTrait : fmt::Debug + fmt::Display + util::Upcast<Instructio
 pub enum Instruction
 {
     Add(instructions::Add),
+    Sub(instructions::Sub),
+    Mul(instructions::Mul),
+    Div(instructions::Div),
+    Shl(instructions::Shl),
+    Shr(instructions::Shr),
+
+    Call(instructions::Call),
     Return(instructions::Return),
 }
 
@@ -35,6 +42,12 @@ impl fmt::Display for Instruction
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
         match self {
             &Instruction::Add(ref instr) => instr.fmt(fmt),
+            &Instruction::Sub(ref instr) => instr.fmt(fmt),
+            &Instruction::Mul(ref instr) => instr.fmt(fmt),
+            &Instruction::Div(ref instr) => instr.fmt(fmt),
+            &Instruction::Shl(ref instr) => instr.fmt(fmt),
+            &Instruction::Shr(ref instr) => instr.fmt(fmt),
+            &Instruction::Call(ref instr) => instr.fmt(fmt),
             &Instruction::Return(ref instr) => instr.fmt(fmt),
         }
     }
