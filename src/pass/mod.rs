@@ -1,6 +1,9 @@
 
-pub mod manager;
 pub use self::manager::Manager;
+
+pub mod manager;
+pub mod transforms;
+
 
 use lang;
 
@@ -28,6 +31,13 @@ impl<M: lang::Module> PassMetadata for PassInfo<M>
             &PassInfo::Mutable(ref p) => p.dependencies(),
         }
     }
+
+    fn name(&self) -> &'static str {
+        match self {
+            &PassInfo::Immutable(ref p) => p.name(),
+            &PassInfo::Mutable(ref p) => p.name(),
+        }
+    }
 }
 
 /// A pass over a set of instructions.
@@ -40,6 +50,8 @@ pub trait PassMetadata
     fn dependencies(&self) -> &'static [Id] {
         &[]
     }
+
+    fn name(&self) -> &'static str;
 }
 
 pub trait Pass<M> : PassMetadata
