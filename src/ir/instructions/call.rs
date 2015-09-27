@@ -1,5 +1,5 @@
 
-use ir::{self,Instruction,InstructionTrait,Value,ValueTrait};
+use ir::{self,Instruction,InstructionTrait,Value};
 use util;
 use std::fmt;
 

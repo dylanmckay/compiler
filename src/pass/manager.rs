@@ -1,5 +1,5 @@
 
-use pm::{self,PassInfo,PassMetadata,Pass,PassMut,Id};
+use pass::{PassInfo,PassMetadata,Pass,PassMut,Id};
 use lang;
 use std;
 
@@ -19,12 +19,9 @@ impl<M: lang::Module> Manager<M>
 
     /// Adds a pass to the manager.
     pub fn add<P>(&mut self, pass: P)
-        where P: pm::PassMetadata, Box<P>: Into<PassInfo<M>> {
-
-        use pm::PassMetadata;
+        where P: PassMetadata, Box<P>: Into<PassInfo<M>> {
 
         let boxed = Box::new(pass);
-
         self.passes.push(boxed.into());
     }
 

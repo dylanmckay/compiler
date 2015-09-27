@@ -60,7 +60,7 @@ pub trait Pass<M> : PassMetadata
         }
     }
 
-    fn run_block(&mut self, block: &<M::Function as lang::Function>::BasicBlock) {
+    fn run_block(&mut self, _: &<M::Function as lang::Function>::BasicBlock) {
         panic!("the pass is not implemented");
     }
 }
@@ -83,7 +83,7 @@ pub trait PassMut<M> : PassMetadata
         }
     }
 
-    fn run_block(&mut self, block: &mut <M::Function as lang::Function>::BasicBlock) {
+    fn run_block(&mut self, _: &mut <M::Function as lang::Function>::BasicBlock) {
         panic!("the pass is not implemented");
     }
 }

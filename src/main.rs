@@ -16,8 +16,8 @@ pub mod mc;
 pub mod dsl;
 /// Language-agnostic traits.
 pub mod lang;
-/// The pass manager.
-pub mod pm;
+/// The pass infrastructure.
+pub mod pass;
 
 fn main() {
     use ir::TypeTrait;

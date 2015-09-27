@@ -1,7 +1,6 @@
 
 use ir::types::{Type,TypeTrait};
 use lang;
-use std::fmt;
 
 /// A function signature in IR.
 pub type Signature = lang::Signature<Type>;
