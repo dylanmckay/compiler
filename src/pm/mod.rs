@@ -7,10 +7,27 @@ use lang;
 /// A pass identifier.
 pub type Id = u64;
 
-pub enum PassKind<M: lang::Module>
+pub enum PassInfo<M: lang::Module>
 {
     Immutable(Box<Pass<M>>),
     Mutable(Box<PassMut<M>>),
+}
+
+impl<M: lang::Module> PassMetadata for PassInfo<M>
+{
+    fn id(&self) -> Id {
+        match self {
+            &PassInfo::Immutable(ref p) => p.id(),
+            &PassInfo::Mutable(ref p) => p.id(),
+        }
+    }
+
+    fn dependencies(&self) -> &'static [Id] {
+        match self {
+            &PassInfo::Immutable(ref p) => p.dependencies(),
+            &PassInfo::Mutable(ref p) => p.dependencies(),
+        }
+    }
 }
 
 /// A pass over a set of instructions.
@@ -23,9 +40,6 @@ pub trait PassMetadata
     fn dependencies(&self) -> &'static [Id] {
         &[]
     }
-
-    /// Checks if the pass is mutable.
-    fn is_mutable(&self) -> bool { false }
 }
 
 pub trait Pass<M> : PassMetadata
@@ -72,22 +86,20 @@ pub trait PassMut<M> : PassMetadata
     fn run_block(&mut self, block: &mut <M::Function as lang::Function>::BasicBlock) {
         panic!("the pass is not implemented");
     }
-
-    fn is_mutable(&self) -> bool { true }
 }
 
-impl<M> Into<PassKind<M>> for Box<Pass<M>>
+impl<M> Into<PassInfo<M>> for Box<Pass<M>>
     where M: lang::Module {
 
-    fn into(self) -> PassKind<M> {
-        PassKind::Immutable(self)
+    fn into(self) -> PassInfo<M> {
+        PassInfo::Immutable(self)
     }
 }
 
-impl<M> Into<PassKind<M>> for Box<PassMut<M>>
+impl<M> Into<PassInfo<M>> for Box<PassMut<M>>
     where M: lang::Module {
 
-    fn into(self) -> PassKind<M> {
-        PassKind::Mutable(self)
+    fn into(self) -> PassInfo<M> {
+        PassInfo::Mutable(self)
     }
 }
