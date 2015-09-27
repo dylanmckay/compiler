@@ -10,38 +10,38 @@ use lang;
 /// A pass identifier.
 pub type Id = u64;
 
-pub enum PassInfo<M: lang::Module>
+pub enum Info<M: lang::Module>
 {
     Immutable(Box<Pass<M>>),
     Mutable(Box<PassMut<M>>),
 }
 
-impl<M: lang::Module> PassMetadata for PassInfo<M>
+impl<M: lang::Module> Metadata for Info<M>
 {
     fn id(&self) -> Id {
         match self {
-            &PassInfo::Immutable(ref p) => p.id(),
-            &PassInfo::Mutable(ref p) => p.id(),
+            &Info::Immutable(ref p) => p.id(),
+            &Info::Mutable(ref p) => p.id(),
         }
     }
 
     fn dependencies(&self) -> &'static [Id] {
         match self {
-            &PassInfo::Immutable(ref p) => p.dependencies(),
-            &PassInfo::Mutable(ref p) => p.dependencies(),
+            &Info::Immutable(ref p) => p.dependencies(),
+            &Info::Mutable(ref p) => p.dependencies(),
         }
     }
 
     fn name(&self) -> &'static str {
         match self {
-            &PassInfo::Immutable(ref p) => p.name(),
-            &PassInfo::Mutable(ref p) => p.name(),
+            &Info::Immutable(ref p) => p.name(),
+            &Info::Mutable(ref p) => p.name(),
         }
     }
 }
 
 /// A pass over a set of instructions.
-pub trait PassMetadata
+pub trait Metadata
 {
     fn id(&self) -> Id;
     
@@ -54,7 +54,7 @@ pub trait PassMetadata
     fn name(&self) -> &'static str;
 }
 
-pub trait Pass<M> : PassMetadata
+pub trait Pass<M> : Metadata
     where M: lang::Module
 {
     fn run_module(&mut self, module: &M) {
@@ -77,7 +77,7 @@ pub trait Pass<M> : PassMetadata
     }
 }
 
-pub trait PassMut<M> : PassMetadata
+pub trait PassMut<M> : Metadata
     where M: lang::Module
 {
     fn run_module(&mut self, module: &mut M) {
@@ -100,18 +100,18 @@ pub trait PassMut<M> : PassMetadata
     }
 }
 
-impl<M> Into<PassInfo<M>> for Box<Pass<M>>
+impl<M> Into<Info<M>> for Box<Pass<M>>
     where M: lang::Module {
 
-    fn into(self) -> PassInfo<M> {
-        PassInfo::Immutable(self)
+    fn into(self) -> Info<M> {
+        Info::Immutable(self)
     }
 }
 
-impl<M> Into<PassInfo<M>> for Box<PassMut<M>>
+impl<M> Into<Info<M>> for Box<PassMut<M>>
     where M: lang::Module {
 
-    fn into(self) -> PassInfo<M> {
-        PassInfo::Mutable(self)
+    fn into(self) -> Info<M> {
+        Info::Mutable(self)
     }
 }

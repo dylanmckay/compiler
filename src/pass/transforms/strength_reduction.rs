@@ -1,5 +1,5 @@
 
-use pass::{PassMetadata,PassMut};
+use pass;
 
 pub struct StrengthReduction;
 
