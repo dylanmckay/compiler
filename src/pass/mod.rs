@@ -80,15 +80,27 @@ pub trait Pass<M> : Metadata
     fn run_block(&mut self, block: &<M::Function as lang::Function>::BasicBlock) {
         use lang::BasicBlock;
 
-        for inst in block.instructions() {
-            self.run_instruction(inst);
+        for value in block.subvalues() {
+            self.run_value_recursive(&value);
         }
     }
 
-    fn run_instruction(&mut self,
-                       _: &<<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Instruction) {
+    fn run_value(&mut self,
+                 _: &<<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value) {
 
         panic!("the pass is not implemented");
+    }
+
+    fn run_value_recursive(&mut self,
+                           value: &<<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value) {
+        use lang::Value;
+
+        // Recurse from the deepest node to the root node.
+        for val in value.subvalues() {
+            self.run_value_recursive(&val);
+        }
+
+        self.run_value(value)
     }
 }
 
@@ -110,14 +122,24 @@ pub trait PassMut<M> : Metadata
         -> <M::Function as lang::Function>::BasicBlock {
         use lang::BasicBlock;
 
-        block.map_instructions(|a| self.run_instruction(a))
+        block.map_subvalues(|a| self.run_value_recursive(a))
     }
 
-    fn run_instruction(&mut self,
-                       _: <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Instruction)
-        -> <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Instruction {
+    fn run_value(&mut self,
+                 _: <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value)
+        -> <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value {
 
         panic!("the pass is not implemented");
+    }
+
+    fn run_value_recursive(&mut self,
+                           value: <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value)
+        -> <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value {
+        use lang::Value;
+
+        // Recurse from the deepest node to the root node.
+        let val = value.map_subvalues(|v| self.run_value_recursive(v));
+        self.run_value(val)
     }
 }
 

@@ -1,11 +1,11 @@
 
-use ir::{self,Instruction,InstructionTrait,Value,ValueTrait};
+use ir::{self,Instruction,Value,ValueTrait};
 use std::fmt;
 
 #[derive(Clone,Debug)]
 pub struct Mul
 {
-    pub ty:  Box<ir::Type>,
+    pub ty:  ir::Type,
     pub lhs: Box<ir::Value>,
     pub rhs: Box<ir::Value>,
 }
@@ -14,14 +14,10 @@ impl Mul
 {
     pub fn new(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Self {
         Mul {
-            ty: Box::new(ty),
+            ty: ty,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }
-    }
-
-    pub fn ty(&self) -> &ir::Type {
-        &self.ty
     }
 
     pub fn multiplicands(&self) -> (Value,Value) {
@@ -29,7 +25,10 @@ impl Mul
     }
 }
 
-impl InstructionTrait for Mul { }
+impl ValueTrait for Mul
+{
+    fn ty(&self) -> ir::Type { self.ty.clone() }
+}
 
 impl fmt::Display for Mul
 {
@@ -38,4 +37,4 @@ impl fmt::Display for Mul
     }
 }
 
-impl_upcast!(Mul,Instruction);
+impl_lang_instruction!(Mul: lhs, rhs);

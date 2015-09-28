@@ -1,6 +1,5 @@
 
 use ir::types::{Type,TypeTrait};
-use lang;
 use std::fmt;
 
 /// A floating point type.
@@ -42,4 +41,4 @@ impl fmt::Display for Float
     }
 }
 
-impl lang::Type for Float { }
+impl_type!(Float);

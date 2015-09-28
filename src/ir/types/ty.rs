@@ -5,7 +5,7 @@ use util::IntegerKind;
 
 use std::fmt;
 
-pub trait TypeTrait : Clone + Eq + PartialEq + fmt::Display + lang::Type
+pub trait TypeTrait : Clone + Eq + PartialEq + fmt::Display + lang::Type + Into<Type>
 {
     /// Gets the size of the type in bits.
     fn size(&self) -> u64;
@@ -137,6 +137,25 @@ impl fmt::Display for Type
     }
 }
 
-impl lang::Type for Type
-{
+impl lang::Type for Type { }
+
+macro_rules! impl_type {
+    ($ty:ident) => {
+
+        impl_into_type!($ty);
+
+        impl ::lang::Type for $ty { }
+    }
+}
+
+macro_rules! impl_into_type {
+    ($ty:ident) => {
+        impl Into<::ir::Type> for $ty
+        {
+            fn into(self) -> ::ir::Type {
+                ::ir::Type::$ty(self)
+            }
+        }
+
+    }
 }

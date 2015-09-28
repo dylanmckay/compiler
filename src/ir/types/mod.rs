@@ -10,6 +10,7 @@ pub use self::strukt::Struct;
 pub use self::vector::Vector;
 pub use self::void::Void;
 
+#[macro_use]
 pub mod ty;
 
 pub mod array;

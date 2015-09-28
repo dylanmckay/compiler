@@ -1,5 +1,4 @@
 use ir::types::{Type,TypeTrait};
-use lang;
 use std::fmt;
 
 /// An empty type.
@@ -24,4 +23,4 @@ impl fmt::Display for Label
     }
 }
 
-impl lang::Type for Label { }
+impl_type!(Label);

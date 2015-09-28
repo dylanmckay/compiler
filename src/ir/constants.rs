@@ -1,13 +1,13 @@
 
-use ir::{types, Value, ValueTrait, Type, TypeTrait};
-use util::{self,Upcast};
+use ir::{types,Value,ValueTrait,Type};
+use util;
 use bit_vec::BitVec;
-use std::fmt;
+use std::{self,fmt};
 
 use num::BigInt;
 use num::bigint::ToBigInt;
 
-pub trait ConstantTrait : Upcast<Constant> + ValueTrait
+pub trait ConstantTrait : Into<Constant> + ValueTrait
 {
 }
 
@@ -23,15 +23,15 @@ impl Constant
 {
     /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
     pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Constant> {
-        Integer::new(ty,val).map(|a| a.upcast())
+        Integer::new(ty,val).map(|a| a.into())
     }
 
     pub fn float(ty: types::Float, bits: BitVec) -> Constant {
-        Float::new(ty,bits).upcast()
+        Float::new(ty,bits).into()
     }
 
     pub fn strukt(fields: Vec<Value>) -> Constant {
-        Struct::new(fields).upcast()
+        Struct::new(fields).into()
     }
 
     pub fn unit_struct() -> Constant {
@@ -150,18 +150,30 @@ impl Integer
     }
 }
 
+impl std::ops::Add for Integer
+{
+    type Output = Integer;
+
+    fn add(mut self, rhs: Integer) -> Integer {
+        let val = self.value + rhs.value;
+
+        self.value = val;
+        self
+    }
+}
+
 impl ConstantTrait for Integer { }
 
-impl Upcast<Value> for Integer
+impl Into<Value> for Integer
 {
-    fn upcast(self) -> Value {
-        Value::Constant(self.upcast())
+    fn into(self) -> Value {
+        Value::Constant(self.into())
     }
 }
 
 impl ValueTrait for Integer
 {
-    fn ty(&self) -> Type { self.ty.clone().upcast() }
+    fn ty(&self) -> Type { self.ty.clone().into() }
 }
 
 impl fmt::Display for Integer
@@ -193,13 +205,13 @@ impl ConstantTrait for Float { }
 
 impl ValueTrait for Float
 {
-    fn ty(&self) -> Type { self.ty.clone().upcast() }
+    fn ty(&self) -> Type { self.ty.clone().into() }
 }
 
-impl Upcast<Value> for Float
+impl Into<Value> for Float
 {
-    fn upcast(self) -> Value {
-        Value::Constant(self.upcast())
+    fn into(self) -> Value {
+        Value::Constant(self.into())
     }
 }
 
@@ -234,32 +246,49 @@ impl ValueTrait for Struct
         // Create the struct type from the types of the values.
         types::Struct::new(
             self.fields.iter().map(|ref f| f.ty()).collect()
-        ).upcast()
+        ).into()
     }
 }
 
-impl Upcast<Value> for Struct
+impl Into<Value> for Struct
 {
-    fn upcast(self) -> Value {
-        Value::Constant(self.upcast())
+    fn into(self) -> Value {
+        Value::Constant(self.into())
     }
 }
 
 impl fmt::Display for Struct
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        try!("{ ".fmt(fmt));
-
-        try!(util::fmt_comma_separated_values(self.fields.iter(), fmt));
-
-        " }".fmt(fmt)
+        write!(fmt, "{{ {} }}", util::comma_separated_values(self.fields.iter()))
     }
 }
 
-impl_upcast!(Constant,Value);
-impl_upcast!(Integer,Constant);
-impl_upcast!(Float,Constant);
-impl_upcast!(Struct,Constant);
+impl Into<Value> for Constant
+{
+    fn into(self) -> Value {
+        Value::Constant(self)
+    }
+}
+
+impl Into<Constant> for Integer {
+    fn into(self) -> Constant {
+        Constant::Integer(self)
+    }
+}
+
+impl Into<Constant> for Float {
+    fn into(self) -> Constant {
+        Constant::Float(self)
+    }
+}
+
+impl Into<Constant> for Struct {
+    fn into(self) -> Constant {
+        Constant::Struct(self)
+    }
+}
+
 
 /// Tests that `Integer` can count its bits correctly.
 #[test]

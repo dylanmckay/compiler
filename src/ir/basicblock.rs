@@ -1,6 +1,6 @@
 
 use ir::{self,Value};
-use std::{self,fmt};
+use std::fmt;
 use lang;
 
 /// A basic block is a list of instructions which
@@ -9,12 +9,12 @@ use lang;
 pub struct BasicBlock
 {
     pub name: ir::Name,
-    pub body: Vec<ir::Instruction>,
+    pub body: Vec<ir::Value>,
 }
 
 impl BasicBlock
 {
-    pub fn new(name: ir::Name, body: Vec<ir::Instruction>) -> BasicBlock {
+    pub fn new(name: ir::Name, body: Vec<ir::Value>) -> BasicBlock {
         BasicBlock {
             name: name,
             body: body,
@@ -25,9 +25,9 @@ impl BasicBlock
         BasicBlock::new(name, Vec::new())
     }
 
-    pub fn add(mut self, instruction: ir::Instruction) -> Self {
-        self.body.push(instruction);
-
+    pub fn add<T>(mut self, value: T) -> Self
+        where T: Into<ir::Value> {
+        self.body.push(value.into());
         self
     }
 }
@@ -54,31 +54,27 @@ impl fmt::Display for BasicBlock
 
 impl lang::BasicBlock for BasicBlock
 {
-    type Instruction = ir::Instruction;
+    type Value = ir::Value;
 
-    fn instructions<'a>(&'a self) -> std::slice::Iter<'a, ir::Instruction> {
-        self.body.iter()
+    fn subvalues(&self) -> Vec<ir::Value> {
+        self.body.clone()
     }
 
-    fn instructions_mut<'a>(&'a mut self) -> std::slice::IterMut<'a, ir::Instruction> {
-        self.body.iter_mut()
-    }
+    fn with_subvalues<I>(mut self, values: I) -> Self
+        where I: Iterator<Item=ir::Value> {
 
-    fn map_instructions<F>(mut self, mut f: F) -> Self
-        where F: FnMut(ir::Instruction) -> ir::Instruction {
-
-        let instrs = self.body.into_iter().map(|a| f(a));
-        self.body = instrs.collect();
-
+        self.body = values.collect();
         self
     }
 
-    fn with_instructions<I>(mut self, instructions: I) -> Self
-        where I: Iterator<Item=ir::Instruction> {
-
-        self.body = instructions.collect();
+    fn map_subvalues<F>(mut self, mut f: F) -> Self
+        where F: FnMut(ir::Value) -> ir::Value {
+        self.body = self.body.into_iter().map(|a| f(a)).collect();
         self
     }
 }
 
-impl_upcast!(BasicBlock,Value);
+impl Into<Value> for BasicBlock
+{
+    fn into(self) -> Value { Value::BasicBlock(self) }
+}

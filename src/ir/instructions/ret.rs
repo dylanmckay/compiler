@@ -1,6 +1,5 @@
 
-use ir;
-use ir::{Instruction,InstructionTrait,Value,ValueTrait};
+use ir::{self,Instruction,Value,ValueTrait};
 use std::fmt;
 
 #[derive(Clone,Debug)]
@@ -26,7 +25,10 @@ impl Return
     }
 }
 
-impl InstructionTrait for Return { }
+impl ValueTrait for Return
+{
+    fn ty(&self) -> ir::Type { unreachable!() }
+}
 
 impl fmt::Display for Return
 {
@@ -40,4 +42,4 @@ impl fmt::Display for Return
     }
 }
 
-impl_upcast!(Return,Instruction);
+impl_lang_instruction!(Return);

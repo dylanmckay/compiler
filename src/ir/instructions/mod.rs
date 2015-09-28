@@ -10,6 +10,7 @@ pub use self::shr::Shr;
 pub use self::call::Call;
 pub use self::ret::Return;
 
+#[macro_use]
 pub mod instruction;
 
 pub mod add;

@@ -13,12 +13,15 @@ impl pass::Metadata for StrengthReduction
 
 impl pass::PassMut<ir::Module> for StrengthReduction
 {
-    fn run_instruction(&mut self, inst: ir::Instruction) -> ir::Instruction {
+    fn run_value(&mut self, value: ir::Value) -> ir::Value {
 
-        match inst {
-            Instruction::Mul(i) => self::reduce::mul(i),
-            _ => inst,
-        }
+        // check if the value is an instruction
+        let inst = match value {
+            ir::Value::Instruction(i) => i,
+            _ => return value,
+        };
+
+        self::reduce::reduce(inst).into()
     }
 }
 
@@ -32,14 +35,22 @@ impl Into<pass::Info<ir::Module>> for Box<StrengthReduction>
 
 pub mod reduce
 {
-    use ir::{self,instructions,Instruction};
+    use ir::{self,instructions,Instruction,
+             ValueTrait};
+
+    pub fn reduce(inst: Instruction) -> ir::Instruction {
+
+        match inst {
+            Instruction::Mul(i) => self::mul(i),
+            _ => inst,
+        }
+    }
 
     pub fn mul(inst: instructions::Mul) -> ir::Instruction {
         self::mul_pow2_shl(inst)
     }
 
     pub fn mul_pow2_shl(inst: instructions::Mul) -> ir::Instruction {
-        use ::util::Upcast;
 
         let ty = inst.ty().clone();
         let (lhs,rhs) = inst.multiplicands();
@@ -50,15 +61,15 @@ pub mod reduce
         // multiplication is commutative so switch the order if necessary.
         let (value,shift) = match (lhs_if_shift,
                                    rhs_if_shift) {
-            (None, None) => return inst.upcast(),
+            (None, None) => return inst.into(),
             // constant folding should've caught this
-            (Some(_),Some(_)) => return inst.upcast(),
+            (Some(_),Some(_)) => return inst.into(),
 
-            (None, Some(v)) => (lhs.clone(),v.upcast()),
-            (Some(v),None) => (v.upcast(),rhs.clone()),
+            (None, Some(v)) => (lhs.clone(),v.into()),
+            (Some(v),None) => (v.into(),rhs.clone()),
         };
 
-        Instruction::shl(ty, value, shift).upcast()
+        Instruction::shl(ty, value, shift).into()
     }
 
     pub mod util {

@@ -1,11 +1,11 @@
 
-use ir::{self,Instruction,InstructionTrait,Value,ValueTrait};
+use ir::{self,Instruction,Value,ValueTrait};
 use std::fmt;
 
 #[derive(Clone,Debug)]
 pub struct Shl
 {
-    ty: Box<ir::Type>,
+    ty: ir::Type,
     value: Box<ir::Value>,
     amount: Box<ir::Value>,
 }
@@ -14,14 +14,17 @@ impl Shl
 {
     pub fn new(ty: ir::Type, value: ir::Value, amount: ir::Value) -> Self {
         Shl {
-            ty: Box::new(ty),
+            ty: ty,
             value: Box::new(value),
             amount: Box::new(amount),
         }
     }
 }
 
-impl InstructionTrait for Shl { }
+impl ValueTrait for Shl
+{
+    fn ty(&self) -> ir::Type { self.ty.clone() }
+}
 
 impl fmt::Display for Shl
 {
@@ -30,4 +33,4 @@ impl fmt::Display for Shl
     }
 }
 
-impl_upcast!(Shl,Instruction);
+impl_lang_instruction!(Shl: value, amount);

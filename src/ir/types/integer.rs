@@ -1,6 +1,5 @@
 
 use ir::types::{Type,TypeTrait};
-use lang;
 use util::IntegerKind;
 use std::fmt;
 
@@ -75,5 +74,4 @@ impl fmt::Display for Integer
     }
 }
 
-impl lang::Type for Integer { }
-
+impl_type!(Integer);

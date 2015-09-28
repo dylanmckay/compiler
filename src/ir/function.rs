@@ -42,18 +42,20 @@ impl ir::ValueTrait for Function
     }
 }
 
+impl Into<Value> for Function
+{
+    fn into(self) -> Value {
+        Value::Function(self)
+    }
+}
+
 impl fmt::Display for Function
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        try!("define ".fmt(fmt));
-
-        try!(util::fmt_comma_separated_values(self.signature.return_types.iter(), fmt));
-        
-        try!(write!(fmt, " @{}(", self.name));
-
-        try!(util::fmt_comma_separated_values(self.signature.param_types.iter(), fmt));
-
-        try!(") {\n".fmt(fmt));
+        try!(write!(fmt, "define {} @{}({}) {{\n",
+                         util::comma_separated_values(self.signature.return_types.iter()),
+                         self.name,
+                         util::comma_separated_values(self.signature.param_types.iter())));
 
         for bb in self.basicblocks.iter() {
             try!(bb.fmt(fmt));
@@ -97,4 +99,3 @@ impl lang::Function for Function
     }
 }
 
-impl_upcast!(Function,Value);

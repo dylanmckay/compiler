@@ -1,7 +1,5 @@
 
 use ir::types::{Type,TypeTrait};
-use lang;
-use util;
 use std::{self, fmt};
 
 /// Represents a struct.
@@ -52,12 +50,10 @@ impl TypeTrait for Struct
 impl fmt::Display for Struct
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        try!("type {".fmt(fmt));
+        use util;
 
-        try!(util::fmt_comma_separated_values(self.fields.iter(), fmt));
-
-        " }".fmt(fmt)
+        write!(fmt, "type {{ {} }}", util::comma_separated_values(self.fields.iter()))
     }
 }
 
-impl lang::Type for Struct { }
+impl_type!(Struct);

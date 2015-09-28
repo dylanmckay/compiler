@@ -1,6 +1,5 @@
 
 use ir::types::{Type,TypeTrait};
-use lang;
 use std::fmt;
 
 /// A vector value.
@@ -43,6 +42,4 @@ impl fmt::Display for Vector
     }
 }
 
-impl lang::Type for Vector { }
-
-
+impl_type!(Vector);

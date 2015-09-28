@@ -1,6 +1,5 @@
 
 use ir::types::{Type,TypeTrait};
-use lang;
 use std::fmt;
 
 /// Represents an array of values of a single `Type`.
@@ -43,4 +42,4 @@ impl fmt::Display for Array
     }
 }
 
-impl lang::Type for Array { }
+impl_type!(Array);

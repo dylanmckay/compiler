@@ -1,6 +1,5 @@
 
-use ir::{self,Instruction,InstructionTrait,Value};
-use util;
+use ir::{self,Instruction,Value};
 use std::fmt;
 
 #[derive(Clone,Debug)]
@@ -18,21 +17,27 @@ impl Call
     }
 }
 
-impl InstructionTrait for Call { }
+impl ir::ValueTrait for Call
+{
+    fn ty(&self) -> ir::Type {
+        unreachable!();
+    }
+}
 
 impl fmt::Display for Call
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
+        use util;
+
         let func = if let Value::Function(ref f) = *self.target {
             f
         } else {
             unreachable!(); // target must be function
         };
 
-        try!("call ".fmt(fmt));
-        try!(util::fmt_comma_separated_values(func.signature.return_types.iter(), fmt));
-        write!(fmt, " {}", func.name)
+        write!(fmt, "call {} {}", util::comma_separated_values(func.signature.return_types.iter()),
+                                  func.name)
     }
 }
 
-impl_upcast!(Call,Instruction);
+impl_lang_instruction!(Call: target);

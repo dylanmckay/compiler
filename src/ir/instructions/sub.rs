@@ -1,10 +1,10 @@
-use ir::{self,Instruction,InstructionTrait,Value,ValueTrait};
+use ir::{self,Instruction,Value,ValueTrait};
 use std::fmt;
 
 #[derive(Clone,Debug)]
 pub struct Sub
 {
-    ty:  Box<ir::Type>,
+    ty:  ir::Type,
     lhs: Box<ir::Value>,
     rhs: Box<ir::Value>,
 }
@@ -13,14 +13,17 @@ impl Sub
 {
     pub fn new(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Self {
         Sub {
-            ty: Box::new(ty),
+            ty: ty,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }
     }
 }
 
-impl InstructionTrait for Sub { }
+impl ValueTrait for Sub
+{
+    fn ty(&self) -> ir::Type { self.ty.clone() }
+}
 
 impl fmt::Display for Sub
 {
@@ -29,4 +32,4 @@ impl fmt::Display for Sub
     }
 }
 
-impl_upcast!(Sub,Instruction);
+impl_lang_instruction!(Sub: lhs, rhs);

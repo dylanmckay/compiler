@@ -1,6 +1,6 @@
 
 use pass;
-use ir::{self,Instruction};
+use ir;
 
 /// An IR strength reduction pass.
 pub struct ConstantFolding;
@@ -13,11 +13,8 @@ impl pass::Metadata for ConstantFolding
 
 impl pass::PassMut<ir::Module> for ConstantFolding
 {
-    fn run_instruction(&mut self, inst: ir::Instruction) -> ir::Instruction {
-
-        match inst {
-            _ => inst,
-        }
+    fn run_value(&mut self, value: ir::Value) -> ir::Value {
+        self::fold::value(value)
     }
 }
 
@@ -26,5 +23,46 @@ impl Into<pass::Info<ir::Module>> for Box<ConstantFolding>
 {
     fn into(self) -> pass::Info<ir::Module> {
         pass::Info::Mutable(self)
+    }
+}
+
+pub mod fold
+{
+    use ir::{Value,Instruction,Constant};
+    use ir::constants::{Integer,Float};
+
+    pub fn value(value: Value) -> Value {
+        match value {
+            Value::Instruction(i) => instruction(i),
+            _ => value,
+        }
+    }
+
+    pub fn instruction(inst: Instruction) -> Value {
+        let inst_copy = inst.clone();
+
+        match inst {
+            Instruction::Add(i) => arithmetic_binop(inst_copy, i.terms(), |a,b| a+b),
+            _ => inst.into(),
+        }
+    }
+
+    pub fn arithmetic_binop<FI>(inst: Instruction,
+                                values: (Value,Value),
+                                mut f_int: FI) -> Value
+        where FI: FnMut(Integer,Integer) -> Integer {
+
+        // make sure the values are constants
+        let (lhs,rhs) = match values {
+            (Value::Constant(a),Value::Constant(b)) => (a,b),
+            _ => return inst.into(), // we can only fold constants
+        };
+
+        match (lhs,rhs) {
+            (Constant::Integer(li),Constant::Integer(ri)) => {
+                f_int(li,ri).into()
+            },
+            _ => inst.into(),
+        }
     }
 }

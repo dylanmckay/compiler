@@ -15,3 +15,5 @@ impl TypeTrait for Signature
         Type::Signature(self)
     }
 }
+
+impl_into_type!(Signature);

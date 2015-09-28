@@ -1,6 +1,5 @@
 
-use ir::{self,Instruction,InstructionTrait,Value,ValueTrait};
-use util;
+use ir::{self,Instruction,Value,ValueTrait};
 use std::fmt;
 
 #[derive(Clone,Debug)]
@@ -18,21 +17,25 @@ impl Jump
     }
 }
 
-impl InstructionTrait for Jump { }
+impl ValueTrait for Jump
+{
+    fn ty(&self) -> ir::Type { unreachable!() }
+}
 
 impl fmt::Display for Jump
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
+        use util;
+
         let func = if let Value::Function(ref f) = *self.target {
             f
         } else {
             unreachable!(); // target must be function
         };
 
-        try!("jump ".fmt(fmt));
-        try!(util::fmt_comma_separated_values(func.signature.return_types.iter(), fmt));
-        write!(fmt, " {}", func.name)
+        write!(fmt, "jump {} {}", util::comma_separated_values(func.signature.return_types.iter()),
+                                  func.name)
     }
 }
 
-impl_upcast!(Jump,Instruction);
+impl_lang_instruction!(Jump: target);

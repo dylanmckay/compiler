@@ -1,11 +1,10 @@
-
-use ir::{self,Instruction,InstructionTrait,Value,ValueTrait};
+use ir::{self,Instruction,Value,ValueTrait};
 use std::fmt;
 
 #[derive(Clone,Debug)]
 pub struct Add
 {
-    ty:  Box<ir::Type>,
+    ty:  ir::Type,
     lhs: Box<ir::Value>,
     rhs: Box<ir::Value>,
 }
@@ -14,14 +13,23 @@ impl Add
 {
     pub fn new(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Self {
         Add {
-            ty: Box::new(ty),
+            ty: ty,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }
     }
+
+    pub fn terms(&self) -> (ir::Value,ir::Value) {
+        (*self.lhs.clone(), *self.rhs.clone())
+    }
 }
 
-impl InstructionTrait for Add { }
+impl ValueTrait for Add
+{
+    fn ty(&self) -> ir::Type {
+        self.ty.clone()
+    }
+}
 
 impl fmt::Display for Add
 {
@@ -30,4 +38,4 @@ impl fmt::Display for Add
     }
 }
 
-impl_upcast!(Add,Instruction);
+impl_lang_instruction!(Add: lhs, rhs);
