@@ -1,14 +1,19 @@
 
 pub use self::manager::Manager;
 
+/// The pass manager infrastructure.
 pub mod manager;
+/// Passes which perform transformations.
 pub mod transforms;
+/// Passes which perform analysis.
+pub mod analysis;
 
 
 use lang;
 
 /// A pass identifier.
-pub type Id = u64;
+#[derive(Copy,Clone,Debug,PartialEq,Eq)]
+pub struct Id(u32);
 
 pub enum Info<M: lang::Module>
 {
@@ -72,7 +77,17 @@ pub trait Pass<M> : Metadata
         }
     }
 
-    fn run_block(&mut self, _: &<M::Function as lang::Function>::BasicBlock) {
+    fn run_block(&mut self, block: &<M::Function as lang::Function>::BasicBlock) {
+        use lang::BasicBlock;
+
+        for inst in block.instructions() {
+            self.run_instruction(inst);
+        }
+    }
+
+    fn run_instruction(&mut self,
+                       _: &<<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Instruction) {
+
         panic!("the pass is not implemented");
     }
 }
@@ -80,38 +95,29 @@ pub trait Pass<M> : Metadata
 pub trait PassMut<M> : Metadata
     where M: lang::Module
 {
-    fn run_module(&mut self, module: &mut M) {
-
-        for func in module.functions_mut() {
-            self.run_function(func);
-        }
+    fn run_module(&mut self, module: M) -> M{
+        module.map_functions(|a| self.run_function(a))
     }
 
-    fn run_function(&mut self, function: &mut M::Function) {
+    fn run_function(&mut self, function: M::Function)
+        -> M::Function {
         use lang::Function;
 
-        for bb in function.basic_blocks_mut() {
-            self.run_block(bb);
-        }
+        function.map_blocks(|a| self.run_block(a))
     }
 
-    fn run_block(&mut self, _: &mut <M::Function as lang::Function>::BasicBlock) {
+    fn run_block(&mut self, block: <M::Function as lang::Function>::BasicBlock)
+        -> <M::Function as lang::Function>::BasicBlock {
+        use lang::BasicBlock;
+
+        block.map_instructions(|a| self.run_instruction(a))
+    }
+
+    fn run_instruction(&mut self,
+                       _: <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Instruction)
+        -> <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Instruction {
+
         panic!("the pass is not implemented");
     }
 }
 
-impl<M> Into<Info<M>> for Box<Pass<M>>
-    where M: lang::Module {
-
-    fn into(self) -> Info<M> {
-        Info::Immutable(self)
-    }
-}
-
-impl<M> Into<Info<M>> for Box<PassMut<M>>
-    where M: lang::Module {
-
-    fn into(self) -> Info<M> {
-        Info::Mutable(self)
-    }
-}

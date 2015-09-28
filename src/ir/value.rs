@@ -23,20 +23,27 @@ pub enum Value
 impl Value
 {
     /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
-    pub fn constant_integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Value> {
+    pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Value> {
         ir::Constant::integer(ty,val).map(|i| i.upcast())
     }
 
-    pub fn constant_float(ty: types::Float, bits: BitVec) -> Value {
+    pub fn float(ty: types::Float, bits: BitVec) -> Value {
         ir::Constant::float(ty,bits).upcast()
     }
 
-    pub fn constant_struct(fields: Vec<Value>) -> Value {
+    pub fn strukt(fields: Vec<Value>) -> Value {
         ir::Constant::strukt(fields).upcast()
     }
 
-    pub fn constant_unit_struct() -> Value {
+    pub fn unit_struct() -> Value {
         ir::Constant::unit_struct().upcast()
+    }
+
+    pub fn as_constant(&self) -> Option<&ir::Constant> {
+        match self {
+            &Value::Constant(ref v) => Some(v),
+            _ => None,
+        }
     }
 }
 

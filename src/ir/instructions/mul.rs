@@ -5,9 +5,9 @@ use std::fmt;
 #[derive(Clone,Debug)]
 pub struct Mul
 {
-    ty:  Box<ir::Type>,
-    lhs: Box<ir::Value>,
-    rhs: Box<ir::Value>,
+    pub ty:  Box<ir::Type>,
+    pub lhs: Box<ir::Value>,
+    pub rhs: Box<ir::Value>,
 }
 
 impl Mul
@@ -18,6 +18,14 @@ impl Mul
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }
+    }
+
+    pub fn ty(&self) -> &ir::Type {
+        &self.ty
+    }
+
+    pub fn multiplicands(&self) -> (Value,Value) {
+        (*self.lhs.clone(), *self.rhs.clone())
     }
 }
 

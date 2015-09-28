@@ -75,6 +75,23 @@ impl lang::Function for Function
     fn basic_blocks_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,BasicBlock> {
         self.basicblocks.iter_mut()
     }
+
+    fn map_blocks<F>(mut self, mut f: F) -> Self
+        where F: FnMut(BasicBlock) -> BasicBlock {
+
+        let blocks = self.basicblocks.into_iter().map(|a| f(a));
+        self.basicblocks = blocks.collect();
+
+        self
+    }
+
+    fn with_blocks<I>(mut self, blocks: I) -> Self
+        where I: Iterator<Item=BasicBlock> {
+
+        self.basicblocks = blocks.collect();
+        self
+    }
+
     fn signature<'a>(&'a self) -> &'a lang::Signature<ir::Type> {
         &self.signature
     }

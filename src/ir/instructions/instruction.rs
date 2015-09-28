@@ -2,9 +2,9 @@
 use std::fmt;
 use ir::{self, instructions, Value, Type, TypeTrait};
 use lang;
-use util;
+use util::Upcast;
 
-pub trait InstructionTrait : fmt::Debug + fmt::Display + util::Upcast<Instruction> 
+pub trait InstructionTrait : fmt::Debug + fmt::Display + Upcast<Instruction> 
 {
 }
 
@@ -25,12 +25,30 @@ pub enum Instruction
 impl Instruction
 {
     pub fn add(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-        use util::Upcast;
         instructions::Add::new(ty, lhs, rhs).upcast()
     }
 
+    pub fn sub(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
+        instructions::Sub::new(ty, lhs, rhs).upcast()
+    }
+
+    pub fn mul(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
+        instructions::Mul::new(ty, lhs, rhs).upcast()
+    }
+
+    pub fn div(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
+        instructions::Div::new(ty, lhs, rhs).upcast()
+    }
+
+    pub fn shl(ty: ir::Type, val: ir::Value, amount: ir::Value) -> Instruction {
+        instructions::Shl::new(ty, val, amount).upcast()
+    }
+
+    pub fn shr(ty: ir::Type, val: ir::Value, amount: ir::Value) -> Instruction {
+        instructions::Shr::new(ty, val, amount).upcast()
+    }
+
     pub fn ret(value: Option<ir::Value>) -> Instruction {
-        use util::Upcast;
         instructions::Return::new(value).upcast()
     }
 }

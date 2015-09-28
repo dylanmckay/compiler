@@ -11,18 +11,19 @@ pub struct Manager<M: lang::Module>
 
 impl<M: lang::Module> Manager<M>
 {
-    pub fn new() -> Self {
+    pub fn empty() -> Self {
         Manager {
             passes: Vec::new(),
         }
     }
 
     /// Adds a pass to the manager.
-    pub fn add<P>(&mut self, pass: P)
-        where P: pass::Metadata, Box<P>: Into<pass::Info<M>> {
+    pub fn add<P>(mut self, pass: P) -> Self
+        where Box<P>: Into<pass::Info<M>> {
 
-        let boxed = Box::new(pass);
-        self.passes.push(boxed.into());
+        self.passes.push(Box::new(pass).into());
+
+        self
     }
 
     pub fn passes<'a>(&'a self) -> std::slice::Iter<'a,pass::Info<M>> {
@@ -30,17 +31,19 @@ impl<M: lang::Module> Manager<M>
     }
 
     /// Runs the pass manager.
-    pub fn run(&mut self, module: &mut M) {
+    pub fn run(&mut self, mut module: M) -> M {
         let pass_list = self::build_pass_list(&self.passes);
 
         for pass_id in pass_list {
             let pass = self::lookup_pass_mut(pass_id, &mut self.passes).unwrap();
 
             match pass {
-                &mut pass::Info::Immutable(ref mut p) => p.run_module(module),
-                &mut pass::Info::Mutable(ref mut p) => p.run_module(module),
+                &mut pass::Info::Immutable(ref mut p) => p.run_module(&module),
+                &mut pass::Info::Mutable(ref mut p) => module = p.run_module(module),
             }
         }
+
+        module
     }
 }
 

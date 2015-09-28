@@ -6,6 +6,7 @@ pub use self::instructions::{Instruction,InstructionTrait};
 pub use self::constants::{Constant};
 pub use self::basicblock::BasicBlock;
 pub use self::function::Function;
+pub use self::module::Module;
 
 pub mod types;
 pub mod value;
@@ -15,4 +16,5 @@ pub mod instructions;
 pub mod constants;
 pub mod basicblock;
 pub mod function;
+pub mod module;
 

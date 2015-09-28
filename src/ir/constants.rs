@@ -37,6 +37,30 @@ impl Constant
     pub fn unit_struct() -> Constant {
         Constant::strukt(Vec::new())
     }
+
+    pub fn as_integer(&self) -> Option<&Integer> {
+        if let &Constant::Integer(ref i) = self {
+            Some(i)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_float(&self) -> Option<&Float> {
+        if let &Constant::Float(ref i) = self {
+            Some(i)
+        } else {
+            None
+        }
+    }
+
+    pub fn as_struct(&self) -> Option<&Struct> {
+        if let &Constant::Struct(ref i) = self {
+            Some(i)
+        } else {
+            None
+        }
+    }
 }
 
 impl ValueTrait for Constant
@@ -65,8 +89,8 @@ impl fmt::Display for Constant
 #[derive(Clone,Debug)]
 pub struct Integer
 {
-    ty: types::Integer,
-    value: BigInt,
+    pub ty: types::Integer,
+    pub value: BigInt,
 }
 
 impl Integer

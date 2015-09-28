@@ -63,6 +63,22 @@ impl lang::BasicBlock for BasicBlock
     fn instructions_mut<'a>(&'a mut self) -> std::slice::IterMut<'a, ir::Instruction> {
         self.body.iter_mut()
     }
+
+    fn map_instructions<F>(mut self, mut f: F) -> Self
+        where F: FnMut(ir::Instruction) -> ir::Instruction {
+
+        let instrs = self.body.into_iter().map(|a| f(a));
+        self.body = instrs.collect();
+
+        self
+    }
+
+    fn with_instructions<I>(mut self, instructions: I) -> Self
+        where I: Iterator<Item=ir::Instruction> {
+
+        self.body = instructions.collect();
+        self
+    }
 }
 
 impl_upcast!(BasicBlock,Value);
