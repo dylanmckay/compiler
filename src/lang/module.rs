@@ -2,6 +2,10 @@
 use std::{self,fmt};
 use lang;
 
+/// An SSA module.
+/// 
+/// A module is made up of functions, basic blocks, and instructions
+/// in **S**ingle **S**tatic **A**ssignment form.
 pub trait Module : fmt::Display
 {
     type Function: lang::Function;
@@ -15,3 +19,4 @@ pub trait Module : fmt::Display
     fn with_functions<I>(self, funcs: I) -> Self
         where I: Iterator<Item=Self::Function>;
 }
+
