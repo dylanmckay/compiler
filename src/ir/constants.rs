@@ -156,12 +156,70 @@ impl std::ops::Add for Integer
 
     fn add(mut self, rhs: Integer) -> Integer {
         let val = self.value + rhs.value;
-
         self.value = val;
         self
     }
 }
 
+impl std::ops::Sub for Integer
+{
+    type Output = Integer;
+
+    fn sub(mut self, rhs: Integer) -> Integer {
+        let val = self.value - rhs.value;
+        self.value = val;
+        self
+    }
+}
+
+impl std::ops::Mul for Integer
+{
+    type Output = Integer;
+
+    fn mul(mut self, rhs: Integer) -> Integer {
+        let val = self.value * rhs.value;
+        self.value = val;
+        self
+    }
+}
+
+impl std::ops::Div for Integer
+{
+    type Output = Integer;
+
+    fn div(mut self, rhs: Integer) -> Integer {
+        // FIXME: this will break with division by zero
+        let val = self.value / rhs.value;
+        self.value = val;
+        self
+    }
+}
+
+impl std::ops::Shl<Integer> for Integer
+{
+    type Output = Integer;
+
+    fn shl(mut self, rhs: Integer) -> Integer {
+        use num::traits::ToPrimitive;
+
+        let val = self.value << rhs.value.to_usize().unwrap();
+        self.value = val;
+        self
+    }
+}
+
+impl std::ops::Shr<Integer> for Integer
+{
+    type Output = Integer;
+
+    fn shr(mut self, rhs: Integer) -> Integer {
+        use num::traits::ToPrimitive;
+
+        let val = self.value >> rhs.value.to_usize().unwrap();
+        self.value = val;
+        self
+    }
+}
 impl ConstantTrait for Integer { }
 
 impl Into<Value> for Integer

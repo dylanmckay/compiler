@@ -19,6 +19,10 @@ impl Div
             rhs: Box::new(rhs),
         }
     }
+
+    pub fn operands(&self) -> (ir::Value,ir::Value) {
+        (*self.lhs.clone(), *self.rhs.clone())
+    }
 }
 
 impl ir::ValueTrait for Div

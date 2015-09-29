@@ -18,6 +18,10 @@ impl Sub
             rhs: Box::new(rhs),
         }
     }
+
+    pub fn terms(&self) -> (ir::Value,ir::Value) {
+        (*self.lhs.clone(), *self.rhs.clone())
+    }
 }
 
 impl ValueTrait for Sub
