@@ -3,4 +3,4 @@
 
 [![Build Status](https://travis-ci.org/dylanmckay/compiler.svg)](https://travis-ci.org/dylanmckay/compiler)
 
-This program is written in Rust.
+This program is written in Rust on the nightly channel.

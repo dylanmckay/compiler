@@ -1,8 +1,9 @@
 language: rust
 
 rust:
-  - stable
-  - beta
+# Only nightly is supported for now
+# - stable
+# - beta
   - nightly
 
 matrix:
