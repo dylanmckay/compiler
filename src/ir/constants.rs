@@ -236,8 +236,8 @@ impl ValueTrait for Integer
 
 impl fmt::Display for Integer
 {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        self.value.fmt(fmt)
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "{} {}", self.ty, self.value)
      }
 }
 

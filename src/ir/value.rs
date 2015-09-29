@@ -51,7 +51,13 @@ impl Value
 impl lang::Value for Value
 {
     fn subvalues(&self) -> Vec<Self> {
-        unimplemented!();
+        use lang::{Value,BasicBlock};
+
+        match self {
+            &ir::Value::Instruction(ref i) => i.subvalues(),
+            &ir::Value::BasicBlock(ref i) => i.subvalues(),
+            _ => Vec::new(),
+        }
     }
 
     fn map_subvalues<F>(self, f: F) -> Self
@@ -62,6 +68,14 @@ impl lang::Value for Value
             Value::Instruction(i) => i.map_subvalues(f),
             Value::BasicBlock(i) => i.map_subvalues(f).into(),
             _ => self,
+        }
+    }
+
+    fn is_single_critical(&self) -> bool {
+        match self {
+            &ir::Value::Constant(..) => false,
+            &ir::Value::Instruction(ref i) => i.is_single_critical(),
+            _ => true,
         }
     }
 }

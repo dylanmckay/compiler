@@ -58,4 +58,5 @@ fn create_ir_pass_manager() -> pass::Manager<ir::Module> {
     pass::Manager::empty()
         .add(pass::transforms::ConstantFolding)
         .add(pass::transforms::StrengthReduction)
+        .add(pass::transforms::DeadCodeElimination)
 }

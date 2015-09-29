@@ -108,6 +108,19 @@ impl Instruction
            ir::Instruction::Return(instr) => instr.map_subvalues(f).into(),
         }
     }
+
+    pub fn is_single_critical(&self) -> bool {
+        match self {
+            &ir::Instruction::Add(..) => false,
+            &ir::Instruction::Sub(..) => false,
+            &ir::Instruction::Mul(..) => false,
+            &ir::Instruction::Div(..) => false,
+            &ir::Instruction::Shl(..) => false,
+            &ir::Instruction::Shr(..) => false,
+            &ir::Instruction::Call(..) => true,
+            &ir::Instruction::Return(..) => true,
+        }
+    }
 }
 
 impl ir::ValueTrait for Instruction
@@ -123,7 +136,6 @@ impl ir::ValueTrait for Instruction
             &Instruction::Call(ref instr) => instr.ty(),
             &Instruction::Return(ref instr) => instr.ty(),
          }
-
     }
 }
 

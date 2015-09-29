@@ -52,13 +52,21 @@ impl Into<Value> for Function
 impl fmt::Display for Function
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
+
+        let mut accum = 0;
         try!(write!(fmt, "define {} @{}({}) {{\n",
                          util::comma_separated_values(self.signature.return_types.iter()),
                          self.name,
                          util::comma_separated_values(self.signature.param_types.iter())));
 
         for bb in self.basicblocks.iter() {
-            try!(bb.fmt(fmt));
+            try!(write!(fmt, "{}:\n", bb.name));
+
+            for value in bb.body.iter() {
+                 try!(write!(fmt, "\t%{} = {}\n", accum, value));
+
+                 accum += 1;
+            }
         }
 
         "}\n".fmt(fmt)
