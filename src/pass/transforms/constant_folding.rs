@@ -47,6 +47,7 @@ pub mod fold
             Instruction::Mul(i) => arithmetic_binop(inst_copy, i.multiplicands(), |a,b| a*b),
             Instruction::Div(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a/b),
             Instruction::Shl(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a<<b),
+            Instruction::Shr(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a>>b),
             _ => inst.into(),
         }
     }
