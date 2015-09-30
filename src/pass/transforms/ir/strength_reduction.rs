@@ -1,6 +1,6 @@
 
 use pass;
-use ir::{self,Instruction};
+use ir;
 
 /// An IR strength reduction pass.
 pub struct StrengthReduction;
@@ -75,6 +75,7 @@ pub mod reduce
     pub mod util {
         use ir::{self,Value,ValueTrait};
 
+        /// Checks if a value is an integer and a power of two.
         pub fn is_power_of_two(value: &ir::Constant) -> bool {
             use ::num::traits::ToPrimitive;
 
