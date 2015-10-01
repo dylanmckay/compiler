@@ -3,6 +3,7 @@ use ir::{self,types,Type};
 use bit_vec::BitVec;
 use std::fmt;
 use lang;
+use util;
 
 use num::bigint::ToBigInt;
 
@@ -23,6 +24,27 @@ pub enum Value
 
 impl Value
 {
+    /// Creates a signed integer value.
+    pub fn i<T: ToBigInt>(bit_width: u16, value: T) -> Self {
+        let ty = types::Integer::new(util::IntegerKind::Signed, bit_width);
+        Self::integer(ty, value).unwrap()
+    }
+
+    /// Creates an unsigned integer value.
+    pub fn u<T: ToBigInt>(bit_width: u16, value: T) -> Self {
+       let ty = types::Integer::new(util::IntegerKind::Unsigned, bit_width);
+       Self::integer(ty, value).unwrap()
+    }
+
+    pub fn u8(value: u8)   -> Self { Self::u(8, value) }
+    pub fn u16(value: u16) -> Self { Self::u(16, value) }
+    pub fn u32(value: u32) -> Self { Self::u(32, value) }
+    pub fn u64(value: u64) -> Self { Self::u(64, value) }
+    pub fn i8(value: i8)   -> Self { Self::i(8, value) }
+    pub fn i16(value: i16) -> Self { Self::i(16, value) }
+    pub fn i32(value: i32) -> Self { Self::i(32, value) }
+    pub fn i64(value: i64) -> Self { Self::i(64, value) }
+
     /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
     pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Value> {
         ir::Constant::integer(ty,val).map(|i| i.into())
