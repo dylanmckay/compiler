@@ -1,6 +1,4 @@
 
-lang::Function::basic_blocks() -> blocks()
-  - Also rename BasicBlock to Block
 
 Remove unnecessary trait bounds
 

@@ -1,5 +1,5 @@
 
-use ir::{self,types,Value,Name,BasicBlock};
+use ir::{self,types,Value,Name,Block};
 use std::{self,fmt};
 use lang;
 use util;
@@ -9,14 +9,14 @@ pub struct Function
 {
     pub name: Name,
     pub signature: types::Signature,
-    pub basicblocks: Vec<BasicBlock>,
+    pub basicblocks: Vec<Block>,
 }
 
 impl Function
 {
     pub fn new(name: Name,
                signature: types::Signature,
-               basicblocks: Vec<BasicBlock>) -> Function {
+               basicblocks: Vec<Block>) -> Function {
         Function {
             name: name,
             signature: signature,
@@ -28,7 +28,7 @@ impl Function
         Function::new(name, signature, Vec::new())
     }
 
-    pub fn add(mut self, basicblock: BasicBlock) -> Function {
+    pub fn add(mut self, basicblock: Block) -> Function {
         self.basicblocks.push(basicblock);
         self
     }
@@ -75,19 +75,19 @@ impl fmt::Display for Function
 
 impl lang::Function for Function
 {
-    type BasicBlock = BasicBlock;
+    type Block = Block;
     type Type = ir::Type;
 
-    fn basic_blocks<'a>(&'a self) -> std::slice::Iter<'a,BasicBlock> {
+    fn blocks<'a>(&'a self) -> std::slice::Iter<'a,Block> {
         self.basicblocks.iter()
     }
 
-    fn basic_blocks_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,BasicBlock> {
+    fn blocks_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,Block> {
         self.basicblocks.iter_mut()
     }
 
     fn map_blocks<F>(mut self, mut f: F) -> Self
-        where F: FnMut(BasicBlock) -> BasicBlock {
+        where F: FnMut(Block) -> Block {
 
         let blocks = self.basicblocks.into_iter().map(|a| f(a));
         self.basicblocks = blocks.collect();
@@ -96,7 +96,7 @@ impl lang::Function for Function
     }
 
     fn with_blocks<I>(mut self, blocks: I) -> Self
-        where I: Iterator<Item=BasicBlock> {
+        where I: Iterator<Item=Block> {
 
         self.basicblocks = blocks.collect();
         self

@@ -17,7 +17,7 @@ pub enum Value
     Constant(ir::Constant),
 
     Instruction(ir::Instruction),
-    BasicBlock(ir::BasicBlock),
+    Block(ir::Block),
     Function(ir::Function),
 }
 
@@ -51,22 +51,22 @@ impl Value
 impl lang::Value for Value
 {
     fn subvalues(&self) -> Vec<Self> {
-        use lang::{Value,BasicBlock};
+        use lang::{Value,Block};
 
         match self {
             &ir::Value::Instruction(ref i) => i.subvalues(),
-            &ir::Value::BasicBlock(ref i) => i.subvalues(),
+            &ir::Value::Block(ref i) => i.subvalues(),
             _ => Vec::new(),
         }
     }
 
     fn map_subvalues<F>(self, f: F) -> Self
         where F: FnMut(Self) -> Self {
-        use lang::BasicBlock;
+        use lang::Block;
 
         match self {
             Value::Instruction(i) => i.map_subvalues(f),
-            Value::BasicBlock(i) => i.map_subvalues(f).into(),
+            Value::Block(i) => i.map_subvalues(f).into(),
             _ => self,
         }
     }
@@ -86,7 +86,7 @@ impl ValueTrait for Value
         match self {
             &Value::Constant(ref val) => val.ty(),
             &Value::Instruction(ref val) => val.ty(),
-            &Value::BasicBlock(ref val) => val.ty(),
+            &Value::Block(ref val) => val.ty(),
             &Value::Function(ref val) => val.ty(),
         }
     }
@@ -98,7 +98,7 @@ impl fmt::Display for Value
         match self {
             &Value::Constant(ref val) => val.fmt(fmt),
             &Value::Instruction(ref val) => val.fmt(fmt),
-            &Value::BasicBlock(ref val) => val.fmt(fmt),
+            &Value::Block(ref val) => val.fmt(fmt),
             &Value::Function(ref val) => val.fmt(fmt),
         }
     }

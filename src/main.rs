@@ -42,7 +42,7 @@ fn create_module() -> ir::Module {
     let inst_mul = ir::Instruction::mul(op_ty.into(), inst_add1.clone().into(), rhs.clone());
     let inst_ret = ir::Instruction::ret(Some(lhs));
 
-    let basicblock = ir::BasicBlock::empty(ir::Name::named("entry".to_owned())).add(inst_add1)
+    let basicblock = ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_add1)
                                                                                .add(inst_add2)
                                                                                .add(inst_mul)
                                                                                .add(inst_ret);

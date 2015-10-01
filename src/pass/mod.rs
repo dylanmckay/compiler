@@ -72,13 +72,13 @@ pub trait Pass<M> : Metadata
     fn run_function(&mut self, function: &M::Function) {
         use lang::Function;
         
-        for bb in function.basic_blocks() {
+        for bb in function.blocks() {
             self.run_block(bb);
         }
     }
 
-    fn run_block(&mut self, block: &<M::Function as lang::Function>::BasicBlock) {
-        use lang::BasicBlock;
+    fn run_block(&mut self, block: &<M::Function as lang::Function>::Block) {
+        use lang::Block;
 
         for value in block.subvalues() {
             self.run_value_recursive(&value);
@@ -86,13 +86,13 @@ pub trait Pass<M> : Metadata
     }
 
     fn run_value(&mut self,
-                 _: &<<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value) {
+                 _: &<<M::Function as lang::Function>::Block as lang::Block>::Value) {
 
         panic!("the pass is not implemented");
     }
 
     fn run_value_recursive(&mut self,
-                           value: &<<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value) {
+                           value: &<<M::Function as lang::Function>::Block as lang::Block>::Value) {
         use lang::Value;
 
         // Recurse from the deepest node to the root node.
@@ -118,23 +118,23 @@ pub trait PassMut<M> : Metadata
         function.map_blocks(|a| self.run_block(a))
     }
 
-    fn run_block(&mut self, block: <M::Function as lang::Function>::BasicBlock)
-        -> <M::Function as lang::Function>::BasicBlock {
-        use lang::BasicBlock;
+    fn run_block(&mut self, block: <M::Function as lang::Function>::Block)
+        -> <M::Function as lang::Function>::Block {
+        use lang::Block;
 
         block.map_subvalues(|a| self.run_value_recursive(a))
     }
 
     fn run_value(&mut self,
-                 _: <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value)
-        -> <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value {
+                 _: <<M::Function as lang::Function>::Block as lang::Block>::Value)
+        -> <<M::Function as lang::Function>::Block as lang::Block>::Value {
 
         panic!("the pass is not implemented");
     }
 
     fn run_value_recursive(&mut self,
-                           value: <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value)
-        -> <<M::Function as lang::Function>::BasicBlock as lang::BasicBlock>::Value {
+                           value: <<M::Function as lang::Function>::Block as lang::Block>::Value)
+        -> <<M::Function as lang::Function>::Block as lang::Block>::Value {
         use lang::Value;
 
         // Recurse from the deepest node to the root node.

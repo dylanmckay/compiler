@@ -21,8 +21,8 @@ impl pass::Metadata for DeadCodeElimination
 impl<M> pass::PassMut<M> for DeadCodeElimination
     where M: lang::Module
 {
-    fn run_block(&mut self, block: <<M as lang::Module>::Function as lang::Function>::BasicBlock)
-        -> <<M as lang::Module>::Function as lang::Function>::BasicBlock {
+    fn run_block(&mut self, block: <<M as lang::Module>::Function as lang::Function>::Block)
+        -> <<M as lang::Module>::Function as lang::Function>::Block {
 
         self::deadcode::eliminate(block)
     }
@@ -43,7 +43,7 @@ pub mod deadcode
 
     /// Eliminates dead code.
     pub fn eliminate<B>(block: B) -> B
-        where B: lang::BasicBlock {
+        where B: lang::Block {
         use lang::Value;
 
         block.filter(|v| v.is_critical())

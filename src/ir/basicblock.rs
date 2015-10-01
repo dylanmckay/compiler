@@ -6,23 +6,23 @@ use lang;
 /// A basic block is a list of instructions which
 /// end with a single terminator instruction.
 #[derive(Clone,Debug)]
-pub struct BasicBlock
+pub struct Block
 {
     pub name: ir::Name,
     pub body: Vec<ir::Value>,
 }
 
-impl BasicBlock
+impl Block
 {
-    pub fn new(name: ir::Name, body: Vec<ir::Value>) -> BasicBlock {
-        BasicBlock {
+    pub fn new(name: ir::Name, body: Vec<ir::Value>) -> Block {
+        Block {
             name: name,
             body: body,
         }
     }
 
-    pub fn empty(name: ir::Name) -> BasicBlock {
-        BasicBlock::new(name, Vec::new())
+    pub fn empty(name: ir::Name) -> Block {
+        Block::new(name, Vec::new())
     }
 
     pub fn add<T>(mut self, value: T) -> Self
@@ -32,14 +32,14 @@ impl BasicBlock
     }
 }
 
-impl ir::ValueTrait for BasicBlock
+impl ir::ValueTrait for Block
 {
     fn ty(&self) -> ir::Type {
         ir::Type::label()
     }
 }
 
-impl fmt::Display for BasicBlock
+impl fmt::Display for Block
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
         try!(write!(fmt, "{}:\n", self.name));
@@ -52,7 +52,7 @@ impl fmt::Display for BasicBlock
     }
 }
 
-impl lang::BasicBlock for BasicBlock
+impl lang::Block for Block
 {
     type Value = ir::Value;
 
@@ -74,7 +74,7 @@ impl lang::BasicBlock for BasicBlock
     }
 }
 
-impl Into<Value> for BasicBlock
+impl Into<Value> for Block
 {
-    fn into(self) -> Value { Value::BasicBlock(self) }
+    fn into(self) -> Value { Value::Block(self) }
 }
