@@ -3,7 +3,7 @@ use std::fmt;
 use lang;
 
 /// A basic block.
-pub trait Block : Sized + fmt::Debug + fmt::Display
+pub trait Block : Sized + fmt::Display
 {
     type Value: lang::Value;
 

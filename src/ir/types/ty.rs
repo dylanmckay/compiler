@@ -5,7 +5,7 @@ use util::IntegerKind;
 
 use std::fmt;
 
-pub trait TypeTrait : Clone + Eq + PartialEq + fmt::Display + lang::Type + Into<Type>
+pub trait TypeTrait : Clone + Eq + fmt::Display + lang::Type + Into<Type>
 {
     /// Gets the size of the type in bits.
     fn size(&self) -> u64;

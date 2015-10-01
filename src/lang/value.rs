@@ -2,7 +2,7 @@
 use std::fmt;
 
 /// A value.
-pub trait Value : Sized + fmt::Debug + fmt::Display
+pub trait Value : Sized + fmt::Display
 {
     /// Gets the set of values.
     /// TODO: make this an iterator once supported.
