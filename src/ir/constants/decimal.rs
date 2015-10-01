@@ -4,48 +4,48 @@ use bit_vec::BitVec;
 use std::fmt;
 
 
-/// A constant floating point value.
+/// A decimal value.
 #[derive(Clone,Debug)]
-pub struct Float
+pub struct Decimal
 {
-    ty: types::Float,
+    ty: types::Decimal,
     bits: BitVec,
 }
 
-impl Float
+impl Decimal
 {
-    pub fn new(ty: types::Float, bits: BitVec) -> Self {
-        Float {
+    pub fn new(ty: types::Decimal, bits: BitVec) -> Self {
+        Decimal {
             ty: ty,
             bits: bits,
         }
     }
 }
 
-impl ir::constants::ConstantTrait for Float { }
+impl ir::constants::ConstantTrait for Decimal { }
 
-impl ValueTrait for Float
+impl ValueTrait for Decimal
 {
     fn ty(&self) -> Type { self.ty.clone().into() }
 }
 
-impl Into<Value> for Float
+impl Into<Value> for Decimal
 {
     fn into(self) -> Value {
         Value::Constant(self.into())
     }
 }
 
-impl fmt::Display for Float
+impl fmt::Display for Decimal
 {
     fn fmt(&self, _: &mut fmt::Formatter) -> Result<(),fmt::Error> {
         unimplemented!()
     }
 }
 
-impl Into<ir::Constant> for Float {
+impl Into<ir::Constant> for Decimal {
     fn into(self) -> ir::Constant {
-        ir::Constant::Float(self)
+        ir::Constant::Decimal(self)
     }
 }
 

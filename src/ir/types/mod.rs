@@ -2,7 +2,7 @@
 pub use self::ty::{Type,TypeTrait};
 
 pub use self::array::Array;
-pub use self::float::Float;
+pub use self::decimal::Decimal;
 pub use self::integer::Integer;
 pub use self::label::Label;
 pub use self::signature::Signature;
@@ -14,7 +14,7 @@ pub use self::void::Void;
 pub mod ty;
 
 pub mod array;
-pub mod float;
+pub mod decimal;
 pub mod integer;
 pub mod label;
 pub mod signature;

@@ -50,8 +50,8 @@ impl Value
         ir::Constant::integer(ty,val).map(|i| i.into())
     }
 
-    pub fn float(ty: types::Float, bits: BitVec) -> Value {
-        ir::Constant::float(ty,bits).into()
+    pub fn decimal(ty: types::Decimal, bits: BitVec) -> Value {
+        ir::Constant::decimal(ty,bits).into()
     }
 
     pub fn strukt(fields: Vec<Value>) -> Value {

@@ -1,5 +1,5 @@
 
-use ir::types::{Void, Integer, Float, Vector, Array, Struct, Signature, Label};
+use ir::types::{Void, Integer, Decimal, Vector, Array, Struct, Signature, Label};
 use lang;
 use util::IntegerKind;
 
@@ -19,7 +19,7 @@ pub enum Type
     Void(Void),
 
     Integer(Integer),
-    Float(Float),
+    Decimal(Decimal),
 
     Vector(Vector),
     Array(Array),
@@ -54,15 +54,15 @@ impl Type
     pub fn u64() ->  Type { Type::u(64)  }
     pub fn u128() -> Type { Type::u(128) }
 
-    /// Creates a new floating point type.
-    pub fn float(bit_width: u16) -> Type {
-        Type::Float(Float::new(bit_width))
+    /// Creates a new decimaling point type.
+    pub fn decimal(bit_width: u16) -> Type {
+        Type::Decimal(Decimal::new(bit_width))
     }
 
-    /// Creates a new floating point type.
-    /// Alias of `Type::float`.
+    /// Creates a new decimaling point type.
+    /// Alias of `Type::decimal`.
     pub fn f(bit_width: u16) -> Type {
-        Type::float(bit_width)
+        Type::decimal(bit_width)
     }
 
     pub fn f16() -> Type { Type::f(16) }
@@ -90,7 +90,7 @@ impl TypeTrait for Type
         match self {
             &Type::Void(ref ty) => { ty.size() },
             &Type::Integer(ref ty) => { ty.size() },
-            &Type::Float(ref ty) => { ty.size() },
+            &Type::Decimal(ref ty) => { ty.size() },
             &Type::Vector(ref ty) => { ty.size() },
             &Type::Array(ref ty) => { ty.size() },
             &Type::Struct(ref ty) => { ty.size() },
@@ -115,7 +115,7 @@ impl fmt::Display for Type
             &Type::Integer(ref ty) => {
                 ty.fmt(fmt)
             },
-            &Type::Float(ref ty) => {
+            &Type::Decimal(ref ty) => {
                 ty.fmt(fmt)
             },
             &Type::Vector(ref ty) => {

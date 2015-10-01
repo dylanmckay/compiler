@@ -1,6 +1,6 @@
 
 pub use self::integer::Integer;
-pub use self::float::Float;
+pub use self::decimal::Decimal;
 pub use self::strukt::Struct;
 
 use ir::{types,Value,ValueTrait,Type};
@@ -9,10 +9,10 @@ use std::fmt;
 
 use num::bigint::ToBigInt;
 
-/// Integer constants implementation.
+/// Integer constant implementation.
 pub mod integer;
-/// Floating-point constants implementation.
-pub mod float;
+/// Decimal constant implementation.
+pub mod decimal;
 /// Structure-constant implementation.
 pub mod strukt;
 
@@ -24,7 +24,7 @@ pub trait ConstantTrait : Into<Constant> + ValueTrait
 pub enum Constant
 {
     Integer(Integer),
-    Float(Float),
+    Decimal(Decimal),
     Struct(Struct),
 }
 
@@ -35,8 +35,8 @@ impl Constant
         Integer::new(ty,val).map(|a| a.into())
     }
 
-    pub fn float(ty: types::Float, bits: BitVec) -> Constant {
-        Float::new(ty,bits).into()
+    pub fn decimal(ty: types::Decimal, bits: BitVec) -> Constant {
+        Decimal::new(ty,bits).into()
     }
 
     pub fn strukt(fields: Vec<Value>) -> Constant {
@@ -55,8 +55,8 @@ impl Constant
         }
     }
 
-    pub fn as_float(&self) -> Option<&Float> {
-        if let &Constant::Float(ref i) = self {
+    pub fn as_decimal(&self) -> Option<&Decimal> {
+        if let &Constant::Decimal(ref i) = self {
             Some(i)
         } else {
             None
@@ -77,7 +77,7 @@ impl ValueTrait for Constant
     fn ty(&self) -> Type {
         match self {
             &Constant::Integer(ref val) => val.ty(),
-            &Constant::Float(ref val) => val.ty(),
+            &Constant::Decimal(ref val) => val.ty(),
             &Constant::Struct(ref val) => val.ty(),
         }
     }
@@ -88,7 +88,7 @@ impl fmt::Display for Constant
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
         match self {
             &Constant::Integer(ref val) => val.fmt(fmt),
-            &Constant::Float(ref val) => val.fmt(fmt),
+            &Constant::Decimal(ref val) => val.fmt(fmt),
             &Constant::Struct(ref val) => val.fmt(fmt),
         }
     }
