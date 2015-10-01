@@ -19,7 +19,7 @@ impl Jump
 
 impl ValueTrait for Jump
 {
-    fn ty(&self) -> ir::Type { unreachable!() }
+    fn ty(&self) -> ir::Type { ir::Type::void() }
 }
 
 impl fmt::Display for Jump
@@ -38,4 +38,4 @@ impl fmt::Display for Jump
     }
 }
 
-impl_lang_instruction!(Jump: target);
+impl_instruction!(Jump: target);

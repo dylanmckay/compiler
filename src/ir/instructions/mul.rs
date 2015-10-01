@@ -19,10 +19,6 @@ impl Mul
             rhs: Box::new(rhs),
         }
     }
-
-    pub fn multiplicands(&self) -> (Value,Value) {
-        (*self.lhs.clone(), *self.rhs.clone())
-    }
 }
 
 impl ValueTrait for Mul
@@ -37,4 +33,4 @@ impl fmt::Display for Mul
     }
 }
 
-impl_lang_instruction!(Mul: lhs, rhs);
+impl_instruction!(Mul: lhs, rhs);

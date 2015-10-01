@@ -19,10 +19,6 @@ impl Shl
             amount: Box::new(amount),
         }
     }
-
-    pub fn operands(&self) -> (ir::Value,ir::Value) {
-        (*self.value.clone(), *self.amount.clone())
-    }
 }
 
 impl ValueTrait for Shl
@@ -37,4 +33,4 @@ impl fmt::Display for Shl
     }
 }
 
-impl_lang_instruction!(Shl: value, amount);
+impl_instruction!(Shl: value, amount);

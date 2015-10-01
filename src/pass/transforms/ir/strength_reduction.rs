@@ -51,9 +51,10 @@ pub mod reduce
     }
 
     pub fn mul_pow2_shl(inst: instructions::Mul) -> ir::Instruction {
+        use ir::instructions::Binary;
 
         let ty = inst.ty().clone();
-        let (lhs,rhs) = inst.multiplicands();
+        let (lhs,rhs) = inst.operands();
 
         let lhs_if_shift = lhs.as_constant().and_then(|a| util::get_mul_shift_amount(a));
         let rhs_if_shift = rhs.as_constant().and_then(|a| util::get_mul_shift_amount(a));

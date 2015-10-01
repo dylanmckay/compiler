@@ -27,7 +27,7 @@ impl Return
 
 impl ValueTrait for Return
 {
-    fn ty(&self) -> ir::Type { unreachable!() }
+    fn ty(&self) -> ir::Type { ir::Type::void() }
 }
 
 impl fmt::Display for Return
@@ -42,4 +42,4 @@ impl fmt::Display for Return
     }
 }
 
-impl_lang_instruction!(Return);
+impl_instruction!(Return);

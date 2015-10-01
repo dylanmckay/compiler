@@ -2,5 +2,3 @@
 
 Write tests for passes
 
-Create an ir::instructions::BinaryOp trait with `fn operands(self) -> (Value,Value)` function.
-

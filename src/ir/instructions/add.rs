@@ -18,10 +18,6 @@ impl Add
             rhs: Box::new(rhs),
         }
     }
-
-    pub fn terms(&self) -> (ir::Value,ir::Value) {
-        (*self.lhs.clone(), *self.rhs.clone())
-    }
 }
 
 impl ValueTrait for Add
@@ -38,4 +34,4 @@ impl fmt::Display for Add
     }
 }
 
-impl_lang_instruction!(Add: lhs, rhs);
+impl_instruction!(Add: lhs, rhs);

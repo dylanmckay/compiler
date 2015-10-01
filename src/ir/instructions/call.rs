@@ -20,7 +20,7 @@ impl Call
 impl ir::ValueTrait for Call
 {
     fn ty(&self) -> ir::Type {
-        unreachable!();
+        ir::Type::void()
     }
 }
 
@@ -40,4 +40,4 @@ impl fmt::Display for Call
     }
 }
 
-impl_lang_instruction!(Call: target);
+impl_instruction!(Call: target);
