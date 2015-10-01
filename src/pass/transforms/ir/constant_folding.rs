@@ -39,7 +39,7 @@ pub mod fold
     }
 
     pub fn instruction(inst: Instruction) -> Value {
-        use ir::instructions::Binary;
+        use ir::instruction::Binary;
         let inst_copy = inst.clone();
 
         match inst {

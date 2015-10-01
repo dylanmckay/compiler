@@ -35,7 +35,7 @@ impl Into<pass::Info<ir::Module>> for Box<StrengthReduction>
 
 pub mod reduce
 {
-    use ir::{self,instructions,Instruction,
+    use ir::{self,instruction,Instruction,
              ValueTrait};
 
     pub fn reduce(inst: Instruction) -> ir::Instruction {
@@ -46,12 +46,12 @@ pub mod reduce
         }
     }
 
-    pub fn mul(inst: instructions::Mul) -> ir::Instruction {
+    pub fn mul(inst: instruction::Mul) -> ir::Instruction {
         self::mul_pow2_shl(inst)
     }
 
-    pub fn mul_pow2_shl(inst: instructions::Mul) -> ir::Instruction {
-        use ir::instructions::Binary;
+    pub fn mul_pow2_shl(inst: instruction::Mul) -> ir::Instruction {
+        use ir::instruction::Binary;
 
         let ty = inst.ty().clone();
         let (lhs,rhs) = inst.operands();

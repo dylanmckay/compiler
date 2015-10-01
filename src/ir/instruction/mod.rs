@@ -15,7 +15,7 @@ pub use self::ret::Return;
 pub mod instruction
 {
     use std::fmt;
-    use ir::{self,instructions,Value,Type};
+    use ir::{self,instruction,Value,Type};
 
     pub trait InstructionTrait : fmt::Debug + fmt::Display +
                                  Into<Value> +
@@ -38,45 +38,45 @@ pub mod instruction
     #[derive(Clone,Debug)]
     pub enum Instruction
     {
-        Add(instructions::Add),
-        Sub(instructions::Sub),
-        Mul(instructions::Mul),
-        Div(instructions::Div),
-        Shl(instructions::Shl),
-        Shr(instructions::Shr),
+        Add(instruction::Add),
+        Sub(instruction::Sub),
+        Mul(instruction::Mul),
+        Div(instruction::Div),
+        Shl(instruction::Shl),
+        Shr(instruction::Shr),
 
-        Call(instructions::Call),
-        Return(instructions::Return),
+        Call(instruction::Call),
+        Return(instruction::Return),
     }
 
     impl Instruction
     {
         pub fn add(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instructions::Add::new(ty, lhs, rhs).into()
+            instruction::Add::new(ty, lhs, rhs).into()
         }
 
         pub fn sub(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instructions::Sub::new(ty, lhs, rhs).into()
+            instruction::Sub::new(ty, lhs, rhs).into()
         }
 
         pub fn mul(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instructions::Mul::new(ty, lhs, rhs).into()
+            instruction::Mul::new(ty, lhs, rhs).into()
         }
 
         pub fn div(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instructions::Div::new(ty, lhs, rhs).into()
+            instruction::Div::new(ty, lhs, rhs).into()
         }
 
         pub fn shl(ty: ir::Type, val: ir::Value, amount: ir::Value) -> Instruction {
-            instructions::Shl::new(ty, val, amount).into()
+            instruction::Shl::new(ty, val, amount).into()
         }
 
         pub fn shr(ty: ir::Type, val: ir::Value, amount: ir::Value) -> Instruction {
-            instructions::Shr::new(ty, val, amount).into()
+            instruction::Shr::new(ty, val, amount).into()
         }
 
         pub fn ret(value: Option<ir::Value>) -> Instruction {
-            instructions::Return::new(value).into()
+            instruction::Return::new(value).into()
         }
     }
 
@@ -177,7 +177,7 @@ pub mod instruction
         ($inst:ident : $op:ident) => {
             impl_instruction_internal!($inst: $op);
 
-            impl ::ir::instructions::Unary for $inst {
+            impl ::ir::instruction::Unary for $inst {
                 fn operand(&self) -> ::ir::Value {
                     *self.$op.clone()
                 }
@@ -188,7 +188,7 @@ pub mod instruction
         ($inst:ident : $op1:ident, $op2:ident) => {
             impl_instruction_internal!($inst: $op1, $op2);
 
-            impl ::ir::instructions::Binary for $inst {
+            impl ::ir::instruction::Binary for $inst {
                 fn operands(&self) -> (::ir::Value,::ir::Value) {
                     (*self.$op1.clone(),
                      *self.$op2.clone())
