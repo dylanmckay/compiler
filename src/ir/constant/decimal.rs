@@ -22,7 +22,7 @@ impl Decimal
     }
 }
 
-impl ir::constants::ConstantTrait for Decimal { }
+impl ir::constant::ConstantTrait for Decimal { }
 
 impl ValueTrait for Decimal
 {

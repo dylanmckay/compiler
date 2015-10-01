@@ -19,7 +19,7 @@ impl Struct
     }
 }
 
-impl ir::constants::ConstantTrait for Struct { }
+impl ir::constant::ConstantTrait for Struct { }
 
 impl ValueTrait for Struct
 {

@@ -143,7 +143,7 @@ impl std::ops::Shr<Integer> for Integer
     }
 }
 
-impl ir::constants::ConstantTrait for Integer { }
+impl ir::constant::ConstantTrait for Integer { }
 
 impl ValueTrait for Integer
 {
