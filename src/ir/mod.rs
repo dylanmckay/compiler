@@ -6,7 +6,6 @@ pub use self::instruction::{Instruction,InstructionTrait};
 pub use self::constant::Constant;
 pub use self::basicblock::Block;
 pub use self::function::Function;
-pub use self::global::Global;
 pub use self::module::Module;
 
 pub mod types;
@@ -18,7 +17,6 @@ pub mod constant;
 // TODO: rename to 'block'.
 pub mod basicblock;
 pub mod function;
-pub mod global;
 pub mod module;
 
 /// The IR verifier.
