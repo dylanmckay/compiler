@@ -25,10 +25,6 @@ impl TypeTrait for Vector
     fn size(&self) -> u64 {
         self.ty.size() as u64 * self.count
     }
-
-    fn upcast(self) -> Type {
-        Type::Vector(self)
-    }
 }
 
 impl fmt::Display for Vector

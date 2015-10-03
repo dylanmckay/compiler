@@ -25,10 +25,6 @@ impl TypeTrait for Array
     fn size(&self) -> u64 {
         self.ty.size() * self.count
     }
-
-    fn upcast(self) -> Type {
-        Type::Array(self)
-    }
 }
 
 impl fmt::Display for Array

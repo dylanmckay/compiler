@@ -1,4 +1,4 @@
-use ir::types::{Type,TypeTrait};
+use ir::types;
 use std::fmt;
 
 /// An empty type.
@@ -10,10 +10,9 @@ impl Label
     pub fn new() -> Label { Label }
 }
 
-impl TypeTrait for Label
+impl types::TypeTrait for Label
 {
     fn size(&self) -> u64 { 0 }
-    fn upcast(self) -> Type { Type::Label(self) }
 }
 
 impl fmt::Display for Label

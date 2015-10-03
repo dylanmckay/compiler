@@ -1,5 +1,5 @@
 
-use ir::types::{Type,TypeTrait};
+use ir::types;
 use std::fmt;
 
 /// A decimal type.
@@ -22,14 +22,10 @@ impl Decimal
     pub fn f64() -> Decimal { Decimal::new(64) }
 }
 
-impl TypeTrait for Decimal
+impl types::TypeTrait for Decimal
 {
     fn size(&self) -> u64 {
         self.bit_width as u64
-    }
-
-    fn upcast(self) -> Type {
-        Type::Decimal(self)
     }
 }
 

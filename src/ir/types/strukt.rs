@@ -41,10 +41,6 @@ impl TypeTrait for Struct
     fn size(&self) -> u64 {
         self.fields.iter().map(|ref ty| ty.size() as u64).sum()
     }
-
-    fn upcast(self) -> Type {
-        Type::Struct(self)
-    }
 }
 
 impl fmt::Display for Struct

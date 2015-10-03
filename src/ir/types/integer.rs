@@ -1,5 +1,5 @@
 
-use ir::types::{Type,TypeTrait};
+use ir::types;
 use util::IntegerKind;
 use std::fmt;
 
@@ -54,14 +54,10 @@ impl Integer
     pub fn width(self) -> u16 { self.bit_width }
 }
 
-impl TypeTrait for Integer
+impl types::TypeTrait for Integer
 {
     fn size(&self) -> u64 {
         self.bit_width as u64
-    }
-
-    fn upcast(self) -> Type {
-        Type::Integer(self)
     }
 }
 

@@ -9,8 +9,6 @@ pub trait TypeTrait : Clone + Eq + fmt::Display + lang::Type + Into<Type>
 {
     /// Gets the size of the type in bits.
     fn size(&self) -> u64;
-
-    fn upcast(self) -> Type;
 }
 
 #[derive(Clone,Eq,PartialEq,Debug)]
@@ -99,10 +97,6 @@ impl TypeTrait for Type
             &Type::Signature(ref ty) => { ty.size() },
             &Type::Label(ref ty) => { ty.size() },
         }
-    }
-
-    fn upcast(self) -> Type {
-        self
     }
 }
 

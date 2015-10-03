@@ -1,4 +1,4 @@
-use ir::types::{Type,TypeTrait};
+use ir::types;
 use std::fmt;
 
 /// An empty type.
@@ -10,10 +10,9 @@ impl Void
     pub fn void() -> Void { Void }
 }
 
-impl TypeTrait for Void
+impl types::TypeTrait for Void
 {
     fn size(&self) -> u64 { 0 }
-    fn upcast(self) -> Type { Type::Void(self) }
 }
 
 impl fmt::Display for Void

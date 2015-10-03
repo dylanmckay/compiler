@@ -25,10 +25,6 @@ impl ir::TypeTrait for Pointer
         // we need to know more about the target
         unimplemented!();
     }
-
-    fn upcast(self) -> ir::Type {
-        ir::Type::Pointer(self)
-    }
 }
 
 impl fmt::Display for Pointer

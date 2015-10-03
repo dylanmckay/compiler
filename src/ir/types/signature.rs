@@ -10,10 +10,6 @@ impl TypeTrait for Signature
     fn size(&self) -> u64 {
         panic!("this should not be called");
     }
-
-    fn upcast(self) -> Type {
-        Type::Signature(self)
-    }
 }
 
 impl_into_type!(Signature);

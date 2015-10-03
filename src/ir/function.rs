@@ -37,8 +37,7 @@ impl Function
 impl ir::ValueTrait for Function
 {
     fn ty(&self) -> ir::Type {
-        use ir::TypeTrait;
-        self.signature.clone().upcast()
+        self.signature.clone().into()
     }
 }
 
