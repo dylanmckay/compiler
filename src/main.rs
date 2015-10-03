@@ -48,12 +48,9 @@ fn create_module() -> ir::Module {
     let inst_add1 = ir::Instruction::add(op_ty.into(), lhs.clone(), rhs.clone());
     let inst_add2 = ir::Instruction::add(op_ty.into(), rhs.clone(), lhs.clone());
     let inst_mul = ir::Instruction::mul(op_ty.into(), inst_add1.clone().into(), rhs.clone());
-    let inst_ret = ir::Instruction::ret(Some(lhs));
+    let inst_ret = ir::Instruction::ret(Some(inst_add1.clone().into()));
 
-    let basicblock = ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_add1)
-                                                                               .add(inst_add2)
-                                                                               .add(inst_mul)
-                                                                               .add(inst_ret);
+    let basicblock = ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_ret);
 
     let sig = ir::types::Function::new().ret(op_ty.into());
     let function = ir::Function::empty(ir::Name::named("main".to_owned()), sig).add(basicblock.clone())
@@ -64,7 +61,7 @@ fn create_module() -> ir::Module {
 
 fn create_ir_pass_manager() -> pass::Manager<ir::Module> {
     pass::Manager::empty()
-        .add(pass::transforms::ir::ConstantFolding)
+//        .add(pass::transforms::ir::ConstantFolding)
         .add(pass::transforms::ir::StrengthReduction)
         .add(pass::transforms::DeadCodeElimination)
 }

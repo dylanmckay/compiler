@@ -23,6 +23,26 @@ impl Return
     pub fn void() -> Return {
         Return::new(None)
     }
+
+    pub fn subvalues(&self) -> Vec<Value> {
+        if let Some(ref value) = self.value {
+            vec![*value.clone()]
+        } else {
+            vec![]
+        }
+    }
+
+    pub fn map_subvalues<F>(mut self, mut f: F) -> Value
+        where F: FnMut(Value) -> Value {
+
+        let value = match self.value {
+            Some(val) => Some(Box::new(f(*val.clone()))),
+            None => self.value,
+        };
+
+        self.value = value;
+        self.into()
+    }
 }
 
 impl ValueTrait for Return
@@ -36,10 +56,22 @@ impl fmt::Display for Return
         try!("ret ".fmt(fmt));
         
         match self.value {
-            Some(ref val) => { write!(fmt, "{} {}", val.ty(), val) },
+            Some(ref val) => { write!(fmt, "{}", val) },
             None =>          { write!(fmt, "void")  },
         }
     }
 }
 
-impl_instruction!(Return);
+impl Into<Instruction> for Return
+{
+    fn into(self) -> Instruction {
+        ir::Instruction::Return(self)
+    }
+}
+
+impl Into<Value> for Return
+{
+    fn into(self) -> Value {
+        ir::Value::Instruction(self.into())
+    }
+}

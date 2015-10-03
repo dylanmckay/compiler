@@ -58,6 +58,8 @@ impl fmt::Display for Function
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
 
+        use ir::ValueTrait;
+
         let mut accum = 0;
         try!(write!(fmt, "define {} @{}({}) {{\n",
                          util::comma_separated_values(self.signature.returns()),
@@ -68,9 +70,16 @@ impl fmt::Display for Function
             try!(write!(fmt, "{}:\n", bb.name));
 
             for value in bb.body.iter() {
-                 try!(write!(fmt, "\t%{} = {}\n", accum, value));
+                try!(write!(fmt, "\t"));
 
-                 accum += 1;
+                // Non-void values must have assignments printed
+                if !value.ty().is_void() {
+                    // write accum.
+                    try!(write!(fmt, "%{} = ", accum));
+                    accum += 1;
+                }
+
+                try!(write!(fmt, "{}\n", value));
             }
         }
 

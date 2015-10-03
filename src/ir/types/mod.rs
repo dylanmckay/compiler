@@ -117,6 +117,15 @@ pub mod ty
 
         /// Creates a new block type.
         pub fn block() -> Type { Type::Block(Block::new()) }
+
+        /// Checks if the type is void.
+        pub fn is_void(&self) -> bool {
+            if let &Type::Void(..) = self {
+                true
+            } else {
+                false
+            }
+        }
     }
 
     impl TypeTrait for Type
