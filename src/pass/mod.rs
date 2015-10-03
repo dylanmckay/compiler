@@ -62,13 +62,24 @@ pub trait Metadata
 pub trait Pass<M> : Metadata
     where M: lang::Module
 {
+    /// Run the pass on an entire module.
     fn run_module(&mut self, module: &M) {
+
+        for global in module.globals() {
+            self.run_global(global);
+        }
 
         for func in module.functions() {
             self.run_function(func);
         }
     }
 
+    /// Run the pass on a global variable.
+    fn run_global(&mut self, _: &M::Global) {
+        // do nothing unless overidden
+    }
+
+    /// Run the pass on a function.
     fn run_function(&mut self, function: &M::Function) {
         use lang::Function;
         
@@ -77,6 +88,7 @@ pub trait Pass<M> : Metadata
         }
     }
 
+    /// Run the pass on a basic block.
     fn run_block(&mut self, block: &<M::Function as lang::Function>::Block) {
         use lang::Block;
 
@@ -85,6 +97,7 @@ pub trait Pass<M> : Metadata
         }
     }
 
+    /// Run the pass on a value.
     fn run_value(&mut self,
                  _: &<<M::Function as lang::Function>::Block as lang::Block>::Value) {
 
@@ -107,10 +120,21 @@ pub trait Pass<M> : Metadata
 pub trait PassMut<M> : Metadata
     where M: lang::Module
 {
+    /// Run the pass on an entire module.
     fn run_module(&mut self, module: M) -> M{
-        module.map_functions(|a| self.run_function(a))
+        module.map_globals(|a| self.run_global(a))
+              .map_functions(|a| self.run_function(a))
     }
 
+    /// Run the pass on a global.
+    fn run_global(&mut self, global: M::Global)
+        -> M::Global {
+
+        // do nothing unless overridden
+        global
+    }
+
+    /// Run the pass on a function.
     fn run_function(&mut self, function: M::Function)
         -> M::Function {
         use lang::Function;
@@ -118,6 +142,7 @@ pub trait PassMut<M> : Metadata
         function.map_blocks(|a| self.run_block(a))
     }
 
+    /// Run the pass on a basic block.
     fn run_block(&mut self, block: <M::Function as lang::Function>::Block)
         -> <M::Function as lang::Function>::Block {
         use lang::Block;
@@ -125,6 +150,7 @@ pub trait PassMut<M> : Metadata
         block.map_subvalues(|a| self.run_value_recursive(a))
     }
 
+    /// Run the pass on a value.
     fn run_value(&mut self,
                  _: <<M::Function as lang::Function>::Block as lang::Block>::Value)
         -> <<M::Function as lang::Function>::Block as lang::Block>::Value {
