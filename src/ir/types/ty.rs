@@ -1,5 +1,5 @@
 
-use ir::types::{Void, Integer, Decimal, Vector, Array, Struct, Signature, Label};
+use ir::types::{Void,Pointer,Integer,Decimal,Vector,Array,Struct,Signature,Label};
 use lang;
 use util::IntegerKind;
 
@@ -18,6 +18,7 @@ pub enum Type
 {
     Void(Void),
 
+    Pointer(Pointer),
     Integer(Integer),
     Decimal(Decimal),
 
@@ -89,6 +90,7 @@ impl TypeTrait for Type
     fn size(&self) -> u64 {
         match self {
             &Type::Void(ref ty) => { ty.size() },
+            &Type::Pointer(ref ty) => ty.size(),
             &Type::Integer(ref ty) => { ty.size() },
             &Type::Decimal(ref ty) => { ty.size() },
             &Type::Vector(ref ty) => { ty.size() },
@@ -109,30 +111,15 @@ impl fmt::Display for Type
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error>
     {
         match self {
-            &Type::Void(ty) => {
-                ty.fmt(fmt)
-            },
-            &Type::Integer(ref ty) => {
-                ty.fmt(fmt)
-            },
-            &Type::Decimal(ref ty) => {
-                ty.fmt(fmt)
-            },
-            &Type::Vector(ref ty) => {
-                ty.fmt(fmt)
-            },
-            &Type::Array(ref ty) => {
-                ty.fmt(fmt)
-            },
-            &Type::Struct(ref ty) => {
-                ty.fmt(fmt)
-            },
-            &Type::Signature(ref ty) => {
-                ty.fmt(fmt)
-            },
-            &Type::Label(ref ty) => {
-                ty.fmt(fmt)
-            },
+            &Type::Void(ty) => ty.fmt(fmt),
+            &Type::Pointer(ref ty) => ty.fmt(fmt),
+            &Type::Integer(ref ty) => ty.fmt(fmt),
+            &Type::Decimal(ref ty) => ty.fmt(fmt),
+            &Type::Vector(ref ty) => ty.fmt(fmt),
+            &Type::Array(ref ty) => ty.fmt(fmt),
+            &Type::Struct(ref ty) => ty.fmt(fmt),
+            &Type::Signature(ref ty) => ty.fmt(fmt),
+            &Type::Label(ref ty) => ty.fmt(fmt),
         }
     }
 }

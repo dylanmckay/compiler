@@ -1,6 +1,7 @@
 
 pub use self::ty::{Type,TypeTrait};
 
+pub use self::pointer::Pointer;
 pub use self::array::Array;
 pub use self::decimal::Decimal;
 pub use self::integer::Integer;
@@ -13,6 +14,7 @@ pub use self::void::Void;
 #[macro_use]
 pub mod ty;
 
+pub mod pointer;
 pub mod array;
 pub mod decimal;
 pub mod integer;
