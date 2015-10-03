@@ -74,10 +74,10 @@ pub mod reduce
     }
 
     pub mod util {
-        use ir::{self,Value,ValueTrait};
+        use ir::{value,Value,ValueTrait};
 
         /// Checks if a value is an integer and a power of two.
-        pub fn is_power_of_two(value: &ir::Constant) -> bool {
+        pub fn is_power_of_two(value: &value::Constant) -> bool {
             use ::num::traits::ToPrimitive;
 
             // FIXME: this will panic if the value >64bits
@@ -96,7 +96,7 @@ pub mod reduce
         /// number of bits that would make an equivalent shift.
         /// 
         /// Returns `None` if the value is not a power of two.
-        pub fn get_mul_shift_amount(value: &ir::Constant) -> Option<Value> {
+        pub fn get_mul_shift_amount(value: &value::Constant) -> Option<Value> {
             use ::num::traits::ToPrimitive;
 
             if !is_power_of_two(&value) {

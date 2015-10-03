@@ -40,8 +40,8 @@ pub fn verify_block(module: &ir::Module,
     Ok(())
 }
 
-pub fn verify_value(module: &ir::Module,
-                    value: &ir::Value) -> Result {
+pub fn verify_value(_: &ir::Module,
+                    _: &ir::Value) -> Result {
     Ok(())
 }
 

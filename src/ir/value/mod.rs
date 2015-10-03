@@ -1,12 +1,17 @@
 
 pub use self::value::{Value,ValueTrait};
+
 pub use self::global::Global;
+pub use self::pointer::Pointer;
+pub use self::constant::{Constant,ConstantTrait};
 
 pub mod global;
+pub mod pointer;
+pub mod constant;
 
 pub mod value
 {
-    use ir::{self,types,Type};
+    use ir::{self,types,value,Type};
     use bit_vec::BitVec;
     use std::fmt;
     use lang;
@@ -22,7 +27,7 @@ pub mod value
     #[derive(Clone,Debug)]
     pub enum Value
     {
-        Constant(ir::Constant),
+        Constant(value::Constant),
 
         Instruction(ir::Instruction),
         Block(ir::Block),
@@ -54,22 +59,22 @@ pub mod value
 
         /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
         pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Value> {
-            ir::Constant::integer(ty,val).map(|i| i.into())
+            value::Constant::integer(ty,val).map(|i| i.into())
         }
 
         pub fn decimal(ty: types::Decimal, bits: BitVec) -> Value {
-            ir::Constant::decimal(ty,bits).into()
+            value::Constant::decimal(ty,bits).into()
         }
 
         pub fn strukt(fields: Vec<Value>) -> Value {
-            ir::Constant::strukt(fields).into()
+            value::Constant::strukt(fields).into()
         }
 
         pub fn unit_struct() -> Value {
-            ir::Constant::unit_struct().into()
+            value::Constant::unit_struct().into()
         }
 
-        pub fn as_constant(&self) -> Option<&ir::Constant> {
+        pub fn as_constant(&self) -> Option<&value::Constant> {
             match self {
                 &Value::Constant(ref v) => Some(v),
                 _ => None,

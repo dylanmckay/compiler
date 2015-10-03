@@ -28,8 +28,8 @@ impl Into<pass::Info<ir::Module>> for Box<ConstantFolding>
 
 pub mod fold
 {
-    use ir::{Value,Instruction,Constant};
-    use ir::constant::Integer;
+    use ir::{Value,Instruction};
+    use ir::value::constant::{Constant,Integer};
 
     pub fn value(value: Value) -> Value {
         match value {

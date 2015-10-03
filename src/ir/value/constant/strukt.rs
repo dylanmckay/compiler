@@ -19,7 +19,7 @@ impl Struct
     }
 }
 
-impl ir::constant::ConstantTrait for Struct { }
+impl ir::value::ConstantTrait for Struct { }
 
 impl ValueTrait for Struct
 {
@@ -45,9 +45,9 @@ impl Into<Value> for Struct
     }
 }
 
-impl Into<ir::Constant> for Struct {
-    fn into(self) -> ir::Constant {
-        ir::Constant::Struct(self)
+impl Into<ir::value::Constant> for Struct {
+    fn into(self) -> ir::value::Constant {
+        ir::value::Constant::Struct(self)
     }
 }
 

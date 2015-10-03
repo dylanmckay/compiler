@@ -143,7 +143,7 @@ impl std::ops::Shr<Integer> for Integer
     }
 }
 
-impl ir::constant::ConstantTrait for Integer { }
+impl ir::value::constant::ConstantTrait for Integer { }
 
 impl ValueTrait for Integer
 {
@@ -164,9 +164,9 @@ impl Into<Value> for Integer
     }
 }
 
-impl Into<ir::Constant> for Integer {
-    fn into(self) -> ir::Constant {
-        ir::Constant::Integer(self)
+impl Into<ir::value::Constant> for Integer {
+    fn into(self) -> ir::value::Constant {
+        ir::value::Constant::Integer(self)
     }
 }
 
