@@ -3,10 +3,12 @@ pub use self::value::{Value,ValueTrait};
 
 pub use self::global::Global;
 pub use self::pointer::Pointer;
+pub use self::register::Register;
 pub use self::constant::{Constant,ConstantTrait};
 
 pub mod global;
 pub mod pointer;
+pub mod register;
 pub mod constant;
 
 pub mod value
@@ -30,6 +32,7 @@ pub mod value
         Constant(value::Constant),
         Global(value::Global),
         Pointer(value::Pointer),
+        Register(value::Register),
 
         Instruction(ir::Instruction),
         Block(ir::Block),
@@ -74,6 +77,19 @@ pub mod value
 
         pub fn unit_struct() -> Value {
             value::Constant::unit_struct().into()
+        }
+
+        /// Creates an unnamed register.
+        pub fn register(ty: ir::Type) -> Value {
+            value::Register::unnamed(ty).into()
+        }
+
+        /// Creates a named register.
+        pub fn register_named<I>(name: I, ty: ir::Type) -> Value
+            where I: Into<String> {
+
+            let name = ir::Name::named(name);
+            value::Register::new(name, ty).into()
         }
 
         pub fn as_constant(&self) -> Option<&value::Constant> {
@@ -123,6 +139,7 @@ pub mod value
                 &Value::Constant(ref val) => val.ty(),
                 &Value::Global(ref val) => val.ty(),
                 &Value::Pointer(ref val) => val.ty(),
+                &Value::Register(ref val) => val.ty(),
                 &Value::Instruction(ref val) => val.ty(),
                 &Value::Block(ref val) => val.ty(),
                 &Value::Function(ref val) => val.ty(),
@@ -137,6 +154,7 @@ pub mod value
                 &Value::Constant(ref val) => val.fmt(fmt),
                 &Value::Global(ref val) => val.fmt(fmt),
                 &Value::Pointer(ref val) => val.fmt(fmt),
+                &Value::Register(ref val) => val.fmt(fmt),
                 &Value::Instruction(ref val) => val.fmt(fmt),
                 &Value::Block(ref val) => val.fmt(fmt),
                 &Value::Function(ref val) => val.fmt(fmt),

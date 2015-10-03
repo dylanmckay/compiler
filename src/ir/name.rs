@@ -5,21 +5,23 @@ use std::fmt;
 #[derive(Clone)]
 pub enum Name
 {
-    /// The value is unnamed and is represented as
-    /// an unsigned numeric value.
-    Unnamed(u64),
+    /// The value is unnamed.
+    Unnamed,
     /// The value has a name.
     Named(String),
 }
 
 impl Name
 {
-    pub fn unnamed(val: u64) -> Name {
-        Name::Unnamed(val)
+    /// Create an unspecified name.
+    pub fn unnamed() -> Name {
+        Name::Unnamed
     }
 
-    pub fn named(name: String) -> Name {
-        Name::Named(name.to_owned())
+    pub fn named<S>(name: S) -> Name
+        where S: Into<String> {
+
+        Name::Named(name.into())
     }
 }
 
@@ -27,7 +29,7 @@ impl fmt::Display for Name
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
         match self {
-            &Name::Unnamed(val) => val.fmt(fmt),
+            &Name::Unnamed => unimplemented!(), // FIXME: we need to have a global accumulator
             &Name::Named(ref val) => val.fmt(fmt),
         }
     }
