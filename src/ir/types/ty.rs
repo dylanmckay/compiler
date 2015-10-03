@@ -9,6 +9,17 @@ pub trait TypeTrait : Clone + Eq + fmt::Display + lang::Type + Into<Type>
 {
     /// Gets the size of the type in bits.
     fn size(&self) -> u64;
+
+    /// Checks if a type can exist on its own.
+    ///
+    /// Physical types must be representable in memory.
+    /// For example, you cannot have an instance of a Signature,
+    /// but you can have an instance of a pointer to a signature.
+    ///
+    /// Non-physical types have sizes of zero.
+    fn is_physical(&self) -> bool {
+        self.size() != 0
+    }
 }
 
 #[derive(Clone,Eq,PartialEq,Debug)]

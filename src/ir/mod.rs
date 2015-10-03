@@ -15,8 +15,11 @@ pub mod name;
 
 pub mod instruction;
 pub mod constant;
+// TODO: rename to 'block'.
 pub mod basicblock;
 pub mod function;
 pub mod global;
 pub mod module;
 
+/// The IR verifier.
+pub mod verifier;

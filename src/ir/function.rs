@@ -32,6 +32,8 @@ impl Function
         self.basicblocks.push(basicblock);
         self
     }
+
+    pub fn name(&self) -> &Name { &self.name }
 }
 
 impl ir::ValueTrait for Function

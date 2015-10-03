@@ -29,6 +29,14 @@ fn main() {
     module = pm.run(module);
 
     println!("Afterwards:\n{}", module);
+
+    print!("Verifying...");
+    let result = ir::verifier::verify(&module);
+
+    match result {
+        Ok(..) => println!("passed!"),
+        Err(ref msg) => println!("failed: {}", msg),
+    }
 }
 
 fn create_module() -> ir::Module {

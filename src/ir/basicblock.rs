@@ -30,6 +30,8 @@ impl Block
         self.body.push(value.into());
         self
     }
+
+    pub fn name(&self) -> &ir::Name { &self.name }
 }
 
 impl ir::ValueTrait for Block
