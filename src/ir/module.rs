@@ -1,12 +1,15 @@
 
 use ir::Function;
+use ir::value::Global;
 use lang;
-use std::{self,fmt};
+
+use std;
 
 /// An IR module.
 pub struct Module
 {
     functions: Vec<Function>,
+    globals: Vec<Global>,
 }
 
 impl Module
@@ -15,26 +18,29 @@ impl Module
     pub fn empty() -> Self {
         Module {
             functions: Vec::new(),
+            globals: Vec::new(),
         }
     }
 
     /// Adds a function to the module.
     pub fn function(mut self, func: Function) -> Self {
         self.functions.push(func);
+        self
+    }
 
+    /// Adds a global to the module.
+    pub fn global(mut self, global: Global) -> Self {
+        self.globals.push(global);
         self
     }
 }
 
 impl lang::Module for Module {
     type Function = Function;
+    type Global = Global;
 
     fn functions<'a>(&'a self) -> std::slice::Iter<'a,Function> {
         self.functions.iter()
-    }
-
-    fn functions_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,Function> {
-        self.functions.iter_mut()
     }
 
     fn map_functions<F>(mut self, mut f: F) -> Self
@@ -46,16 +52,22 @@ impl lang::Module for Module {
         self
     }
 
-    fn with_functions<I>(mut self, funcs: I) -> Self
-        where I: Iterator<Item=Function> {
+    fn globals<'a>(&'a self) -> std::slice::Iter<'a,Global> {
+        self.globals.iter()
+    }
 
-        self.functions = funcs.collect();
+    fn map_globals<F>(mut self, mut f: F) -> Self
+        where F: FnMut(Global) -> Global {
+
+        let globals = self.globals.into_iter().map(|a| f(a));
+        self.globals = globals.collect();
+
         self
     }
 }
 
-impl fmt::Display for Module {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+impl std::fmt::Display for Module {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
 
         for func in self.functions.iter() {
             try!(write!(fmt, "{}\n", func));

@@ -28,6 +28,7 @@ pub mod value
     pub enum Value
     {
         Constant(value::Constant),
+        Global(value::Global),
         Pointer(value::Pointer),
 
         Instruction(ir::Instruction),
@@ -120,6 +121,7 @@ pub mod value
         fn ty(&self) -> Type {
             match self {
                 &Value::Constant(ref val) => val.ty(),
+                &Value::Global(ref val) => val.ty(),
                 &Value::Pointer(ref val) => val.ty(),
                 &Value::Instruction(ref val) => val.ty(),
                 &Value::Block(ref val) => val.ty(),
@@ -133,6 +135,7 @@ pub mod value
         fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
             match self {
                 &Value::Constant(ref val) => val.fmt(fmt),
+                &Value::Global(ref val) => val.fmt(fmt),
                 &Value::Pointer(ref val) => val.fmt(fmt),
                 &Value::Instruction(ref val) => val.fmt(fmt),
                 &Value::Block(ref val) => val.fmt(fmt),
