@@ -35,8 +35,9 @@ impl fmt::Display for Call
             unreachable!(); // target must be function
         };
 
-        write!(fmt, "call {} {}", util::comma_separated_values(func.signature.return_types.iter()),
-                                  func.name)
+        write!(fmt, "call {} {}",
+               util::comma_separated_values(func.signature().returns()),
+               func.name())
     }
 }
 

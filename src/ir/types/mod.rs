@@ -6,7 +6,7 @@ pub use self::array::Array;
 pub use self::decimal::Decimal;
 pub use self::integer::Integer;
 pub use self::label::Label;
-pub use self::signature::Signature;
+pub use self::function::Function;
 pub use self::strukt::Struct;
 pub use self::vector::Vector;
 pub use self::void::Void;
@@ -15,7 +15,7 @@ pub use self::void::Void;
 #[macro_use]
 pub mod ty
 {
-    use ir::types::{Void,Pointer,Integer,Decimal,Vector,Array,Struct,Signature,Label};
+    use ir::types::{Void,Pointer,Integer,Decimal,Vector,Array,Struct,Function,Label};
     use lang;
     use util::IntegerKind;
 
@@ -24,13 +24,15 @@ pub mod ty
     pub trait TypeTrait : Clone + Eq + fmt::Display + lang::Type + Into<Type>
     {
         /// Gets the size of the type in bits.
-        fn size(&self) -> u64;
+        /// 
+        /// If the size is zero, the object can only exist through a pointer.
+        fn size(&self) -> u64 { 0 }
 
         /// Checks if a type can exist on its own.
         ///
         /// Physical types must be representable in memory.
-        /// For example, you cannot have an instance of a Signature,
-        /// but you can have an instance of a pointer to a signature.
+        /// For example, you cannot have an instance of a Function,
+        /// but you can have an instance of a pointer to a function.
         ///
         /// Non-physical types have sizes of zero.
         fn is_physical(&self) -> bool {
@@ -51,7 +53,7 @@ pub mod ty
         Array(Array),
         Struct(Struct),
 
-        Signature(Signature),
+        Function(Function),
         Label(Label),
     }
 
@@ -126,7 +128,7 @@ pub mod ty
                 &Type::Vector(ref ty) => { ty.size() },
                 &Type::Array(ref ty) => { ty.size() },
                 &Type::Struct(ref ty) => { ty.size() },
-                &Type::Signature(ref ty) => { ty.size() },
+                &Type::Function(ref ty) => { ty.size() },
                 &Type::Label(ref ty) => { ty.size() },
             }
         }
@@ -144,7 +146,7 @@ pub mod ty
                 &Type::Vector(ref ty) => ty.fmt(fmt),
                 &Type::Array(ref ty) => ty.fmt(fmt),
                 &Type::Struct(ref ty) => ty.fmt(fmt),
-                &Type::Signature(ref ty) => ty.fmt(fmt),
+                &Type::Function(ref ty) => ty.fmt(fmt),
                 &Type::Label(ref ty) => ty.fmt(fmt),
             }
         }
@@ -179,7 +181,7 @@ pub mod array;
 pub mod decimal;
 pub mod integer;
 pub mod label;
-pub mod signature;
+pub mod function;
 pub mod strukt;
 pub mod vector;
 pub mod void;

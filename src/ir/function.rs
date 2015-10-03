@@ -8,32 +8,36 @@ use util;
 pub struct Function
 {
     pub name: Name,
-    pub signature: types::Signature,
-    pub basicblocks: Vec<Block>,
+    pub signature: types::Function,
+    pub blocks: Vec<Block>,
 }
 
 impl Function
 {
     pub fn new(name: Name,
-               signature: types::Signature,
-               basicblocks: Vec<Block>) -> Function {
+               signature: types::Function,
+               blocks: Vec<Block>) -> Function {
         Function {
             name: name,
             signature: signature,
-            basicblocks: basicblocks,
+            blocks: blocks,
         }
     }
 
-    pub fn empty(name: Name, signature: types::Signature) -> Function {
-        Function::new(name, signature, Vec::new())
+    pub fn empty(name: Name, ty: types::Function) -> Function {
+        Function::new(name, ty, Vec::new())
     }
 
-    pub fn add(mut self, basicblock: Block) -> Function {
-        self.basicblocks.push(basicblock);
+    pub fn add(mut self, block: Block) -> Function {
+        self.blocks.push(block);
         self
     }
 
     pub fn name(&self) -> &Name { &self.name }
+
+    pub fn signature(&self) -> &types::Function {
+        &self.signature
+    }
 }
 
 impl ir::ValueTrait for Function
@@ -56,11 +60,11 @@ impl fmt::Display for Function
 
         let mut accum = 0;
         try!(write!(fmt, "define {} @{}({}) {{\n",
-                         util::comma_separated_values(self.signature.return_types.iter()),
+                         util::comma_separated_values(self.signature.returns()),
                          self.name,
-                         util::comma_separated_values(self.signature.param_types.iter())));
+                         util::comma_separated_values(self.signature.parameters())));
 
-        for bb in self.basicblocks.iter() {
+        for bb in self.blocks.iter() {
             try!(write!(fmt, "{}:\n", bb.name));
 
             for value in bb.body.iter() {
@@ -80,18 +84,18 @@ impl lang::Function for Function
     type Type = ir::Type;
 
     fn blocks<'a>(&'a self) -> std::slice::Iter<'a,Block> {
-        self.basicblocks.iter()
+        self.blocks.iter()
     }
 
     fn blocks_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,Block> {
-        self.basicblocks.iter_mut()
+        self.blocks.iter_mut()
     }
 
     fn map_blocks<F>(mut self, mut f: F) -> Self
         where F: FnMut(Block) -> Block {
 
-        let blocks = self.basicblocks.into_iter().map(|a| f(a));
-        self.basicblocks = blocks.collect();
+        let blocks = self.blocks.into_iter().map(|a| f(a));
+        self.blocks = blocks.collect();
 
         self
     }
@@ -99,12 +103,8 @@ impl lang::Function for Function
     fn with_blocks<I>(mut self, blocks: I) -> Self
         where I: Iterator<Item=Block> {
 
-        self.basicblocks = blocks.collect();
+        self.blocks = blocks.collect();
         self
-    }
-
-    fn signature<'a>(&'a self) -> &'a lang::Signature<ir::Type> {
-        &self.signature
     }
 }
 

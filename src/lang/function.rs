@@ -7,8 +7,6 @@ pub trait Function : Sized + fmt::Display {
     type Block: lang::Block;
     type Type: lang::Type;
     
-    fn signature<'a>(&'a self) -> &'a lang::Signature<Self::Type>;
-
     fn blocks<'a>(&'a self) -> std::slice::Iter<'a,Self::Block>;
     fn blocks_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,Self::Block>;
 

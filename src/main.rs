@@ -55,7 +55,7 @@ fn create_module() -> ir::Module {
                                                                                .add(inst_mul)
                                                                                .add(inst_ret);
 
-    let sig = ir::types::Signature::new().ret(op_ty.into());
+    let sig = ir::types::Function::new().ret(op_ty.into());
     let function = ir::Function::empty(ir::Name::named("main".to_owned()), sig).add(basicblock.clone())
                                                                                .add(basicblock.clone());
 
