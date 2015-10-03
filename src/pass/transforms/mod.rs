@@ -1,8 +1,12 @@
 
 pub use self::dce::DeadCodeElimination;
+pub use self::constant_folding::ConstantFolding;
+pub use self::strength_reduction::StrengthReduction;
 
-/// Passes which operate on IR.
-pub mod ir;
 
 /// The dead code elimination pass.
 pub mod dce;
+/// The constant folder.
+pub mod constant_folding;
+/// The strength reduction pass.
+pub mod strength_reduction;
