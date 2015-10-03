@@ -4,12 +4,12 @@ pub use self::value::{Value,ValueTrait};
 pub use self::global::Global;
 pub use self::pointer::Pointer;
 pub use self::register::Register;
-pub use self::constant::{Constant,ConstantTrait};
+pub use self::literal::{Literal,LiteralTrait};
 
 pub mod global;
 pub mod pointer;
 pub mod register;
-pub mod constant;
+pub mod literal;
 
 pub mod value
 {
@@ -29,7 +29,7 @@ pub mod value
     #[derive(Clone,Debug)]
     pub enum Value
     {
-        Constant(value::Constant),
+        Literal(value::Literal),
         Global(value::Global),
         Pointer(value::Pointer),
         Register(value::Register),
@@ -64,19 +64,19 @@ pub mod value
 
         /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
         pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Value> {
-            value::Constant::integer(ty,val).map(|i| i.into())
+            value::Literal::integer(ty,val).map(|i| i.into())
         }
 
         pub fn decimal(ty: types::Decimal, bits: BitVec) -> Value {
-            value::Constant::decimal(ty,bits).into()
+            value::Literal::decimal(ty,bits).into()
         }
 
         pub fn strukt(fields: Vec<Value>) -> Value {
-            value::Constant::strukt(fields).into()
+            value::Literal::strukt(fields).into()
         }
 
         pub fn unit_struct() -> Value {
-            value::Constant::unit_struct().into()
+            value::Literal::unit_struct().into()
         }
 
         /// Creates an unnamed register.
@@ -92,9 +92,9 @@ pub mod value
             value::Register::new(name, ty).into()
         }
 
-        pub fn as_constant(&self) -> Option<&value::Constant> {
+        pub fn as_literal(&self) -> Option<&value::Literal> {
             match self {
-                &Value::Constant(ref v) => Some(v),
+                &Value::Literal(ref v) => Some(v),
                 _ => None,
             }
         }
@@ -125,7 +125,7 @@ pub mod value
 
         fn is_single_critical(&self) -> bool {
             match self {
-                &ir::Value::Constant(..) => false,
+                &ir::Value::Literal(..) => false,
                 &ir::Value::Instruction(ref i) => i.is_single_critical(),
                 _ => true,
             }
@@ -136,7 +136,7 @@ pub mod value
     {
         fn ty(&self) -> Type {
             match self {
-                &Value::Constant(ref val) => val.ty(),
+                &Value::Literal(ref val) => val.ty(),
                 &Value::Global(ref val) => val.ty(),
                 &Value::Pointer(ref val) => val.ty(),
                 &Value::Register(ref val) => val.ty(),
@@ -151,7 +151,7 @@ pub mod value
     {
         fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
             match self {
-                &Value::Constant(ref val) => val.fmt(fmt),
+                &Value::Literal(ref val) => val.fmt(fmt),
                 &Value::Global(ref val) => val.fmt(fmt),
                 &Value::Pointer(ref val) => val.fmt(fmt),
                 &Value::Register(ref val) => val.fmt(fmt),

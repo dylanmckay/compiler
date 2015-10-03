@@ -29,7 +29,7 @@ impl Into<pass::Info<ir::Module>> for Box<ConstantFolding>
 pub mod fold
 {
     use ir::{Value,Instruction};
-    use ir::value::constant::{Constant,Integer};
+    use ir::value::literal::{Literal,Integer};
 
     pub fn value(value: Value) -> Value {
         match value {
@@ -60,12 +60,12 @@ pub mod fold
 
         // make sure the values are constants
         let (lhs,rhs) = match values {
-            (Value::Constant(a),Value::Constant(b)) => (a,b),
+            (Value::Literal(a),Value::Literal(b)) => (a,b),
             _ => return inst.into(), // we can only fold constants
         };
 
         match (lhs,rhs) {
-            (Constant::Integer(li),Constant::Integer(ri)) => {
+            (Literal::Integer(li),Literal::Integer(ri)) => {
                 f_int(li,ri).into()
             },
             _ => inst.into(),

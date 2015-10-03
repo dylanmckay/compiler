@@ -143,7 +143,7 @@ impl std::ops::Shr<Integer> for Integer
     }
 }
 
-impl ir::value::constant::ConstantTrait for Integer { }
+impl ir::value::literal::LiteralTrait for Integer { }
 
 impl ValueTrait for Integer
 {
@@ -160,13 +160,13 @@ impl fmt::Display for Integer
 impl Into<Value> for Integer
 {
     fn into(self) -> Value {
-        Value::Constant(self.into())
+        Value::Literal(self.into())
     }
 }
 
-impl Into<ir::value::Constant> for Integer {
-    fn into(self) -> ir::value::Constant {
-        ir::value::Constant::Integer(self)
+impl Into<ir::value::Literal> for Integer {
+    fn into(self) -> ir::value::Literal {
+        ir::value::Literal::Integer(self)
     }
 }
 

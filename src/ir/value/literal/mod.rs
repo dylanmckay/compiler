@@ -16,39 +16,39 @@ pub mod decimal;
 /// Structure-constant implementation.
 pub mod strukt;
 
-pub trait ConstantTrait : Into<Constant> + ValueTrait
+pub trait LiteralTrait : Into<Literal> + ValueTrait
 {
 }
 
 #[derive(Clone,Debug)]
-pub enum Constant
+pub enum Literal
 {
     Integer(Integer),
     Decimal(Decimal),
     Struct(Struct),
 }
 
-impl Constant
+impl Literal
 {
     /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
-    pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Constant> {
+    pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Literal> {
         Integer::new(ty,val).map(|a| a.into())
     }
 
-    pub fn decimal(ty: types::Decimal, bits: BitVec) -> Constant {
+    pub fn decimal(ty: types::Decimal, bits: BitVec) -> Literal {
         Decimal::new(ty,bits).into()
     }
 
-    pub fn strukt(fields: Vec<Value>) -> Constant {
+    pub fn strukt(fields: Vec<Value>) -> Literal {
         Struct::new(fields).into()
     }
 
-    pub fn unit_struct() -> Constant {
-        Constant::strukt(Vec::new())
+    pub fn unit_struct() -> Literal {
+        Literal::strukt(Vec::new())
     }
 
     pub fn as_integer(&self) -> Option<&Integer> {
-        if let &Constant::Integer(ref i) = self {
+        if let &Literal::Integer(ref i) = self {
             Some(i)
         } else {
             None
@@ -56,7 +56,7 @@ impl Constant
     }
 
     pub fn as_decimal(&self) -> Option<&Decimal> {
-        if let &Constant::Decimal(ref i) = self {
+        if let &Literal::Decimal(ref i) = self {
             Some(i)
         } else {
             None
@@ -64,7 +64,7 @@ impl Constant
     }
 
     pub fn as_struct(&self) -> Option<&Struct> {
-        if let &Constant::Struct(ref i) = self {
+        if let &Literal::Struct(ref i) = self {
             Some(i)
         } else {
             None
@@ -72,38 +72,38 @@ impl Constant
     }
 }
 
-impl ValueTrait for Constant
+impl ValueTrait for Literal
 {
     fn ty(&self) -> Type {
         match self {
-            &Constant::Integer(ref val) => val.ty(),
-            &Constant::Decimal(ref val) => val.ty(),
-            &Constant::Struct(ref val) => val.ty(),
+            &Literal::Integer(ref val) => val.ty(),
+            &Literal::Decimal(ref val) => val.ty(),
+            &Literal::Struct(ref val) => val.ty(),
         }
     }
 }
 
-impl fmt::Display for Constant
+impl fmt::Display for Literal
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
         match self {
-            &Constant::Integer(ref val) => val.fmt(fmt),
-            &Constant::Decimal(ref val) => val.fmt(fmt),
-            &Constant::Struct(ref val) => val.fmt(fmt),
+            &Literal::Integer(ref val) => val.fmt(fmt),
+            &Literal::Decimal(ref val) => val.fmt(fmt),
+            &Literal::Struct(ref val) => val.fmt(fmt),
         }
     }
 }
 
-impl Into<Value> for Constant
+impl Into<Value> for Literal
 {
     fn into(self) -> Value {
-        Value::Constant(self)
+        Value::Literal(self)
     }
 }
 
 /// Tests that `Integer` can count its bits correctly.
 #[test]
-fn test_constantinteger_bitcount() {
+fn test_integer_literal_bitcount() {
     let types       = [ types::Integer::u64(), types::Integer::i64() ];
     let small_types = [ types::Integer::u(13), types::Integer::i(13) ];
 

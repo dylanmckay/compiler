@@ -56,8 +56,8 @@ pub mod reduce
         let ty = inst.ty().clone();
         let (lhs,rhs) = inst.operands();
 
-        let lhs_if_shift = lhs.as_constant().and_then(|a| util::get_mul_shift_amount(a));
-        let rhs_if_shift = rhs.as_constant().and_then(|a| util::get_mul_shift_amount(a));
+        let lhs_if_shift = lhs.as_literal().and_then(|a| util::get_mul_shift_amount(a));
+        let rhs_if_shift = rhs.as_literal().and_then(|a| util::get_mul_shift_amount(a));
 
         // multiplication is commutative so switch the order if necessary.
         let (value,shift) = match (lhs_if_shift,
@@ -77,7 +77,7 @@ pub mod reduce
         use ir::{value,Value,ValueTrait};
 
         /// Checks if a value is an integer and a power of two.
-        pub fn is_power_of_two(value: &value::Constant) -> bool {
+        pub fn is_power_of_two(value: &value::Literal) -> bool {
             use ::num::traits::ToPrimitive;
 
             // FIXME: this will panic if the value >64bits
@@ -96,7 +96,7 @@ pub mod reduce
         /// number of bits that would make an equivalent shift.
         /// 
         /// Returns `None` if the value is not a power of two.
-        pub fn get_mul_shift_amount(value: &value::Constant) -> Option<Value> {
+        pub fn get_mul_shift_amount(value: &value::Literal) -> Option<Value> {
             use ::num::traits::ToPrimitive;
 
             if !is_power_of_two(&value) {

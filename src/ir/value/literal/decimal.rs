@@ -22,7 +22,7 @@ impl Decimal
     }
 }
 
-impl ir::value::ConstantTrait for Decimal { }
+impl ir::value::LiteralTrait for Decimal { }
 
 impl ValueTrait for Decimal
 {
@@ -32,7 +32,7 @@ impl ValueTrait for Decimal
 impl Into<Value> for Decimal
 {
     fn into(self) -> Value {
-        Value::Constant(self.into())
+        Value::Literal(self.into())
     }
 }
 
@@ -43,9 +43,9 @@ impl fmt::Display for Decimal
     }
 }
 
-impl Into<ir::value::Constant> for Decimal {
-    fn into(self) -> ir::value::Constant {
-        ir::value::Constant::Decimal(self)
+impl Into<ir::value::Literal> for Decimal {
+    fn into(self) -> ir::value::Literal {
+        ir::value::Literal::Decimal(self)
     }
 }
 

@@ -19,7 +19,7 @@ impl Struct
     }
 }
 
-impl ir::value::ConstantTrait for Struct { }
+impl ir::value::LiteralTrait for Struct { }
 
 impl ValueTrait for Struct
 {
@@ -41,13 +41,13 @@ impl fmt::Display for Struct
 impl Into<Value> for Struct
 {
     fn into(self) -> Value {
-        Value::Constant(self.into())
+        Value::Literal(self.into())
     }
 }
 
-impl Into<ir::value::Constant> for Struct {
-    fn into(self) -> ir::value::Constant {
-        ir::value::Constant::Struct(self)
+impl Into<ir::value::Literal> for Struct {
+    fn into(self) -> ir::value::Literal {
+        ir::value::Literal::Struct(self)
     }
 }
 
