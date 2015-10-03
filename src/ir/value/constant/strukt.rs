@@ -26,7 +26,7 @@ impl ValueTrait for Struct
     fn ty(&self) -> Type {
         // Create the struct type from the types of the values.
         types::Struct::new(
-            self.fields.iter().map(|ref f| f.ty()).collect()
+            self.fields.iter().map(|ref f| f.ty())
         ).into()
     }
 }

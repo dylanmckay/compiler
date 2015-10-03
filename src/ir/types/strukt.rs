@@ -19,18 +19,18 @@ impl Struct
     }
 
     /// Creates a new structure.
-    pub fn new(fields: Vec<Type>) -> Struct {
+    pub fn new<I>(fields: I) -> Struct
+        where I: Iterator<Item=Type> {
+
         Struct {
-            fields: fields,
+            fields: fields.collect(),
         }
     }
 
     /// Returns a new structure with an added field.
-    pub fn field(self, ty: Type) -> Struct {
-        let mut fields = self.fields.clone();
-        fields.push(ty);
-
-        Struct::new(fields)
+    pub fn field(mut self, ty: Type) -> Struct {
+        self.fields.push(ty);
+        self
     }
 
     /// Gets the fields of the structure.
@@ -41,7 +41,7 @@ impl Struct
 
 impl fmt::Display for Struct
 {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
         use util;
 
         write!(fmt, "type {{ {} }}", util::comma_separated_values(self.fields.iter()))
