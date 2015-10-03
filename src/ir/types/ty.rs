@@ -47,6 +47,11 @@ impl Type
         Type::Integer(Integer::new(kind, bit_width))
     }
 
+    /// A pointer to a type.
+    pub fn pointer(ty: Type) -> Type {
+        Pointer::to(ty).into()
+    }
+
     /// Creates a signed integer/
     pub fn i(bit_width: u16) -> Type { Type::integer(IntegerKind::Signed, bit_width) }
     /// Creates an unsigned integer.
