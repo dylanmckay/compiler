@@ -12,6 +12,10 @@ pub struct Array
 
 impl Array
 {
+    pub fn empty(ty: Type) -> Self {
+        Array::new(0, ty)
+    }
+
     pub fn new(count: u64, ty: Type) -> Array {
         Array {
             count: count,

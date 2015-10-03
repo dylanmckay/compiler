@@ -12,18 +12,12 @@ pub struct Vector
 
 impl Vector
 {
+    /// Creates a new vector.
     pub fn new(count: u64, ty: Type) -> Vector {
         Vector {
             count: count,
             ty: Box::new(ty),
         }
-    }
-}
-
-impl TypeTrait for Vector
-{
-    fn size(&self) -> u64 {
-        self.ty.size() as u64 * self.count
     }
 }
 
@@ -35,6 +29,13 @@ impl fmt::Display for Vector
         try!(" x ".fmt(fmt));
         try!(self.ty.fmt(fmt));
         '>'.fmt(fmt)
+    }
+}
+
+impl TypeTrait for Vector
+{
+    fn size(&self) -> u64 {
+        self.ty.size() as u64 * self.count
     }
 }
 

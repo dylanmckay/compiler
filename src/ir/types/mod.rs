@@ -5,7 +5,7 @@ pub use self::pointer::Pointer;
 pub use self::array::Array;
 pub use self::decimal::Decimal;
 pub use self::integer::Integer;
-pub use self::label::Label;
+pub use self::block::Block;
 pub use self::function::Function;
 pub use self::strukt::Struct;
 pub use self::vector::Vector;
@@ -15,7 +15,7 @@ pub use self::void::Void;
 #[macro_use]
 pub mod ty
 {
-    use ir::types::{Void,Pointer,Integer,Decimal,Vector,Array,Struct,Function,Label};
+    use ir::types::{Void,Pointer,Integer,Decimal,Vector,Array,Struct,Function,Block};
     use lang;
     use util::IntegerKind;
 
@@ -25,7 +25,9 @@ pub mod ty
     {
         /// Gets the size of the type in bits.
         /// 
-        /// If the size is zero, the object can only exist through a pointer.
+        /// If the size is `0`, the object can only exist through a pointer.
+        /// 
+        /// By default, this function returns `0`.
         fn size(&self) -> u64 { 0 }
 
         /// Checks if a type can exist on its own.
@@ -54,7 +56,7 @@ pub mod ty
         Struct(Struct),
 
         Function(Function),
-        Label(Label),
+        Block(Block),
     }
 
     impl Type
@@ -113,8 +115,8 @@ pub mod ty
         /// Creates a new unit struct.
         pub fn unit_struct() -> Type { Type::Struct(Struct::unit()) }
 
-        /// Creates a new label type.
-        pub fn label() -> Type { Type::Label(Label::new()) }
+        /// Creates a new block type.
+        pub fn block() -> Type { Type::Block(Block::new()) }
     }
 
     impl TypeTrait for Type
@@ -129,14 +131,14 @@ pub mod ty
                 &Type::Array(ref ty) => { ty.size() },
                 &Type::Struct(ref ty) => { ty.size() },
                 &Type::Function(ref ty) => { ty.size() },
-                &Type::Label(ref ty) => { ty.size() },
+                &Type::Block(ref ty) => { ty.size() },
             }
         }
     }
 
     impl fmt::Display for Type
     {
-        fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error>
+        fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result
         {
             match self {
                 &Type::Void(ty) => ty.fmt(fmt),
@@ -147,7 +149,7 @@ pub mod ty
                 &Type::Array(ref ty) => ty.fmt(fmt),
                 &Type::Struct(ref ty) => ty.fmt(fmt),
                 &Type::Function(ref ty) => ty.fmt(fmt),
-                &Type::Label(ref ty) => ty.fmt(fmt),
+                &Type::Block(ref ty) => ty.fmt(fmt),
             }
         }
     }
@@ -180,7 +182,7 @@ pub mod pointer;
 pub mod array;
 pub mod decimal;
 pub mod integer;
-pub mod label;
+pub mod block;
 pub mod function;
 pub mod strukt;
 pub mod vector;

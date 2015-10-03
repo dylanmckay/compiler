@@ -38,8 +38,6 @@ impl Function
     }
 }
 
-impl TypeTrait for Function { }
-
 impl std::fmt::Display for Function
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -51,5 +49,7 @@ impl std::fmt::Display for Function
 
     }
 }
+
+impl TypeTrait for Function { }
 
 impl_type!(Function);

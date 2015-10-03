@@ -7,12 +7,8 @@ pub struct Void;
 
 impl Void
 {
+    /// The `void` type.
     pub fn void() -> Void { Void }
-}
-
-impl types::TypeTrait for Void
-{
-    fn size(&self) -> u64 { 0 }
 }
 
 impl fmt::Display for Void
@@ -21,5 +17,7 @@ impl fmt::Display for Void
         "void".fmt(fmt)
     }
 }
+
+impl types::TypeTrait for Void { }
 
 impl_type!(Void);

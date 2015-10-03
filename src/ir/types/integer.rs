@@ -54,13 +54,6 @@ impl Integer
     pub fn width(self) -> u16 { self.bit_width }
 }
 
-impl types::TypeTrait for Integer
-{
-    fn size(&self) -> u64 {
-        self.bit_width as u64
-    }
-}
-
 impl fmt::Display for Integer
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error>
@@ -68,6 +61,11 @@ impl fmt::Display for Integer
         try!(self.kind.prefix().fmt(fmt));
         self.bit_width.fmt(fmt)
     }
+}
+
+impl types::TypeTrait for Integer
+{
+    fn size(&self) -> u64 { self.bit_width as u64 }
 }
 
 impl_type!(Integer);

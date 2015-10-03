@@ -19,6 +19,13 @@ impl Pointer
     }
 }
 
+impl fmt::Display for Pointer
+{
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "{}*", self.to)
+    }
+}
+
 impl ir::TypeTrait for Pointer
 {
     fn size(&self) -> u64 {
@@ -27,11 +34,5 @@ impl ir::TypeTrait for Pointer
     }
 }
 
-impl fmt::Display for Pointer
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "{}*", self.to)
-    }
-}
 
 impl_type!(Pointer);

@@ -37,7 +37,7 @@ impl Block
 impl ir::ValueTrait for Block
 {
     fn ty(&self) -> ir::Type {
-        ir::Type::label()
+        ir::Type::block()
     }
 }
 

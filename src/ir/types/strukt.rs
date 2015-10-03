@@ -11,12 +11,14 @@ pub struct Struct
 
 impl Struct
 {
+    /// The unit struct type.
     pub fn unit() -> Struct {
         Struct {
             fields: Vec::new(),
         }
     }
 
+    /// Creates a new structure.
     pub fn new(fields: Vec<Type>) -> Struct {
         Struct {
             fields: fields,
@@ -31,15 +33,9 @@ impl Struct
         Struct::new(fields)
     }
 
+    /// Gets the fields of the structure.
     pub fn fields<'a>(&'a self) -> std::slice::Iter<'a,Type> {
         self.fields.iter()
-    }
-}
-
-impl TypeTrait for Struct
-{
-    fn size(&self) -> u64 {
-        self.fields.iter().map(|ref ty| ty.size() as u64).sum()
     }
 }
 
@@ -49,6 +45,13 @@ impl fmt::Display for Struct
         use util;
 
         write!(fmt, "type {{ {} }}", util::comma_separated_values(self.fields.iter()))
+    }
+}
+
+impl TypeTrait for Struct
+{
+    fn size(&self) -> u64 {
+        self.fields.iter().map(|ref ty| ty.size() as u64).sum()
     }
 }
 

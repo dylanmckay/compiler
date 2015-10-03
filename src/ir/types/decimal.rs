@@ -17,16 +17,13 @@ impl Decimal
         }
     }
 
-    pub fn f16() -> Decimal { Decimal::new(16) }
-    pub fn f32() -> Decimal { Decimal::new(32) }
-    pub fn f64() -> Decimal { Decimal::new(64) }
-}
-
-impl types::TypeTrait for Decimal
-{
-    fn size(&self) -> u64 {
-        self.bit_width as u64
+    pub fn f(bit_width: u16) -> Self {
+        Decimal::new(bit_width)
     }
+
+    pub fn f16() -> Decimal { Decimal::f(16) }
+    pub fn f32() -> Decimal { Decimal::f(32) }
+    pub fn f64() -> Decimal { Decimal::f(64) }
 }
 
 impl fmt::Display for Decimal
@@ -35,6 +32,11 @@ impl fmt::Display for Decimal
         try!('f'.fmt(fmt));
         self.bit_width.fmt(fmt)
     }
+}
+
+impl types::TypeTrait for Decimal
+{
+    fn size(&self) -> u64 { self.bit_width as u64 }
 }
 
 impl_type!(Decimal);
