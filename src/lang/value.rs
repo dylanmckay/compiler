@@ -37,5 +37,8 @@ pub trait Value : Sized + fmt::Display
 
         self.is_single_critical() || subvalues_critical
     }
+
+    /// Checks if the value is a terminator.
+    fn is_terminator(&self) -> bool { false }
 }
 

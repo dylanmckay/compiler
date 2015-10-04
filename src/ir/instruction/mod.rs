@@ -9,6 +9,7 @@ pub use self::shl::Shl;
 pub use self::shr::Shr;
 pub use self::call::Call;
 pub use self::ret::Return;
+pub use self::jump::Jump;
 
 
 #[macro_use]
@@ -46,6 +47,7 @@ pub mod instruction
         Shr(instruction::Shr),
 
         Call(instruction::Call),
+        Jump(instruction::Jump),
         Return(instruction::Return),
     }
 
@@ -100,6 +102,7 @@ pub mod instruction
                 &Instruction::Shl(ref instr) => instr.fmt(fmt),
                 &Instruction::Shr(ref instr) => instr.fmt(fmt),
                 &Instruction::Call(ref instr) => instr.fmt(fmt),
+                &Instruction::Jump(ref instr) => instr.fmt(fmt),
                 &Instruction::Return(ref instr) => instr.fmt(fmt),
             }
         }
@@ -116,6 +119,7 @@ pub mod instruction
                 &Instruction::Shl(ref instr) => instr.subvalues(),
                 &Instruction::Shr(ref instr) => instr.subvalues(),
                 &Instruction::Call(ref instr) => instr.subvalues(),
+                &Instruction::Jump(ref instr) => instr.subvalues(),
                 &Instruction::Return(ref instr) => instr.subvalues(),
              }
         }
@@ -132,6 +136,7 @@ pub mod instruction
                ir::Instruction::Shl(instr) => instr.map_subvalues(f).into(),
                ir::Instruction::Shr(instr) => instr.map_subvalues(f).into(),
                ir::Instruction::Call(instr) => instr.map_subvalues(f).into(),
+               ir::Instruction::Jump(instr) => instr.map_subvalues(f).into(),
                ir::Instruction::Return(instr) => instr.map_subvalues(f).into(),
             }
         }
@@ -145,7 +150,16 @@ pub mod instruction
                 &ir::Instruction::Shl(..) => false,
                 &ir::Instruction::Shr(..) => false,
                 &ir::Instruction::Call(..) => true,
+                &ir::Instruction::Jump(..) => true,
                 &ir::Instruction::Return(..) => true,
+            }
+        }
+
+        pub fn is_terminator(&self) -> bool {
+            match self {
+                &ir::Instruction::Return(..) => true,
+                &ir::Instruction::Jump(..) => true,
+                _ => false,
             }
         }
     }
@@ -161,6 +175,7 @@ pub mod instruction
                 &Instruction::Shl(ref instr) => instr.ty(),
                 &Instruction::Shr(ref instr) => instr.ty(),
                 &Instruction::Call(ref instr) => instr.ty(),
+                &Instruction::Jump(ref instr) => instr.ty(),
                 &Instruction::Return(ref instr) => instr.ty(),
              }
         }
@@ -253,4 +268,5 @@ pub mod shl;
 pub mod shr;
 pub mod call;
 pub mod ret;
+pub mod jump;
 

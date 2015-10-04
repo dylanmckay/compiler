@@ -33,7 +33,7 @@ impl fmt::Display for Jump
             unreachable!(); // target must be function
         };
 
-        write!(fmt, "jump {} {}", util::comma_separated_values(func.signature.return_types.iter()),
+        write!(fmt, "jump {} {}", util::comma_separated_values(func.signature.returns()),
                                   func.name)
     }
 }

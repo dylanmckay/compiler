@@ -30,11 +30,19 @@ pub fn verify_function(module: &ir::Module,
 
 pub fn verify_block(module: &ir::Module,
                     block: &ir::Block) -> Result {
+    use lang::Value;
 
     try!(util::verify_name(block.name()));
 
     for value in block.subvalues().iter() {
         try!(self::verify_value(module, value));
+    }
+
+    // TODO: handle the (erroneous) empty block case
+    let last = block.subvalues().into_iter().last().unwrap();
+
+    if !last.is_terminator() {
+        return Err("every basic block must end with a terminating instruction".into());
     }
 
     Ok(())
