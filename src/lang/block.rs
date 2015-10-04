@@ -3,10 +3,11 @@ use std::fmt;
 use lang;
 
 /// A basic block.
-pub trait Block : Sized + fmt::Display
+pub trait Block : Sized
 {
     type Value: lang::Value;
 
+    // TODO: s/subvalues/values
     fn subvalues(&self) -> Vec<Self::Value>;
 
     fn with_subvalues<I>(self, values: I) -> Self

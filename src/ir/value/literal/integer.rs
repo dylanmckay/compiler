@@ -153,8 +153,8 @@ impl ValueTrait for Integer
 impl fmt::Display for Integer
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "{} {}", self.ty, self.value)
-     }
+        self.value.fmt(fmt)
+    }
 }
 
 impl Into<Value> for Integer

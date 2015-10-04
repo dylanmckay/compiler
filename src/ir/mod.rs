@@ -18,3 +18,5 @@ pub mod module;
 
 /// The IR verifier.
 pub mod verifier;
+/// Routines for printing modules.
+pub mod print;

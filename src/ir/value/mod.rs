@@ -21,7 +21,7 @@ pub mod value
 
     use num::bigint::ToBigInt;
 
-    pub trait ValueTrait : Clone + fmt::Display + fmt::Debug + Into<Value>
+    pub trait ValueTrait : Clone + fmt::Debug + Into<Value>
     {
         fn ty(&self) -> Type;
     }
@@ -98,6 +98,14 @@ pub mod value
                 _ => None,
             }
         }
+
+        pub fn is_literal(&self) -> bool {
+            if let &Value::Literal(..) = self {
+                true
+            } else {
+                false
+            }
+        }
     }
 
     impl lang::Value for Value
@@ -156,7 +164,7 @@ pub mod value
                 &Value::Pointer(ref val) => val.fmt(fmt),
                 &Value::Register(ref val) => val.fmt(fmt),
                 &Value::Instruction(ref val) => val.fmt(fmt),
-                &Value::Block(ref val) => val.fmt(fmt),
+                &Value::Block(ref val) => val.name().fmt(fmt),
                 &Value::Function(ref val) => val.fmt(fmt),
             }
         }

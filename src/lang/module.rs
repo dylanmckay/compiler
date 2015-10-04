@@ -6,7 +6,7 @@ use lang;
 /// 
 /// A module is made up of functions, basic blocks, and instructions
 /// in **S**ingle **S**tatic **A**ssignment form.
-pub trait Module : fmt::Display
+pub trait Module
 {
     type Function: lang::Function;
     type Global;

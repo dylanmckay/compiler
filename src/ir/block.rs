@@ -41,19 +41,6 @@ impl ir::ValueTrait for Block
     }
 }
 
-impl fmt::Display for Block
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        try!(write!(fmt, "{}:\n", self.name));
-
-        for inst in self.body.iter() {
-            try!(write!(fmt, "\t{}\n", inst));
-        }
-
-        Ok(())
-    }
-}
-
 impl lang::Block for Block
 {
     type Value = ir::Value;

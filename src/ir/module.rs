@@ -2,6 +2,7 @@
 use ir::Function;
 use ir::value::Global;
 use lang;
+use ir;
 
 use std;
 
@@ -68,11 +69,6 @@ impl lang::Module for Module {
 
 impl std::fmt::Display for Module {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-
-        for func in self.functions.iter() {
-            try!(write!(fmt, "{}\n", func));
-        }
-
-        Ok(())
+        ir::print::module(self, fmt)
     }
 }

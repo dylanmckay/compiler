@@ -3,7 +3,7 @@ use lang;
 use std::{self,fmt};
 
 /// A function.
-pub trait Function : Sized + fmt::Display {
+pub trait Function : Sized {
     type Block: lang::Block;
     type Type: lang::Type;
     

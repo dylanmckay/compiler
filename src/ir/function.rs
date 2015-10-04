@@ -2,7 +2,6 @@
 use ir::{self,types,Value,Name,Block};
 use std::{self,fmt};
 use lang;
-use util;
 
 #[derive(Clone,Debug)]
 pub struct Function
@@ -56,34 +55,8 @@ impl Into<Value> for Function
 
 impl fmt::Display for Function
 {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-
-        use ir::ValueTrait;
-
-        let mut accum = 0;
-        try!(write!(fmt, "define {} @{}({}) {{\n",
-                         util::comma_separated_values(self.signature.returns()),
-                         self.name,
-                         util::comma_separated_values(self.signature.parameters())));
-
-        for bb in self.blocks.iter() {
-            try!(write!(fmt, "{}:\n", bb.name));
-
-            for value in bb.body.iter() {
-                try!(write!(fmt, "\t"));
-
-                // Non-void values must have assignments printed
-                if !value.ty().is_void() {
-                    // write accum.
-                    try!(write!(fmt, "%{} = ", accum));
-                    accum += 1;
-                }
-
-                try!(write!(fmt, "{}\n", value));
-            }
-        }
-
-        "}\n".fmt(fmt)
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        ir::print::function(self, fmt)
     }
 }
 
@@ -116,4 +89,5 @@ impl lang::Function for Function
         self
     }
 }
+
 
