@@ -1,6 +1,5 @@
 
 use ir::{self,Value};
-use std::fmt;
 use lang;
 
 /// A basic block is a list of instructions which

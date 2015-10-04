@@ -1,5 +1,5 @@
 
-use std::{self,fmt};
+use std;
 use lang;
 
 /// An SSA module.

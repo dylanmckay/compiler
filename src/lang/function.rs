@@ -1,6 +1,6 @@
 
 use lang;
-use std::{self,fmt};
+use std;
 
 /// A function.
 pub trait Function : Sized {
