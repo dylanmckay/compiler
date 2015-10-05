@@ -3,6 +3,7 @@ use ir::Function;
 use ir::value::Global;
 use lang;
 use ir;
+use util;
 
 use std;
 
@@ -11,6 +12,8 @@ pub struct Module
 {
     functions: Vec<Function>,
     globals: Vec<Global>,
+
+    generator: util::id::Generator,
 }
 
 impl Module
@@ -20,11 +23,16 @@ impl Module
         Module {
             functions: Vec::new(),
             globals: Vec::new(),
+
+            generator: util::id::Generator::new(),
         }
     }
 
     /// Adds a function to the module.
-    pub fn function(mut self, func: Function) -> Self {
+    pub fn function(mut self,mut  func: Function) -> Self {
+        // assign an ID to the function
+        func.set_id(self.generator.next());
+
         self.functions.push(func);
         self
     }

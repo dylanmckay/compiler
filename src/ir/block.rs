@@ -1,20 +1,25 @@
 
 use ir::{self,Value};
 use lang;
+use util;
 
 /// A basic block is a list of instructions which
 /// end with a single terminator instruction.
 #[derive(Clone,Debug)]
 pub struct Block
 {
+    id: util::Id,
+
     pub name: ir::Name,
     pub body: Vec<ir::Value>,
 }
 
 impl Block
 {
-    pub fn new(name: ir::Name, body: Vec<ir::Value>) -> Block {
+    pub fn new(name: ir::Name,
+               body: Vec<ir::Value>) -> Block {
         Block {
+            id: util::Id::unspecified(),
             name: name,
             body: body,
         }
@@ -31,6 +36,17 @@ impl Block
     }
 
     pub fn name(&self) -> &ir::Name { &self.name }
+
+    /// Gets the ID of the block.
+    ///
+    /// The ID is guaranteed to be unique for each function.
+    pub fn id(&self) -> util::Id { self.id }
+
+    /// Sets the internal ID of the block.
+    /// This **should not** be called directly.
+    pub fn set_id(&mut self, id: util::Id) {
+        self.id = id;
+    }
 }
 
 impl lang::Block for Block

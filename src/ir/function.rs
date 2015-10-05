@@ -2,14 +2,18 @@
 use ir::{self,types,Value,Block};
 use std::{self,fmt};
 use lang;
+use util;
 
 #[derive(Clone,Debug)]
 pub struct Function
 {
-    // TODO: functions must have textual names. use String
+    id: util::Id,
+
     pub name: String,
     pub signature: types::Function,
     pub blocks: Vec<Block>,
+
+    generator: util::id::Generator,
 }
 
 impl Function
@@ -18,9 +22,13 @@ impl Function
                signature: types::Function,
                blocks: Vec<Block>) -> Function {
         Function {
+            id: util::Id::unspecified(),
+
             name: name,
             signature: signature,
             blocks: blocks,
+
+            generator: util::id::Generator::new(),
         }
     }
 
@@ -28,7 +36,10 @@ impl Function
         Function::new(name, ty, Vec::new())
     }
 
-    pub fn add(mut self, block: Block) -> Function {
+    pub fn add(mut self, mut block: Block) -> Function {
+        // assign an ID to the block.
+        
+        block.set_id(self.generator.next());
         self.blocks.push(block);
         self
     }
@@ -37,6 +48,17 @@ impl Function
 
     pub fn signature(&self) -> &types::Function {
         &self.signature
+    }
+
+    /// Gets the ID of the function.
+    ///
+    /// The ID is guaranteed to be unique for each module.
+    pub fn id(&self) -> util::Id { self.id }
+
+    /// Sets the internal ID of the function.
+    /// This **should not** be called directly.
+    pub fn set_id(&mut self, id: util::Id) {
+        self.id = id;
     }
 }
 

@@ -1,11 +1,12 @@
 
 pub use self::enums::{ByteOrder,IntegerKind,Sign};
 pub use self::architecture::Architecture;
+pub use self::id::Id;
 
 pub mod enums;
 pub mod architecture;
-
 pub mod id;
+
 pub mod os;
 
 use std::fmt;
