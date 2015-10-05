@@ -6,13 +6,21 @@ use std::fmt;
 pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
     use lang::Module;
 
-    // TODO: prin globals.
+    for global in module.globals() {
+        try!(self::global(global, fmt));
+    }
+
+    try!(write!(fmt, "\n"));
    
     for func in module.functions() {
          try!(self::function(func, fmt));
     }
 
     Ok(())
+}
+
+pub fn global(global: &ir::Global, fmt: &mut fmt::Formatter) -> fmt::Result {
+    write!(fmt, "%{} = {} {}\n", global.name(), global.ty(), global.value())
 }
 
 pub fn function(func: &ir::Function, fmt: &mut fmt::Formatter) -> fmt::Result {

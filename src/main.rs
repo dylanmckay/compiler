@@ -53,6 +53,8 @@ fn create_module() -> ir::Module {
     let lhs = ir::Value::integer(op_ty, 23i32).unwrap();
     let rhs = ir::Value::integer(op_ty, 2i32).unwrap();
 
+    let global = ir::Global::new("MyGlobal".into(), lhs.clone());
+
     let inst_add1 = ir::Instruction::add(op_ty.into(), lhs.clone(), rhs.clone());
     let inst_add2 = ir::Instruction::add(op_ty.into(), rhs.clone(), lhs.clone());
     let inst_mul = ir::Instruction::mul(op_ty.into(), inst_add1.clone().into(), rhs.clone());
@@ -64,6 +66,7 @@ fn create_module() -> ir::Module {
     let function = ir::Function::empty("main".into(), sig).add(basicblock.clone());
 
     ir::Module::empty().function(function)
+                       .global(global)
 }
 
 fn create_ir_pass_manager() -> pass::Manager<ir::Module> {

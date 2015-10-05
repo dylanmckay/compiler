@@ -9,13 +9,13 @@ pub struct Global
 {
     id: util::Id,
 
-    name: ir::Name,
+    name: String,
     value: Box<ir::Value>,
 }
 
 impl Global
 {
-    pub fn new(name: ir::Name, value: ir::Value) -> Self {
+    pub fn new(name: String, value: ir::Value) -> Self {
         Global {
             id: util::Id::unspecified(),
 
@@ -24,7 +24,7 @@ impl Global
         }
     }
 
-    pub fn name(&self) -> ir::Name { self.name.clone() }
+    pub fn name(&self) -> &str { &self.name }
     pub fn value(&self) -> ir::Value { *self.value.clone() }
     pub fn ty(&self) -> ir::Type {
         use ir::ValueTrait;
