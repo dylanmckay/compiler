@@ -29,7 +29,7 @@ impl Module
     }
 
     /// Adds a function to the module.
-    pub fn function(mut self,mut  func: Function) -> Self {
+    pub fn function(mut self, mut func: Function) -> Self {
         // assign an ID to the function
         func.set_id(self.generator.next());
 
@@ -38,7 +38,10 @@ impl Module
     }
 
     /// Adds a global to the module.
-    pub fn global(mut self, global: Global) -> Self {
+    pub fn global(mut self, mut global: Global) -> Self {
+        // assign an ID to the global
+        global.set_id(self.generator.next());
+
         self.globals.push(global);
         self
     }
