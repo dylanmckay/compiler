@@ -18,6 +18,8 @@ pub mod dsl;
 pub mod lang;
 /// The pass infrastructure.
 pub mod pass;
+/// The target information module.
+pub mod target;
 
 
 fn main() {
