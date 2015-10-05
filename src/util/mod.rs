@@ -5,6 +5,7 @@ pub use self::architecture::Architecture;
 pub mod enums;
 pub mod architecture;
 
+pub mod id;
 pub mod os;
 
 use std::fmt;
