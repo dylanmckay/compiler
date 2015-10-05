@@ -69,7 +69,8 @@ pub fn value(value: &ir::Value,
     let modified = value.clone()
                         .map_subvalues(|a| {
 
-        if a.is_literal() {
+        // don't bother with non-instructional values.
+        if !a.is_instruction() {
             return a;
         }
         let reg_name = ir::Name::named(format!("{}", accum));

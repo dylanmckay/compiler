@@ -110,6 +110,15 @@ pub mod value
                 false
             }
         }
+
+        /// Checks if the value is an instruction.
+        pub fn is_instruction(&self) -> bool {
+            if let &Value::Instruction(..) = self {
+                true
+            } else {
+                false
+            }
+        }
     }
 
     impl lang::Value for Value
