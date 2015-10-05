@@ -53,8 +53,7 @@ fn create_module() -> ir::Module {
     let basicblock = ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_ret);
 
     let sig = ir::types::Function::new().ret(op_ty.into());
-    let function = ir::Function::empty(ir::Name::named("main".to_owned()), sig).add(basicblock.clone())
-                                                                               .add(basicblock.clone());
+    let function = ir::Function::empty(ir::Name::named("main".to_owned()), sig).add(basicblock.clone());
 
     ir::Module::empty().function(function)
 }

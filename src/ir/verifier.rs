@@ -23,6 +23,10 @@ pub fn verify_function(module: &ir::Module,
 
     for block in func.blocks() {
         try!(self::verify_block(module, block));
+
+        if func.blocks().filter(|a| a.name() == block.name()).count() > 1 {
+            return Err("basic blocks must have unique names for each function".into());
+        }
     }
 
     Ok(())

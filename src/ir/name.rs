@@ -1,8 +1,8 @@
 
-use std::fmt;
+use std;
 
 /// Represents a name.
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 pub enum Name
 {
     /// The value is unnamed.
@@ -25,9 +25,9 @@ impl Name
     }
 }
 
-impl fmt::Display for Name
+impl std::fmt::Display for Name
 {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> Result<(),std::fmt::Error> {
         match self {
             &Name::Unnamed => unimplemented!(), // FIXME: we need to have a global accumulator
             &Name::Named(ref val) => val.fmt(fmt),
@@ -35,9 +35,15 @@ impl fmt::Display for Name
     }
 }
 
-impl fmt::Debug for Name
+impl std::cmp::PartialEq for Name
 {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        fmt::Display::fmt(self, fmt)
+    fn eq(&self, other: &Name) -> bool {
+         match (self,other) {
+             (&Name::Named(ref n1),
+              &Name::Named(ref n2)) => n1 == n2,
+              _ => false, // unnamed values are always unique
+         }
     }
 }
+
+impl std::cmp::Eq for Name { }
