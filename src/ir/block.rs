@@ -33,13 +33,6 @@ impl Block
     pub fn name(&self) -> &ir::Name { &self.name }
 }
 
-impl ir::ValueTrait for Block
-{
-    fn ty(&self) -> ir::Type {
-        ir::Type::block()
-    }
-}
-
 impl lang::Block for Block
 {
     type Value = ir::Value;
@@ -62,7 +55,3 @@ impl lang::Block for Block
     }
 }
 
-impl Into<Value> for Block
-{
-    fn into(self) -> Value { Value::Block(self) }
-}

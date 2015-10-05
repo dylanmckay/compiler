@@ -40,20 +40,6 @@ impl Function
     }
 }
 
-impl ir::ValueTrait for Function
-{
-    fn ty(&self) -> ir::Type {
-        self.signature.clone().into()
-    }
-}
-
-impl Into<Value> for Function
-{
-    fn into(self) -> Value {
-        Value::Function(self)
-    }
-}
-
 impl fmt::Display for Function
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {

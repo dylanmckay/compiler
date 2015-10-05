@@ -25,16 +25,7 @@ impl ValueTrait for Jump
 impl fmt::Display for Jump
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        use util;
-
-        let func = if let Value::Function(ref f) = *self.target {
-            f
-        } else {
-            unreachable!(); // target must be function
-        };
-
-        write!(fmt, "jump {} {}", util::comma_separated_values(func.signature.returns()),
-                                  func.name)
+        unimplemented!();
     }
 }
 

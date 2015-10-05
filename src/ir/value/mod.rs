@@ -33,10 +33,7 @@ pub mod value
         Global(value::Global),
         Pointer(value::Pointer),
         Register(value::Register),
-
         Instruction(ir::Instruction),
-        Block(ir::Block),
-        Function(ir::Function),
     }
 
     impl Value
@@ -115,7 +112,6 @@ pub mod value
 
             match self {
                 &ir::Value::Instruction(ref i) => i.subvalues(),
-                &ir::Value::Block(ref i) => i.subvalues(),
                 _ => Vec::new(),
             }
         }
@@ -126,7 +122,6 @@ pub mod value
 
             match self {
                 Value::Instruction(i) => i.map_subvalues(f),
-                Value::Block(i) => i.map_subvalues(f).into(),
                 _ => self,
             }
         }
@@ -158,8 +153,6 @@ pub mod value
                 &Value::Pointer(ref val) => val.ty(),
                 &Value::Register(ref val) => val.ty(),
                 &Value::Instruction(ref val) => val.ty(),
-                &Value::Block(ref val) => val.ty(),
-                &Value::Function(ref val) => val.ty(),
             }
         }
     }
@@ -173,8 +166,6 @@ pub mod value
                 &Value::Pointer(ref val) => val.fmt(fmt),
                 &Value::Register(ref val) => val.fmt(fmt),
                 &Value::Instruction(ref val) => val.fmt(fmt),
-                &Value::Block(ref val) => val.name().fmt(fmt),
-                &Value::Function(ref val) => val.fmt(fmt),
             }
         }
     }

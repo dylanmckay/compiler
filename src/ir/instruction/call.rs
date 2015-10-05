@@ -27,17 +27,18 @@ impl ir::ValueTrait for Call
 impl fmt::Display for Call
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        use util;
+        unimplemented!();
+/*        use util;
 
         let func = if let Value::Function(ref f) = *self.target {
             f
         } else {
             unreachable!(); // target must be function
         };
-
         write!(fmt, "call {} {}",
                util::comma_separated_values(func.signature().returns()),
                func.name())
+               */
     }
 }
 
