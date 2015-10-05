@@ -7,6 +7,8 @@ use std;
 pub struct FunctionRef
 {
     id: util::Id,
+
+    name: String,
     signature: ir::types::Function,
 }
 
@@ -15,8 +17,17 @@ impl FunctionRef
     pub fn reference(func: &ir::Function) -> Self {
         FunctionRef {
             id: func.id(),
+            name: func.name().into(),
             signature: func.signature().clone(),
         }
+    }
+
+    /// Gets the name of the function.
+    pub fn name(&self) -> &str { &self.name }
+
+    /// Gets the signature of the function.
+    pub fn signature(&self) -> &ir::types::Function {
+        &self.signature
     }
 }
 
