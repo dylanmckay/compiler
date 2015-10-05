@@ -1,5 +1,5 @@
 
-use ir::{self,types,Value,Name,Block};
+use ir::{self,types,Value,Block};
 use std::{self,fmt};
 use lang;
 
@@ -7,14 +7,14 @@ use lang;
 pub struct Function
 {
     // TODO: functions must have textual names. use String
-    pub name: Name,
+    pub name: String,
     pub signature: types::Function,
     pub blocks: Vec<Block>,
 }
 
 impl Function
 {
-    pub fn new(name: Name,
+    pub fn new(name: String,
                signature: types::Function,
                blocks: Vec<Block>) -> Function {
         Function {
@@ -24,7 +24,7 @@ impl Function
         }
     }
 
-    pub fn empty(name: Name, ty: types::Function) -> Function {
+    pub fn empty(name: String, ty: types::Function) -> Function {
         Function::new(name, ty, Vec::new())
     }
 
@@ -33,7 +33,7 @@ impl Function
         self
     }
 
-    pub fn name(&self) -> &Name { &self.name }
+    pub fn name(&self) -> &str { &self.name }
 
     pub fn signature(&self) -> &types::Function {
         &self.signature

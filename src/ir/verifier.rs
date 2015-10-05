@@ -19,7 +19,7 @@ pub fn verify(module: &ir::Module) -> Result {
 pub fn verify_function(module: &ir::Module,
                        func: &ir::Function) -> Result {
 
-    try!(util::verify_name(func.name()));
+    try!(util::verify_ident(func.name()));
 
     for block in func.blocks() {
         try!(self::verify_block(module, block));

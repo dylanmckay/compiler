@@ -81,13 +81,9 @@ impl Into<Function> for ir::Function
     fn into(self) -> Function {
         use lang::Function;
 
-        // TODO: the clone should be unnecessary
-        let blocks = self.blocks().map(|a| a.clone().into());
+        let blocks = self.blocks.into_iter().map(|a| a.into());
 
-        // FIXME: get the name from the instruction.
-        let name = "asdf".into();
-
-        self::Function::new(name, blocks)
+        self::Function::new(self.name, blocks)
     }
 }
 
