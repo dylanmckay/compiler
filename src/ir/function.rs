@@ -1,5 +1,5 @@
 
-use ir::{self,types,Value,Block};
+use ir::{self,types,Block};
 use std::{self,fmt};
 use lang;
 use util;

@@ -1,6 +1,6 @@
 
 use ir::Function;
-use ir::value::Global;
+use ir::Global;
 use lang;
 use ir;
 use util;

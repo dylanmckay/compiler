@@ -1,12 +1,10 @@
 
 pub use self::value::{Value,ValueTrait};
 
-pub use self::global::Global;
 pub use self::pointer::Pointer;
 pub use self::register::Register;
 pub use self::literal::{Literal,LiteralTrait};
 
-pub mod global;
 pub mod pointer;
 pub mod register;
 pub mod literal;
@@ -30,9 +28,9 @@ pub mod value
     pub enum Value
     {
         Literal(value::Literal),
-        Global(value::Global),
         Pointer(value::Pointer),
         Register(value::Register),
+
         Instruction(ir::Instruction),
     }
 
@@ -149,7 +147,6 @@ pub mod value
         fn ty(&self) -> Type {
             match self {
                 &Value::Literal(ref val) => val.ty(),
-                &Value::Global(ref val) => val.ty(),
                 &Value::Pointer(ref val) => val.ty(),
                 &Value::Register(ref val) => val.ty(),
                 &Value::Instruction(ref val) => val.ty(),
@@ -162,7 +159,6 @@ pub mod value
         fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
             match self {
                 &Value::Literal(ref val) => val.fmt(fmt),
-                &Value::Global(ref val) => val.fmt(fmt),
                 &Value::Pointer(ref val) => val.fmt(fmt),
                 &Value::Register(ref val) => val.fmt(fmt),
                 &Value::Instruction(ref val) => val.fmt(fmt),

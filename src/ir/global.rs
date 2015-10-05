@@ -29,16 +29,3 @@ impl std::fmt::Display for Global
     }
 }
 
-impl ir::value::ValueTrait for Global
-{
-    fn ty(&self) -> ir::Type {
-        ir::Type::pointer(self.value.ty())
-    }
-}
-
-impl Into<ir::Value> for Global
-{
-    fn into(self) -> ir::Value {
-        ir::Value::Global(self)
-    }
-}
