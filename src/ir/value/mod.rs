@@ -4,10 +4,12 @@ pub use self::value::{Value,ValueTrait};
 pub use self::pointer::Pointer;
 pub use self::register::Register;
 pub use self::literal::{Literal,LiteralTrait};
+pub use self::globalref::GlobalRef;
 
 pub mod pointer;
 pub mod register;
 pub mod literal;
+pub mod globalref;
 
 pub mod value
 {
@@ -30,8 +32,9 @@ pub mod value
         Literal(value::Literal),
         Pointer(value::Pointer),
         Register(value::Register),
-
         Instruction(ir::Instruction),
+
+        GlobalRef(value::GlobalRef),
     }
 
     impl Value
@@ -150,6 +153,7 @@ pub mod value
                 &Value::Pointer(ref val) => val.ty(),
                 &Value::Register(ref val) => val.ty(),
                 &Value::Instruction(ref val) => val.ty(),
+                &Value::GlobalRef(ref val) => val.ty(),
             }
         }
     }
@@ -162,6 +166,7 @@ pub mod value
                 &Value::Pointer(ref val) => val.fmt(fmt),
                 &Value::Register(ref val) => val.fmt(fmt),
                 &Value::Instruction(ref val) => val.fmt(fmt),
+                &Value::GlobalRef(ref val) => val.fmt(fmt),
             }
         }
     }

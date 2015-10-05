@@ -26,6 +26,10 @@ impl Global
 
     pub fn name(&self) -> ir::Name { self.name.clone() }
     pub fn value(&self) -> ir::Value { *self.value.clone() }
+    pub fn ty(&self) -> ir::Type {
+        use ir::ValueTrait;
+        self.value.ty()
+    }
 
     /// Gets the ID of the global.
     ///
