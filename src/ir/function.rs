@@ -6,6 +6,7 @@ use lang;
 #[derive(Clone,Debug)]
 pub struct Function
 {
+    // TODO: functions must have textual names. use String
     pub name: Name,
     pub signature: types::Function,
     pub blocks: Vec<Block>,
@@ -90,4 +91,12 @@ impl lang::Function for Function
     }
 }
 
+impl std::cmp::PartialEq for Function
+{
+    fn eq(&self, other: &Function) -> bool {
+        self.name == other.name &&
+        self.signature == other.signature
+    }
+}
 
+impl std::cmp::Eq for Function { }
