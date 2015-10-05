@@ -5,11 +5,15 @@ pub use self::pointer::Pointer;
 pub use self::register::Register;
 pub use self::literal::{Literal,LiteralTrait};
 pub use self::globalref::GlobalRef;
+pub use self::blockref::BlockRef;
+pub use self::functionref::FunctionRef;
 
 pub mod pointer;
 pub mod register;
 pub mod literal;
 pub mod globalref;
+pub mod blockref;
+pub mod functionref;
 
 pub mod value
 {
@@ -35,6 +39,8 @@ pub mod value
         Instruction(ir::Instruction),
 
         GlobalRef(value::GlobalRef),
+        BlockRef(value::BlockRef),
+        FunctionRef(value::FunctionRef),
     }
 
     impl Value
@@ -154,6 +160,8 @@ pub mod value
                 &Value::Register(ref val) => val.ty(),
                 &Value::Instruction(ref val) => val.ty(),
                 &Value::GlobalRef(ref val) => val.ty(),
+                &Value::BlockRef(ref val) => val.ty(),
+                &Value::FunctionRef(ref val) => val.ty(),
             }
         }
     }
@@ -167,6 +175,8 @@ pub mod value
                 &Value::Register(ref val) => val.fmt(fmt),
                 &Value::Instruction(ref val) => val.fmt(fmt),
                 &Value::GlobalRef(ref val) => val.fmt(fmt),
+                &Value::BlockRef(ref val) => val.fmt(fmt),
+                &Value::FunctionRef(ref val) => val.fmt(fmt),
             }
         }
     }
