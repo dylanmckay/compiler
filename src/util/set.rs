@@ -11,7 +11,7 @@ pub struct Set<T>
     generator: util::id::Generator,
 }
 
-impl<T> Set<T>
+impl<T: util::id::Identifiable> Set<T>
 {
     /// Creates an empty set.
     pub fn empty() -> Self {
@@ -30,8 +30,9 @@ impl<T> Set<T>
     /// Adds an element to the set.
     ///
     /// Returns the ID of the element.
-    pub fn add(&mut self, element: T) -> util::Id {
+    pub fn add(&mut self, mut element: T) -> util::Id {
         let index = self.generator.next();
+        element.set_id(index);
 
         // we should always be appending to the end.
         debug_assert!(index.underlying() == self.elements.len());
@@ -51,3 +52,23 @@ impl<T> Set<T>
     }
 }
 
+impl<T> IntoIterator for Set<T>
+{
+    type Item = T;
+    type IntoIter = std::vec::IntoIter<T>;
+
+    fn into_iter(self) -> std::vec::IntoIter<T> {
+        self.elements.into_iter()
+    }
+}
+
+impl<T> std::iter::FromIterator<T> for Set<T>
+{
+    fn from_iter<I>(it: I) -> Self
+        where I: IntoIterator<Item=T> {
+        Set {
+            elements: Vec::from_iter(it),
+            generator: util::id::Generator::new(),
+        }
+    }
+}

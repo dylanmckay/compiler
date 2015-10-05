@@ -28,6 +28,14 @@ impl Id
     }
 }
 
+/// An object which has an identifier.
+pub trait Identifiable
+{
+    /// Sets the internal ID of the object.
+    /// This **should not** be called manually.
+    fn set_id(&mut self, id: Id);
+}
+
 /// A unique identifier generator.
 #[derive(Copy,Clone,Debug)]
 pub struct Generator

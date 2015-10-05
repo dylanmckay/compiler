@@ -1,6 +1,5 @@
 
-use ir::Function;
-use ir::Global;
+use ir::{Function,Global};
 use lang;
 use ir;
 use util;
@@ -10,10 +9,8 @@ use std;
 /// An IR module.
 pub struct Module
 {
-    functions: Vec<Function>,
-    globals: Vec<Global>,
-
-    generator: util::id::Generator,
+    functions: util::Set<Function>,
+    globals: util::Set<Global>,
 }
 
 impl Module
@@ -21,28 +18,20 @@ impl Module
     /// Creates an empty module.
     pub fn empty() -> Self {
         Module {
-            functions: Vec::new(),
-            globals: Vec::new(),
-
-            generator: util::id::Generator::new(),
+            functions: util::Set::empty(),
+            globals: util::Set::empty(),
         }
     }
 
     /// Adds a function to the module.
-    pub fn function(mut self, mut func: Function) -> Self {
-        // assign an ID to the function
-        func.set_id(self.generator.next());
-
-        self.functions.push(func);
+    pub fn function(mut self, func: Function) -> Self {
+        self.functions.add(func);
         self
     }
 
     /// Adds a global to the module.
-    pub fn global(mut self, mut global: Global) -> Self {
-        // assign an ID to the global
-        global.set_id(self.generator.next());
-
-        self.globals.push(global);
+    pub fn global(mut self, global: Global) -> Self {
+        self.globals.add(global);
         self
     }
 }

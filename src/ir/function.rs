@@ -54,10 +54,11 @@ impl Function
     ///
     /// The ID is guaranteed to be unique for each module.
     pub fn id(&self) -> util::Id { self.id }
+}
 
-    /// Sets the internal ID of the function.
-    /// This **should not** be called directly.
-    pub fn set_id(&mut self, id: util::Id) {
+impl util::id::Identifiable for Function
+{
+    fn set_id(&mut self, id: util::Id) {
         self.id = id;
     }
 }
