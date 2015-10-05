@@ -3,10 +3,10 @@ use std;
 
 /// A unique identifier.
 #[derive(Copy,Clone,Debug)]
-pub struct Id(u64);
+pub struct Id(usize);
 
 /// A special value signifying an unspeficied Id.
-const UNSPECIFIED_ID: u64 = !0;
+const UNSPECIFIED_ID: usize = !0;
 
 impl Id
 {
@@ -16,9 +16,15 @@ impl Id
     }
 
     /// Checks if the ID is unspecified.
-    pub fn is_specified(&self) -> bool {
-        let &Id(val) = self;
+    pub fn is_specified(self) -> bool {
+        let Id(val) = self;
         val != UNSPECIFIED_ID
+    }
+
+    /// Gets the underlying ID.
+    pub fn underlying(self) -> usize {
+        let Id(val) = self;
+        val
     }
 }
 
@@ -26,7 +32,7 @@ impl Id
 #[derive(Copy,Clone,Debug)]
 pub struct Generator
 {
-    next: u64,
+    next: usize,
 }
 
 impl Generator
