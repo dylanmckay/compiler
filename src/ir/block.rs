@@ -37,6 +37,10 @@ impl Block
 
     pub fn name(&self) -> &ir::Name { &self.name }
 
+    pub fn reference(&self) -> ir::Value {
+        ir::Value::block_ref(self)
+    }
+
     /// Gets the ID of the block.
     ///
     /// The ID is guaranteed to be unique for each function.

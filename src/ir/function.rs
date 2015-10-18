@@ -50,6 +50,11 @@ impl Function
         &self.signature
     }
 
+    /// Gets a reference to the function.
+    pub fn reference(&self) -> ir::Value {
+        ir::Value::function_ref(self)
+    }
+
     /// Gets the ID of the function.
     ///
     /// The ID is guaranteed to be unique for each module.

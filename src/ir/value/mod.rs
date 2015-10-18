@@ -83,6 +83,18 @@ pub mod value
             value::Literal::unit_struct().into()
         }
 
+        pub fn global_ref(global: &ir::Global) -> Value {
+            value::GlobalRef::reference(global).into()
+        }
+
+        pub fn block_ref(block: &ir::Block) -> Value {
+            value::BlockRef::reference(block).into()
+        }
+
+        pub fn function_ref(func: &ir::Function) -> Value {
+            value::FunctionRef::reference(func).into()
+        }
+
         /// Creates an unnamed register.
         pub fn register(ty: ir::Type) -> Value {
             value::Register::unnamed(ty).into()

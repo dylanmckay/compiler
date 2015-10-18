@@ -41,7 +41,7 @@ impl std::fmt::Display for FunctionRef
 impl ir::value::ValueTrait for FunctionRef
 {
     fn ty(&self) -> ir::Type {
-        self.signature.clone().into()
+        ir::Type::pointer(self.signature.clone().into())
     }
 }
 

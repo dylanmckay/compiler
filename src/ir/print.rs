@@ -3,6 +3,8 @@ use ir;
 use util;
 use std::fmt;
 
+// TODO: pass the module to all functions so we can lookup globals et al
+
 pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
     use lang::Module;
 

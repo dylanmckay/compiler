@@ -55,7 +55,7 @@ fn create_module() -> ir::Module {
 
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
-    let inst_add1 = ir::Instruction::add(op_ty.into(), lhs.clone(), rhs.clone());
+    let inst_add1 = ir::Instruction::add(op_ty.into(), global.reference(), rhs.clone());
     let inst_add2 = ir::Instruction::add(op_ty.into(), rhs.clone(), lhs.clone());
     let inst_mul = ir::Instruction::mul(op_ty.into(), inst_add1.clone().into(), rhs.clone());
     let inst_ret = ir::Instruction::ret(Some(inst_add1.clone().into()));

@@ -30,7 +30,7 @@ impl std::fmt::Display for GlobalRef
 impl ir::value::ValueTrait for GlobalRef
 {
     fn ty(&self) -> ir::Type {
-        self.ty.clone()
+        ir::Type::pointer(self.ty.clone())
     }
 }
 

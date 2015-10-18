@@ -31,6 +31,11 @@ impl Global
         self.value.ty()
     }
 
+    /// Gets a reference to the global.
+    pub fn reference(&self) -> ir::Value {
+        ir::Value::global_ref(self)
+    }
+
     /// Gets the ID of the global.
     ///
     /// The ID is guaranteed to be unique for each module.
