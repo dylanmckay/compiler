@@ -1,5 +1,5 @@
-use mc::{Encodable,Register};
-use mc::backends::avr::instructions::Instruction;
+use target::mc::{Encodable,Register};
+use target::mc::backends::avr::instructions::Instruction;
 
 pub trait FRdRr : Instruction
 {

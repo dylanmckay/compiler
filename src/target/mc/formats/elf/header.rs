@@ -1,5 +1,5 @@
 
-use mc::formats::BinaryKind;
+use target::mc::formats::BinaryKind;
 //use mc::formats::elf::rawheaders::HeaderData;
 use util;
 
@@ -52,7 +52,7 @@ impl Class {
 pub mod mapping
 {
     use util;
-    use mc::formats::BinaryKind;
+    use target::mc::formats::BinaryKind;
 
     /// Gets the byte order number as used by the `e_ident[EI_DATA]` field
     /// in the ELF header.

@@ -1,5 +1,5 @@
 
-use mc::Encodable;
+use target::mc::Encodable;
 
 pub trait Instruction : Encodable
 {
