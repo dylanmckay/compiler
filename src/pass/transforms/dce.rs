@@ -18,7 +18,7 @@ impl pass::Metadata for DeadCodeElimination
     fn name(&self) -> &'static str { "Dead code elimination" }
 }
 
-impl pass::PassMut<ir::Module> for DeadCodeElimination
+impl pass::Transform<ir::Module> for DeadCodeElimination
 {
     fn run_block(&mut self, block: ir::Block)
         -> ir::Block {
@@ -31,7 +31,7 @@ impl pass::PassMut<ir::Module> for DeadCodeElimination
 impl Into<pass::Info<ir::Module>> for Box<DeadCodeElimination>
 {
     fn into(self) -> pass::Info<ir::Module> {
-        pass::Info::Mutable(self)
+        pass::Info::Transform(self)
     }
 }
 

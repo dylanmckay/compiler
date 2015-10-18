@@ -17,30 +17,30 @@ pub struct Id(u32);
 
 pub enum Info<M: lang::Module>
 {
-    Immutable(Box<Pass<M>>),
-    Mutable(Box<PassMut<M>>),
+    Analysis(Box<Analysis<M>>),
+    Transform(Box<Transform<M>>),
 }
 
 impl<M: lang::Module> Metadata for Info<M>
 {
     fn id(&self) -> Id {
         match self {
-            &Info::Immutable(ref p) => p.id(),
-            &Info::Mutable(ref p) => p.id(),
+            &Info::Analysis(ref p) => p.id(),
+            &Info::Transform(ref p) => p.id(),
         }
     }
 
     fn dependencies(&self) -> &'static [Id] {
         match self {
-            &Info::Immutable(ref p) => p.dependencies(),
-            &Info::Mutable(ref p) => p.dependencies(),
+            &Info::Analysis(ref p) => p.dependencies(),
+            &Info::Transform(ref p) => p.dependencies(),
         }
     }
 
     fn name(&self) -> &'static str {
         match self {
-            &Info::Immutable(ref p) => p.name(),
-            &Info::Mutable(ref p) => p.name(),
+            &Info::Analysis(ref p) => p.name(),
+            &Info::Transform(ref p) => p.name(),
         }
     }
 }
@@ -59,7 +59,7 @@ pub trait Metadata
     fn name(&self) -> &'static str;
 }
 
-pub trait Pass<M> : Metadata
+pub trait Analysis<M> : Metadata
     where M: lang::Module
 {
     /// Run the pass on an entire module.
@@ -117,7 +117,7 @@ pub trait Pass<M> : Metadata
     }
 }
 
-pub trait PassMut<M> : Metadata
+pub trait Transform<M> : Metadata
     where M: lang::Module
 {
     /// Run the pass on an entire module.

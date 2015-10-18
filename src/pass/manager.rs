@@ -1,5 +1,5 @@
 
-use pass::{self,Metadata,Pass,PassMut,Id};
+use pass::{self,Metadata,Analysis,Transform,Id};
 use lang;
 use std;
 
@@ -38,8 +38,8 @@ impl<M: lang::Module> Manager<M>
             let pass = self::lookup_pass_mut(pass_id, &mut self.passes).unwrap();
 
             match pass {
-                &mut pass::Info::Immutable(ref mut p) => p.run_module(&module),
-                &mut pass::Info::Mutable(ref mut p) => module = p.run_module(module),
+                &mut pass::Info::Analysis(ref mut p) => p.run_module(&module),
+                &mut pass::Info::Transform(ref mut p) => module = p.run_module(module),
             }
         }
 

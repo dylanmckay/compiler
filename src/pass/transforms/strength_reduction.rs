@@ -11,7 +11,7 @@ impl pass::Metadata for StrengthReduction
     fn name(&self) -> &'static str { "Strength reduction" }
 }
 
-impl pass::PassMut<ir::Module> for StrengthReduction
+impl pass::Transform<ir::Module> for StrengthReduction
 {
     fn run_value(&mut self, value: ir::Value) -> ir::Value {
 
@@ -29,7 +29,7 @@ impl pass::PassMut<ir::Module> for StrengthReduction
 impl Into<pass::Info<ir::Module>> for Box<StrengthReduction>
 {
     fn into(self) -> pass::Info<ir::Module> {
-        pass::Info::Mutable(self)
+        pass::Info::Transform(self)
     }
 }
 
