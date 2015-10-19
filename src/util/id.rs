@@ -85,6 +85,9 @@ impl std::cmp::Eq for Id { }
 impl std::fmt::Display for Id
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        assert!(self.is_specified(),
+                "ID is not set");
+
         let &Id(val) = self;
         val.fmt(fmt)
     }
