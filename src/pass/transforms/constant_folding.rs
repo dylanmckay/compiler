@@ -72,3 +72,26 @@ pub mod fold
         }
     }
 }
+
+#[test]
+fn test_binop_fold()
+{
+    use {lang,ir};
+    use lang::Value;
+
+    let one = ir::Value::i8(1);
+    let eight = ir::Value::i8(8);
+    let ty = one.ty();
+
+    let cases = [
+        // (inst, expected value)
+        (ir::Instruction::add(ty,one,eight), ir::Value::i8(9)),
+    ];
+
+    for &(inst,expected) in cases.iter() {
+        let folded = fold::instruction(inst);
+
+        assert!(folded == expected);
+    }
+
+}
