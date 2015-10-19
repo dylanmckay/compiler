@@ -68,7 +68,6 @@ impl Block
 impl Into<Dag> for ir::Module
 {
     fn into(self) -> Dag {
-        use lang::Module;
 
         // TODO: the clone should be unnecessary
         let functions = self.functions().map(|a| a.clone().into());

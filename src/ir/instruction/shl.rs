@@ -1,5 +1,5 @@
 
-use ir::{self,Instruction,Value,ValueTrait};
+use ir::{self,Instruction,Value};
 use std::fmt;
 
 #[derive(Clone,Debug)]
@@ -19,11 +19,8 @@ impl Shl
             amount: Box::new(amount),
         }
     }
-}
 
-impl ValueTrait for Shl
-{
-    fn ty(&self) -> ir::Type { self.ty.clone() }
+    pub fn ty(&self) -> ir::Type { self.ty.clone() }
 }
 
 impl fmt::Display for Shl

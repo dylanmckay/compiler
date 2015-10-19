@@ -15,13 +15,13 @@ use lang;
 #[derive(Copy,Clone,Debug,PartialEq,Eq)]
 pub struct Id(u32);
 
-pub enum Info<M: lang::Module>
+pub enum Info<V: lang::Value>
 {
-    Analysis(Box<Analysis<M>>),
-    Transform(Box<Transform<M>>),
+    Analysis(Box<Analysis<V>>),
+    Transform(Box<Transform<V>>),
 }
 
-impl<M: lang::Module> Metadata for Info<M>
+impl<V: lang::Value> Metadata for Info<V>
 {
     fn id(&self) -> Id {
         match self {
@@ -59,11 +59,11 @@ pub trait Metadata
     fn name(&self) -> &'static str;
 }
 
-pub trait Analysis<M> : Metadata
-    where M: lang::Module
+pub trait Analysis<V> : Metadata
+    where V: lang::Value
 {
     /// Run the pass on an entire module.
-    fn run_module(&mut self, module: &M) {
+    fn run_module(&mut self, module: &lang::Module<V>) {
 
         for global in module.globals() {
             self.run_global(global);
@@ -75,13 +75,12 @@ pub trait Analysis<M> : Metadata
     }
 
     /// Run the pass on a global variable.
-    fn run_global(&mut self, _: &M::Global) {
+    fn run_global(&mut self, _: &lang::Global<V>) {
         // do nothing unless overidden
     }
 
     /// Run the pass on a function.
-    fn run_function(&mut self, function: &M::Function) {
-        use lang::Function;
+    fn run_function(&mut self, function: &lang::Function<V>) {
         
         for bb in function.blocks() {
             self.run_block(bb);
@@ -89,8 +88,7 @@ pub trait Analysis<M> : Metadata
     }
 
     /// Run the pass on a basic block.
-    fn run_block(&mut self, block: &<M::Function as lang::Function>::Block) {
-        use lang::Block;
+    fn run_block(&mut self, block: &lang::Block<V>) {
 
         for value in block.subvalues() {
             self.run_value_recursive(&value);
@@ -99,14 +97,13 @@ pub trait Analysis<M> : Metadata
 
     /// Run the pass on a value.
     fn run_value(&mut self,
-                 _: &<<M::Function as lang::Function>::Block as lang::Block>::Value) {
+                 _: &V) {
 
         panic!("the pass is not implemented");
     }
 
     fn run_value_recursive(&mut self,
-                           value: &<<M::Function as lang::Function>::Block as lang::Block>::Value) {
-        use lang::Value;
+                           value: &V) {
 
         // Recurse from the deepest node to the root node.
         for val in value.subvalues() {
@@ -117,51 +114,46 @@ pub trait Analysis<M> : Metadata
     }
 }
 
-pub trait Transform<M> : Metadata
-    where M: lang::Module
+pub trait Transform<V> : Metadata
+    where V: lang::Value
 {
     /// Run the pass on an entire module.
-    fn run_module(&mut self, module: M) -> M{
+    fn run_module(&mut self, module: lang::Module<V>) -> lang::Module<V> {
         module.map_globals(|a| self.run_global(a))
               .map_functions(|a| self.run_function(a))
     }
 
     /// Run the pass on a global.
-    fn run_global(&mut self, global: M::Global)
-        -> M::Global {
+    fn run_global(&mut self, global: lang::Global<V>)
+        -> lang::Global<V> {
 
         // do nothing unless overridden
         global
     }
 
     /// Run the pass on a function.
-    fn run_function(&mut self, function: M::Function)
-        -> M::Function {
-        use lang::Function;
+    fn run_function(&mut self, function: lang::Function<V>)
+        -> lang::Function<V> {
 
         function.map_blocks(|a| self.run_block(a))
     }
 
     /// Run the pass on a basic block.
-    fn run_block(&mut self, block: <M::Function as lang::Function>::Block)
-        -> <M::Function as lang::Function>::Block {
-        use lang::Block;
+    fn run_block(&mut self, block: lang::Block<V>)
+        -> lang::Block<V> {
 
         block.map_subvalues(|a| self.run_value_recursive(a))
     }
 
     /// Run the pass on a value.
     fn run_value(&mut self,
-                 _: <<M::Function as lang::Function>::Block as lang::Block>::Value)
-        -> <<M::Function as lang::Function>::Block as lang::Block>::Value {
+                 _: V) -> V {
 
         panic!("the pass is not implemented");
     }
 
     fn run_value_recursive(&mut self,
-                           value: <<M::Function as lang::Function>::Block as lang::Block>::Value)
-        -> <<M::Function as lang::Function>::Block as lang::Block>::Value {
-        use lang::Value;
+                           value: V) -> V {
 
         // Recurse from the deepest node to the root node.
         let val = value.map_subvalues(|v| self.run_value_recursive(v));

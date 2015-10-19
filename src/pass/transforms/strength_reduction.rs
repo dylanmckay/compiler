@@ -11,7 +11,7 @@ impl pass::Metadata for StrengthReduction
     fn name(&self) -> &'static str { "Strength reduction" }
 }
 
-impl pass::Transform<ir::Module> for StrengthReduction
+impl pass::Transform<ir::Value> for StrengthReduction
 {
     fn run_value(&mut self, value: ir::Value) -> ir::Value {
 
@@ -26,17 +26,16 @@ impl pass::Transform<ir::Module> for StrengthReduction
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Module>> for Box<StrengthReduction>
+impl Into<pass::Info<ir::Value>> for Box<StrengthReduction>
 {
-    fn into(self) -> pass::Info<ir::Module> {
+    fn into(self) -> pass::Info<ir::Value> {
         pass::Info::Transform(self)
     }
 }
 
 pub mod reduce
 {
-    use ir::{self,instruction,Instruction,
-             ValueTrait};
+    use ir::{self,instruction,Instruction};
 
     pub fn reduce(inst: Instruction) -> ir::Instruction {
 
@@ -74,7 +73,7 @@ pub mod reduce
     }
 
     pub mod util {
-        use ir::{value,Value,ValueTrait};
+        use ir::{value,Value};
 
         /// Checks if a value is an integer and a power of two.
         pub fn is_power_of_two(value: &value::Literal) -> bool {

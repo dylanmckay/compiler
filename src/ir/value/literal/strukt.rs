@@ -17,19 +17,20 @@ impl Struct
             fields: fields,
         }
     }
-}
 
-impl ir::value::LiteralTrait for Struct { }
+    pub fn ty(&self) -> Type {
+        use lang::Value;
 
-impl ValueTrait for Struct
-{
-    fn ty(&self) -> Type {
         // Create the struct type from the types of the values.
         types::Struct::new(
             self.fields.iter().map(|ref f| f.ty())
         ).into()
     }
 }
+
+impl ir::value::LiteralTrait for Struct { }
+
+impl ValueTrait for Struct { }
 
 impl fmt::Display for Struct
 {

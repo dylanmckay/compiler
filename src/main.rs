@@ -41,7 +41,6 @@ fn main() {
     }
 
     let dag = isel::Dag::from_module(module);
-
     println!("DAG:\n{:?}", dag);
 }
 
@@ -53,21 +52,21 @@ fn create_module() -> ir::Module {
 
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
-    let inst_add1 = ir::Instruction::add(op_ty.into(), global.reference(), rhs.clone());
+    let inst_add1 = ir::Instruction::add(op_ty.into(), lhs.clone(), rhs.clone());
     let inst_add2 = ir::Instruction::add(op_ty.into(), rhs.clone(), lhs.clone());
     let inst_mul = ir::Instruction::mul(op_ty.into(), inst_add1.clone().into(), rhs.clone());
     let inst_ret = ir::Instruction::ret(Some(inst_add1.clone().into()));
 
     let basicblock = ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_ret);
 
-    let sig = ir::types::Function::new().ret(op_ty.into());
+    let sig = lang::Signature::new().ret(op_ty.into());
     let function = ir::Function::empty("main".into(), sig).add(basicblock.clone());
 
     ir::Module::empty().function(function)
                        .global(global)
 }
 
-fn create_ir_pass_manager() -> pass::Manager<ir::Module> {
+fn create_ir_pass_manager() -> pass::Manager<ir::Value> {
     pass::Manager::empty()
 //        .add(pass::transforms::ConstantFolding)
         .add(pass::transforms::StrengthReduction)

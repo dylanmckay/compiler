@@ -83,6 +83,7 @@ pub mod instruction
     }
 
     impl InstructionTrait for Instruction { }
+    impl ir::ValueTrait for Instruction { }
 
     impl Into<Value> for Instruction
     {
@@ -126,7 +127,6 @@ pub mod instruction
         
         pub fn map_subvalues<F>(self, f: F) -> Value
             where F: FnMut(Value) -> Value {
-            use lang::Value;
 
             match self {
                ir::Instruction::Add(instr) => instr.map_subvalues(f).into(),
@@ -162,11 +162,8 @@ pub mod instruction
                 _ => false,
             }
         }
-    }
 
-    impl ir::ValueTrait for Instruction
-    {
-        fn ty(&self) -> ir::Type {
+        pub fn ty(&self) -> ir::Type {
             match self {
                 &Instruction::Add(ref instr) => instr.ty(),
                 &Instruction::Sub(ref instr) => instr.ty(),
@@ -179,6 +176,7 @@ pub mod instruction
                 &Instruction::Return(ref instr) => instr.ty(),
              }
         }
+
     }
 
     /// Implements several traits for an instruction.
@@ -242,6 +240,8 @@ pub mod instruction
             }
 
             impl ::ir::InstructionTrait for $inst { }
+
+            impl ::ir::ValueTrait for $inst { }
 
             impl Into<::ir::Instruction> for $inst
             {

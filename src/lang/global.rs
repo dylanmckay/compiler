@@ -1,21 +1,23 @@
 
-use ir;
+use lang;
 use util;
 
 use std;
 
 #[derive(Clone,Debug)]
-pub struct Global
+pub struct Global<V: lang::Value>
 {
     id: util::Id,
 
     name: String,
-    value: Box<ir::Value>,
+    // TODO: does this need to be boxed
+    value: Box<V>,
 }
 
-impl Global
+impl<V> Global<V>
+    where V: lang::Value
 {
-    pub fn new(name: String, value: ir::Value) -> Self {
+    pub fn new(name: String, value: V) -> Self {
         Global {
             id: util::Id::unspecified(),
 
@@ -25,15 +27,9 @@ impl Global
     }
 
     pub fn name(&self) -> &str { &self.name }
-    pub fn value(&self) -> ir::Value { *self.value.clone() }
-    pub fn ty(&self) -> ir::Type {
-        use ir::ValueTrait;
+    pub fn value(&self) -> V { *self.value.clone() }
+    pub fn ty(&self) -> V::Type {
         self.value.ty()
-    }
-
-    /// Gets a reference to the global.
-    pub fn reference(&self) -> ir::Value {
-        ir::Value::global_ref(self)
     }
 
     /// Gets the ID of the global.
@@ -42,14 +38,14 @@ impl Global
     pub fn id(&self) -> util::Id { self.id }
 }
 
-impl util::id::Identifiable for Global
+impl<V: lang::Value> util::id::Identifiable for Global<V>
 {
     fn set_id(&mut self, id: util::Id) {
         self.id = id;
     }
 }
 
-impl std::fmt::Display for Global
+impl<V: lang::Value> std::fmt::Display for Global<V>
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.name.fmt(fmt)

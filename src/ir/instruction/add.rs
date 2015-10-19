@@ -1,4 +1,4 @@
-use ir::{self,Instruction,Value,ValueTrait};
+use ir::{self,Instruction,Value};
 use std::fmt;
 
 #[derive(Clone,Debug)]
@@ -18,11 +18,8 @@ impl Add
             rhs: Box::new(rhs),
         }
     }
-}
 
-impl ValueTrait for Add
-{
-    fn ty(&self) -> ir::Type {
+    pub fn ty(&self) -> ir::Type {
         self.ty.clone()
     }
 }

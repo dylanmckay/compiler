@@ -1,6 +1,6 @@
 
 use std::fmt;
 
-pub trait Type : Clone + fmt::Display + PartialEq + Eq
+pub trait Type : Clone + fmt::Display + fmt::Debug + PartialEq + Eq
 {
 }

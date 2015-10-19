@@ -1,4 +1,4 @@
-use ir::{self,Instruction,Value,ValueTrait};
+use ir::{self,Instruction,Value};
 use std::fmt;
 
 #[derive(Clone,Debug)]
@@ -18,11 +18,8 @@ impl Sub
             rhs: Box::new(rhs),
         }
     }
-}
 
-impl ValueTrait for Sub
-{
-    fn ty(&self) -> ir::Type { self.ty.clone() }
+    pub fn ty(&self) -> ir::Type { self.ty.clone() }
 }
 
 impl fmt::Display for Sub

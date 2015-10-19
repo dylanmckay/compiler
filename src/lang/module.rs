@@ -1,28 +1,65 @@
 
-use std;
 use lang;
+use util;
 
-/// An SSA module.
-/// 
-/// A module is made up of functions, basic blocks, and instructions
-/// in **S**ingle **S**tatic **A**ssignment form.
-pub trait Module
+use lang::{Value,Function,Global};
+
+use std;
+
+/// An IR module.
+pub struct Module<V: Value>
 {
-    type Function: lang::Function;
-    type Global;
+    functions: util::Set<Function<V>>,
+    globals: util::Set<Global<V>>,
+}
 
-    /// Gets the functions that the module contains.
-    fn functions<'a>(&'a self) -> std::slice::Iter<'a,Self::Function>;
+impl<V> Module<V>
+    where V: lang::Value
+{
+    /// Creates an empty module.
+    pub fn empty() -> Self {
+        Module {
+            functions: util::Set::empty(),
+            globals: util::Set::empty(),
+        }
+    }
 
-    /// Maps the functions.
-    fn map_functions<F>(self, f: F) -> Self
-        where F: FnMut(Self::Function) -> Self::Function;
+    /// Adds a function to the module.
+    pub fn function(mut self, func: Function<V>) -> Self {
+        self.functions.add(func);
+        self
+    }
 
-    /// Gets the globals that the module contains.
-    fn globals<'a>(&'a self) -> std::slice::Iter<'a,Self::Global>;
+    /// Adds a global to the module.
+    pub fn global(mut self, global: Global<V>) -> Self {
+        self.globals.add(global);
+        self
+    }
 
-    /// Maps the globals.
-    fn map_globals<F>(self, f: F) -> Self
-        where F: FnMut(Self::Global) -> Self::Global;
+    pub fn functions<'a>(&'a self) -> std::slice::Iter<'a,Function<V>> {
+        self.functions.iter()
+    }
+
+    pub fn map_functions<F>(mut self, mut f: F) -> Self
+        where F: FnMut(Function<V>) -> Function<V> {
+
+        let funcs = self.functions.into_iter().map(|a| f(a));
+        self.functions = funcs.collect();
+
+        self
+    }
+
+    pub fn globals<'a>(&'a self) -> std::slice::Iter<'a,Global<V>> {
+        self.globals.iter()
+    }
+
+    pub fn map_globals<F>(mut self, mut f: F) -> Self
+        where F: FnMut(Global<V>) -> Global<V> {
+
+        let globals = self.globals.into_iter().map(|a| f(a));
+        self.globals = globals.collect();
+
+        self
+    }
 }
 

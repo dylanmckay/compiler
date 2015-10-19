@@ -18,7 +18,7 @@ impl pass::Metadata for DeadCodeElimination
     fn name(&self) -> &'static str { "Dead code elimination" }
 }
 
-impl pass::Transform<ir::Module> for DeadCodeElimination
+impl pass::Transform<ir::Value> for DeadCodeElimination
 {
     fn run_block(&mut self, block: ir::Block)
         -> ir::Block {
@@ -28,9 +28,9 @@ impl pass::Transform<ir::Module> for DeadCodeElimination
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Module>> for Box<DeadCodeElimination>
+impl Into<pass::Info<ir::Value>> for Box<DeadCodeElimination>
 {
-    fn into(self) -> pass::Info<ir::Module> {
+    fn into(self) -> pass::Info<ir::Value> {
         pass::Info::Transform(self)
     }
 }
@@ -40,9 +40,9 @@ pub mod deadcode
     use lang;
 
     /// Eliminates dead code.
-    pub fn eliminate<B>(block: B) -> B
-        where B: lang::Block {
-        use lang::Value;
+    pub fn eliminate<V>(block: lang::Block<V>) -> lang::Block<V>
+        where V: lang::Value {
+        //use lang::Value;
 
         block.filter(|v| v.is_critical())
     }

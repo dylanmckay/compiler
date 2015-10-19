@@ -70,6 +70,8 @@ impl Integer
 
         self.count_magnitude_bits() <= magnitude_max_size
     }
+
+    pub fn ty(&self) -> Type { self.ty.clone().into() }
 }
 
 impl std::ops::Add for Integer
@@ -145,10 +147,7 @@ impl std::ops::Shr<Integer> for Integer
 
 impl ir::value::literal::LiteralTrait for Integer { }
 
-impl ValueTrait for Integer
-{
-    fn ty(&self) -> Type { self.ty.clone().into() }
-}
+impl ValueTrait for Integer { }
 
 impl fmt::Display for Integer
 {

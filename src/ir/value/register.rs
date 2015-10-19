@@ -26,19 +26,16 @@ impl Register
     }
 
     pub fn name(&self) -> &ir::Name { &self.name }
+
+    pub fn ty(&self) -> ir::Type {
+        self.ty.clone()
+    }
 }
 
 impl std::fmt::Display for Register
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(fmt, "{} %{}", self.ty, self.name)
-    }
-}
-
-impl ir::ValueTrait for Register
-{
-    fn ty(&self) -> ir::Type {
-        self.ty.clone()
     }
 }
 

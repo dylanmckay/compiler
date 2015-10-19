@@ -70,11 +70,8 @@ impl Literal
             None
         }
     }
-}
 
-impl ValueTrait for Literal
-{
-    fn ty(&self) -> Type {
+    pub fn ty(&self) -> Type {
         match self {
             &Literal::Integer(ref val) => val.ty(),
             &Literal::Decimal(ref val) => val.ty(),
@@ -82,6 +79,8 @@ impl ValueTrait for Literal
         }
     }
 }
+
+impl ValueTrait for Literal { }
 
 impl fmt::Display for Literal
 {

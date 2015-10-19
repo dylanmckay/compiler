@@ -1,5 +1,5 @@
 
-use ir::{self,Instruction,Value,ValueTrait};
+use ir::{self,Instruction,Value};
 use std::fmt;
 
 #[derive(Clone,Debug)]
@@ -15,16 +15,13 @@ impl Jump
             target: Box::new(target),
         }
     }
-}
 
-impl ValueTrait for Jump
-{
-    fn ty(&self) -> ir::Type { ir::Type::void() }
+    pub fn ty(&self) -> ir::Type { ir::Type::void() }
 }
 
 impl fmt::Display for Jump
 {
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
+    fn fmt(&self, _: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
     }
 }

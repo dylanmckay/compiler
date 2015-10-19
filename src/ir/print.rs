@@ -5,8 +5,14 @@ use std::fmt;
 
 // TODO: pass the module to all functions so we can lookup globals et al
 
+impl fmt::Display for ir::Module
+{
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+        self::module(self, fmt)
+    }
+}
+
 pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
-    use lang::Module;
 
     for global in module.globals() {
         try!(self::global(global, fmt));
@@ -26,7 +32,6 @@ pub fn global(global: &ir::Global, fmt: &mut fmt::Formatter) -> fmt::Result {
 }
 
 pub fn function(func: &ir::Function, fmt: &mut fmt::Formatter) -> fmt::Result {
-    use lang::Function;
 
     let mut accum = 1;
 
@@ -45,7 +50,6 @@ pub fn function(func: &ir::Function, fmt: &mut fmt::Formatter) -> fmt::Result {
 pub fn block(block: &ir::Block,
              fmt: &mut fmt::Formatter,
              accum: &mut u64) -> fmt::Result {
-    use lang::Block;
 
     try!(write!(fmt, "{}:\n", block.name()));
 
@@ -60,7 +64,6 @@ pub fn value(value: &ir::Value,
              fmt: &mut fmt::Formatter,
              accum: &mut u64) -> fmt::Result {
     use lang::Value;
-    use ir::ValueTrait;
 
     // Recursively print all subvalues
     for subvalue in value.subvalues().iter().filter(|a| !a.is_literal())  {

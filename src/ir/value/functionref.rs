@@ -9,7 +9,7 @@ pub struct FunctionRef
     id: util::Id,
 
     name: String,
-    signature: ir::types::Function,
+    ty: ir::types::Function,
 }
 
 impl FunctionRef
@@ -18,16 +18,20 @@ impl FunctionRef
         FunctionRef {
             id: func.id(),
             name: func.name().into(),
-            signature: func.signature().clone(),
+            ty: ir::types::Function::new(func.signature().clone()),
         }
     }
 
     /// Gets the name of the function.
     pub fn name(&self) -> &str { &self.name }
 
-    /// Gets the signature of the function.
-    pub fn signature(&self) -> &ir::types::Function {
-        &self.signature
+    /// Gets the signature of the callee.
+    pub fn signature(&self) -> &ir::Signature {
+        self.ty.signature()
+    }
+
+    pub fn ty(&self) -> ir::Type {
+        ir::Type::pointer(self.ty.clone().into())
     }
 }
 
@@ -38,12 +42,7 @@ impl std::fmt::Display for FunctionRef
     }
 }
 
-impl ir::value::ValueTrait for FunctionRef
-{
-    fn ty(&self) -> ir::Type {
-        ir::Type::pointer(self.signature.clone().into())
-    }
-}
+impl ir::value::ValueTrait for FunctionRef { }
 
 impl Into<ir::Value> for FunctionRef
 {

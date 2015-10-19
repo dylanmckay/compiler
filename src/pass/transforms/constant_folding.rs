@@ -11,7 +11,7 @@ impl pass::Metadata for ConstantFolding
     fn name(&self) -> &'static str { "Constant folding" }
 }
 
-impl pass::Transform<ir::Module> for ConstantFolding
+impl pass::Transform<ir::Value> for ConstantFolding
 {
     fn run_value(&mut self, value: ir::Value) -> ir::Value {
         self::fold::value(value)
@@ -19,9 +19,9 @@ impl pass::Transform<ir::Module> for ConstantFolding
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Module>> for Box<ConstantFolding>
+impl Into<pass::Info<ir::Value>> for Box<ConstantFolding>
 {
-    fn into(self) -> pass::Info<ir::Module> {
+    fn into(self) -> pass::Info<ir::Value> {
         pass::Info::Transform(self)
     }
 }

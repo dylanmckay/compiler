@@ -20,14 +20,13 @@ impl Decimal
             bits: bits,
         }
     }
+
+    pub fn ty(&self) -> Type { self.ty.clone().into() }
 }
 
 impl ir::value::LiteralTrait for Decimal { }
 
-impl ValueTrait for Decimal
-{
-    fn ty(&self) -> Type { self.ty.clone().into() }
-}
+impl ValueTrait for Decimal { }
 
 impl Into<Value> for Decimal
 {

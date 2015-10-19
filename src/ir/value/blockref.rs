@@ -16,19 +16,18 @@ impl BlockRef
             id: block.id(),
         }
     }
+
+    pub fn ty(&self) -> ir::Type {
+        ir::Type::block()
+    }
 }
+
+impl ir::ValueTrait for BlockRef { }
 
 impl std::fmt::Display for BlockRef
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.id.fmt(fmt)
-    }
-}
-
-impl ir::value::ValueTrait for BlockRef
-{
-    fn ty(&self) -> ir::Type {
-        ir::Type::block()
     }
 }
 

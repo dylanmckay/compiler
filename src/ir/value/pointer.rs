@@ -20,6 +20,11 @@ impl Pointer
     pub fn deref(self) -> ir::Value {
         *self.to
     }
+
+    pub fn ty(&self) -> ir::Type {
+        use lang::Value;
+        ir::Type::pointer(self.to.ty())
+    }
 }
 
 impl fmt::Display for Pointer
@@ -29,12 +34,7 @@ impl fmt::Display for Pointer
     }
 }
 
-impl ir::value::ValueTrait for Pointer
-{
-    fn ty(&self) -> ir::Type {
-        ir::Type::pointer(self.to.ty())
-    }
-}
+impl ir::value::ValueTrait for Pointer { }
 
 impl Into<ir::Value> for Pointer
 {

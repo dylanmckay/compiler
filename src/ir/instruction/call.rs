@@ -15,11 +15,8 @@ impl Call
             target: Box::new(target),
         }
     }
-}
 
-impl ir::ValueTrait for Call
-{
-    fn ty(&self) -> ir::Type {
+    pub fn ty(&self) -> ir::Type {
         ir::Type::void()
     }
 }

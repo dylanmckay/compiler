@@ -1,33 +1,76 @@
 
 use lang;
+use util;
 
-/// A basic block.
-pub trait Block : Sized
+/// A basic block is a list of instructions which
+/// end with a single terminator instruction.
+#[derive(Clone,Debug)]
+pub struct Block<V>
 {
-    type Value: lang::Value;
+    id: util::Id,
 
-    // TODO: s/subvalues/values
-    fn subvalues(&self) -> Vec<Self::Value>;
-
-    fn with_subvalues<I>(self, values: I) -> Self
-        where I: Iterator<Item=Self::Value>;
-
-    /// Maps values to other values.
-    fn map_subvalues<F>(self, f: F) -> Self
-        where F: FnMut(Self::Value) -> Self::Value;
-
-    /// Filters values out of the block.
-    fn filter<F>(self, mut f: F) -> Self
-        where F: FnMut(&Self::Value) -> bool {
-        // TODO: optimise implementation
-        
-        let vals = self.subvalues().into_iter().filter(|a| f(a));
-        self.with_subvalues(vals)
-    }
-
-    fn map<F,T>(self, f: F) -> T
-        where F: Fn(Self) -> T {
-        f(self)
-    }
-
+    pub name: lang::Name,
+    pub body: Vec<V>,
 }
+
+impl<V> Block<V>
+    where V: lang::Value
+{
+    pub fn new(name: lang::Name,
+               body: Vec<V>) -> Self {
+        Block {
+            id: util::Id::unspecified(),
+            name: name,
+            body: body,
+        }
+    }
+
+    pub fn empty(name: lang::Name) -> Self {
+        Block::new(name, Vec::new())
+    }
+
+    pub fn add<T>(mut self, value: T) -> Self
+        where T: Into<V> {
+        self.body.push(value.into());
+        self
+    }
+
+    pub fn name(&self) -> &lang::Name { &self.name }
+
+    /// Gets the ID of the block.
+    ///
+    /// The ID is guaranteed to be unique for each function.
+    pub fn id(&self) -> util::Id { self.id }
+
+    /// Sets the internal ID of the block.
+    /// This **should not** be called directly.
+    pub fn set_id(&mut self, id: util::Id) {
+        self.id = id;
+    }
+
+    pub fn subvalues(&self) -> Vec<V> {
+        self.body.clone()
+    }
+
+    pub fn with_subvalues<I>(mut self, values: I) -> Self
+        where I: Iterator<Item=V> {
+
+        self.body = values.collect();
+        self
+    }
+
+    pub fn map_subvalues<F>(mut self, mut f: F) -> Self
+        where F: FnMut(V) -> V {
+        self.body = self.body.into_iter().map(|a| f(a)).collect();
+        self
+    }
+
+    pub fn filter<F>(mut self, mut f: F) -> Self
+        where F: FnMut(&V) -> bool {
+        self.body = self.body.into_iter()
+                             .filter(|a| f(a))
+                             .collect();
+        self
+    }
+}
+

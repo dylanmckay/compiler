@@ -27,7 +27,6 @@ pub mod value
 
     pub trait ValueTrait : Clone + fmt::Debug + Into<Value>
     {
-        fn ty(&self) -> Type;
     }
 
     #[derive(Clone,Debug)]
@@ -135,9 +134,9 @@ pub mod value
 
     impl lang::Value for Value
     {
-        fn subvalues(&self) -> Vec<Self> {
-            use lang::{Value,Block};
+        type Type = Type;
 
+        fn subvalues(&self) -> Vec<Self> {
             match self {
                 &ir::Value::Instruction(ref i) => i.subvalues(),
                 _ => Vec::new(),
@@ -146,8 +145,6 @@ pub mod value
 
         fn map_subvalues<F>(self, f: F) -> Self
             where F: FnMut(Self) -> Self {
-            use lang::Block;
-
             match self {
                 Value::Instruction(i) => i.map_subvalues(f),
                 _ => self,
@@ -170,12 +167,9 @@ pub mod value
                 false
             }
         }
-    }
 
-    impl ValueTrait for Value
-    {
         fn ty(&self) -> Type {
-            match self {
+             match self {
                 &Value::Literal(ref val) => val.ty(),
                 &Value::Pointer(ref val) => val.ty(),
                 &Value::Register(ref val) => val.ty(),
@@ -186,6 +180,8 @@ pub mod value
             }
         }
     }
+
+    impl ValueTrait for Value { }
 
     impl fmt::Display for Value
     {

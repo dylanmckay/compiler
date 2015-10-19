@@ -18,6 +18,10 @@ impl GlobalRef
             ty: global.ty().clone(),
         }
     }
+
+    pub fn ty(&self) -> ir::Type {
+        ir::Type::pointer(self.ty.clone())
+    }
 }
 
 impl std::fmt::Display for GlobalRef
@@ -27,12 +31,7 @@ impl std::fmt::Display for GlobalRef
     }
 }
 
-impl ir::value::ValueTrait for GlobalRef
-{
-    fn ty(&self) -> ir::Type {
-        ir::Type::pointer(self.ty.clone())
-    }
-}
+impl ir::value::ValueTrait for GlobalRef { }
 
 impl Into<ir::Value> for GlobalRef
 {

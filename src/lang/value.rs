@@ -1,9 +1,12 @@
 
+use lang;
 use std::fmt;
 
 /// A value.
-pub trait Value : Sized + fmt::Display
+pub trait Value : Clone + Sized + fmt::Display + fmt::Debug
 {
+    type Type: lang::Type;
+
     /// Gets the set of values.
     /// TODO: make this an iterator once supported.
     fn subvalues(&self) -> Vec<Self>;
@@ -16,6 +19,8 @@ pub trait Value : Sized + fmt::Display
         where F: Fn(Self) -> T {
         f(self)
     }
+
+    fn ty(&self) -> Self::Type;
 
     /// Checks if a single value is critical.
     ///

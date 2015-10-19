@@ -34,6 +34,7 @@ pub fn verify_function(module: &ir::Module,
 
 pub fn verify_block(module: &ir::Module,
                     block: &ir::Block) -> Result {
+
     use lang::Value;
 
     try!(util::verify_name(block.name()));

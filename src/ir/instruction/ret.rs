@@ -1,5 +1,5 @@
 
-use ir::{self,Instruction,Value,ValueTrait};
+use ir::{self,Instruction,Value};
 use std::fmt;
 
 #[derive(Clone,Debug)]
@@ -43,11 +43,8 @@ impl Return
         self.value = value;
         self.into()
     }
-}
 
-impl ValueTrait for Return
-{
-    fn ty(&self) -> ir::Type { ir::Type::void() }
+    pub fn ty(&self) -> ir::Type { ir::Type::void() }
 }
 
 impl fmt::Display for Return
