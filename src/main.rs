@@ -18,8 +18,6 @@ pub mod lang;
 pub mod pass;
 /// The target information module.
 pub mod target;
-/// Instruction selection.
-pub mod isel;
 
 
 fn main() {
@@ -39,9 +37,6 @@ fn main() {
         Ok(..) => println!("passed!"),
         Err(ref msg) => println!("failed: {}", msg),
     }
-
-    let dag = isel::Dag::from_module(module);
-    println!("DAG:\n{:?}", dag);
 }
 
 fn create_module() -> ir::Module {
