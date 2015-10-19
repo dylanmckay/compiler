@@ -72,3 +72,11 @@ impl<T> std::iter::FromIterator<T> for Set<T>
         }
     }
 }
+
+impl<T: std::fmt::Debug + util::id::Identifiable> std::fmt::Debug for Set<T>
+{
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let elements: Vec<_> = self.iter().collect();
+        std::fmt::Debug::fmt(&elements, fmt)
+    }
+}

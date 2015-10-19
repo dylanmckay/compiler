@@ -1,98 +1,19 @@
 
 use ir;
+use lang;
 use isel;
 
 // TODO: handle globals
+//
 
 /// A directed-acyclic-graph.
-#[derive(Clone,Debug)]
-pub struct Dag
-{
-    functions: Vec<Function>,
-}
+pub type Dag = lang::Module<isel::Node>;
 
 impl Dag
 {
-    pub fn new<I>(functions: I) -> Self
-        where I: Iterator<Item=Function> {
-        Dag {
-            functions: functions.collect(),
-        }
-    }
-
     /// Creates the DAG from a module.
     pub fn from_module(module: ir::Module) -> Self {
-        module.into()
-    }
-}
-
-
-/// A function.
-#[derive(Clone,Debug)]
-pub struct Function
-{
-    name: String,
-    blocks: Vec<Block>,
-}
-
-impl Function
-{
-    /// Creates a new function.
-    pub fn new<I>(name: String, blocks: I) -> Self
-        where I: Iterator<Item=Block> {
-        Function {
-            name: name,
-            blocks: blocks.collect(),
-        }
-    }
-}
-
-/// A basic block.
-#[derive(Clone,Debug)]
-pub struct Block
-{
-    nodes: Vec<isel::Node>,
-}
-
-impl Block
-{
-    /// Creates a new block.
-    pub fn new<I>(nodes: I) -> Self
-        where I: Iterator<Item=isel::Node> {
-        Block {
-            nodes: nodes.collect(),
-        }
-    }
-}
-
-impl Into<Dag> for ir::Module
-{
-    fn into(self) -> Dag {
-
-        // TODO: the clone should be unnecessary
-        let functions = self.functions().map(|a| a.clone().into());
-        Dag::new(functions)
-    }
-}
-
-impl Into<Function> for ir::Function
-{
-    fn into(self) -> Function {
-        use lang::Function;
-
-        let blocks = self.blocks.into_iter().map(|a| a.into());
-
-        self::Function::new(self.name, blocks)
-    }
-}
-
-impl Into<Block> for ir::Block
-{
-    fn into(self) -> Block {
-        use lang::Block;
-
-        let nodes = self.subvalues().into_iter().map(|v| create::node(&v));
-        self::Block::new(nodes)
+        unimplemented!();
     }
 }
 

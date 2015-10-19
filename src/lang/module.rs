@@ -7,6 +7,7 @@ use lang::{Value,Function,Global};
 use std;
 
 /// An IR module.
+#[derive(Clone,Debug)]
 pub struct Module<V: Value>
 {
     functions: util::Set<Function<V>>,

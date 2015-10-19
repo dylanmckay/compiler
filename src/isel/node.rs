@@ -1,6 +1,8 @@
 
 use num::BigInt;
 use num::bigint::ToBigInt;
+use lang;
+use std::fmt;
 
 // TODO: proper float support
 // TODO: factor out ir/value/literal/integer,rs so we can use it too.
@@ -53,6 +55,44 @@ impl Node
         where I: Iterator<Item=Node> {
 
         Node::Operation(operation, children.collect())
+    }
+}
+
+#[derive(Copy,Clone,Debug,PartialEq,Eq)]
+pub struct TempType;
+
+impl lang::Type for TempType { }
+
+impl lang::Value for Node
+{
+    // temporary
+    type Type = TempType;
+
+    fn subvalues(&self) -> Vec<Self> {
+        unimplemented!();
+    }
+
+    fn map_subvalues<F>(self, f: F) -> Self
+        where F: FnMut(Self) -> Self {
+        unimplemented!();
+    }
+
+    fn ty(&self) -> TempType {
+        unimplemented!();
+    }
+}
+
+impl fmt::Display for TempType
+{
+    fn fmt(&self, _: &mut fmt::Formatter) -> fmt::Result {
+        unimplemented!();
+    }
+}
+
+impl fmt::Display for Node
+{
+    fn fmt(&self, _: &mut fmt::Formatter) -> fmt::Result {
+        unimplemented!();
     }
 }
 
