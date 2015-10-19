@@ -76,22 +76,24 @@ pub mod fold
 #[test]
 fn test_binop_fold()
 {
-    use {lang,ir};
-    use lang::Value;
-
-    let one = ir::Value::i8(1);
-    let eight = ir::Value::i8(8);
-    let ty = one.ty();
+    use ir;
+    use ir::{Instruction,Value,Type};
 
     let cases = [
         // (inst, expected value)
-        (ir::Instruction::add(ty,one,eight), ir::Value::i8(9)),
+        (Instruction::add(Type::i8(), Value::i8(1),Value::i8(8)), ir::Value::i8(9)),
+        (Instruction::sub(Type::i8(), Value::i8(1),Value::i8(8)), ir::Value::i8(-7)),
+        (Instruction::mul(Type::i8(), Value::i8(1),Value::i8(8)), ir::Value::i8(8)),
+        (Instruction::div(Type::i8(), Value::i8(10),Value::i8(2)), ir::Value::i8(5)),
+        (Instruction::shl(Type::u8(), Value::u8(1),Value::u8(1)), ir::Value::u8(2)),
+        (Instruction::shr(Type::u8(), Value::u8(32),Value::u8(1)), ir::Value::u8(16)),
     ];
 
-    for &(inst,expected) in cases.iter() {
-        let folded = fold::instruction(inst);
+    for &(ref inst,ref expected) in cases.iter() {
+        let folded = fold::instruction(inst.clone());
 
-        assert!(folded == expected);
+        println!("{}", inst.clone());
+        assert_eq!(&folded, expected);
     }
 
 }

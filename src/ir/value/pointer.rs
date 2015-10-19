@@ -3,7 +3,7 @@ use ir;
 use std::fmt;
 
 /// A pointer.
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Pointer
 {
     to: Box<ir::Value>,

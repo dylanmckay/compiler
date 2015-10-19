@@ -5,7 +5,7 @@ use std::fmt;
 
 
 /// A decimal value.
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Decimal
 {
     ty: types::Decimal,

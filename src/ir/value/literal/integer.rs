@@ -8,7 +8,7 @@ use num::BigInt;
 use num::bigint::ToBigInt;
 
 /// A constant integral value.
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Integer
 {
     pub ty: types::Integer,

@@ -20,7 +20,7 @@ pub trait LiteralTrait : Into<Literal> + ValueTrait
 {
 }
 
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub enum Literal
 {
     Integer(Integer),

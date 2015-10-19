@@ -3,7 +3,7 @@ use ir::{self,types,Value,ValueTrait,Type};
 use util;
 use std::fmt;
 
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Struct
 {
     fields: Vec<Value>,

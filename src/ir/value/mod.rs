@@ -29,7 +29,7 @@ pub mod value
     {
     }
 
-    #[derive(Clone,Debug)]
+    #[derive(Clone,Debug,PartialEq,Eq)]
     pub enum Value
     {
         Literal(value::Literal),

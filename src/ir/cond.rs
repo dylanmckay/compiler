@@ -3,7 +3,7 @@ use ir;
 use std::fmt;
 
 /// A branching condition.
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub enum Condition
 {
     /// Always.

@@ -3,7 +3,7 @@ use ir;
 use std;
 
 /// A register.
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Register
 {
     name: ir::Name,

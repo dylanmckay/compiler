@@ -2,7 +2,7 @@
 use ir::{self,Instruction,Value};
 use std::fmt;
 
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Return
 {
     value: Option<Box<ir::Value>>,

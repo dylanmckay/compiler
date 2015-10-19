@@ -3,7 +3,7 @@ use ir;
 use util;
 use std;
 
-#[derive(Clone,Debug)]
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub struct GlobalRef
 {
     id: util::Id,

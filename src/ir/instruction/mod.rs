@@ -36,7 +36,7 @@ pub mod instruction
         fn operands(&self) -> (Value,Value);
     }
 
-    #[derive(Clone,Debug)]
+    #[derive(Clone,Debug,PartialEq,Eq)]
     pub enum Instruction
     {
         Add(instruction::Add),
