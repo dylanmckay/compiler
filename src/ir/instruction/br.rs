@@ -3,15 +3,15 @@ use ir::{self,Instruction,Value};
 use std::fmt;
 
 #[derive(Clone,Debug)]
-pub struct Jump
+pub struct Break
 {
     target: Box<ir::Value>,
 }
 
-impl Jump
+impl Break
 {
     pub fn new(target: ir::Value) -> Self {
-        Jump {
+        Break {
             target: Box::new(target),
         }
     }
@@ -19,11 +19,11 @@ impl Jump
     pub fn ty(&self) -> ir::Type { ir::Type::void() }
 }
 
-impl fmt::Display for Jump
+impl fmt::Display for Break
 {
     fn fmt(&self, _: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
     }
 }
 
-impl_instruction!(Jump: target);
+impl_instruction!(Break: target);
