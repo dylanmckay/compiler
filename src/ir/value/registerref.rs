@@ -26,6 +26,11 @@ impl RegisterRef
     }
 }
 
+impl util::Identifiable for RegisterRef
+{
+    fn get_id(&self) -> util::Id { self.id }
+}
+
 impl ir::value::ValueTrait for RegisterRef { }
 
 impl Into<ir::Value> for RegisterRef

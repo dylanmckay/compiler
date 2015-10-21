@@ -4,7 +4,7 @@ use std;
 static mut ID_ACCUMULATOR: u64 = 0;
 
 /// A unique identifier.
-#[derive(Copy,Clone,Debug)]
+#[derive(Copy,Clone,Debug,Hash)]
 pub struct Id(u64);
 
 

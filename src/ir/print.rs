@@ -3,7 +3,9 @@ use ir;
 use lang;
 use util;
 use ir::Value;
+use util::Identifiable;
 use std::fmt;
+use std::collections::HashMap;
 
 
 impl fmt::Display for ir::Module
@@ -13,17 +15,55 @@ impl fmt::Display for ir::Module
     }
 }
 
+/// Holds IR printing state.
 pub struct Printer<'a>
 {
+    /// The module that is being printed.
     module: &'a ir::Module,
-    accum: u64,
+
+    /// Keeps track of the current register number for
+    /// each function.
+    register_accumulator: u32,
+
+    /// Holds unnamed register ids and the register numbers we map
+    /// them to. Can be cleared upon each function.
+    register_map: HashMap<util::Id,u32>,
 }
 
+impl<'a> Printer<'a>
+{
+    /// Assigns a number to a register internally.
+    /// Returns the registers newly assigned number.
+    fn assign_register(&mut self, reg: &ir::value::Register) -> u32 {
+
+        let id = reg.get_id();
+        let num = self.register_accumulator;
+
+        self.register_accumulator += 1;
+        self.register_map.insert(id, num);
+
+        num
+    }
+
+    /// Gets the assigned number of a register.
+    fn register_number(&self, id: util::Id) -> u32 {
+        self.register_map.get(&id).unwrap().clone()
+    }
+
+    /// Clears the stored register state for the current function.
+    fn clear_registers(&mut self) {
+        self.register_accumulator = 0;
+        self.register_map.clear();
+    }
+}
+
+/// Prints an IR module.
 pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
 
     let mut printer = Printer {
+        register_map: HashMap::new(),
         module: module,
-        accum: 0,
+        register_accumulator: 0,
     };
     
     for global in module.globals() {
@@ -49,8 +89,8 @@ pub fn global(global: &ir::Global,
 pub fn function(func: &ir::Function,
                 printer: &mut Printer,
                 fmt: &mut fmt::Formatter) -> fmt::Result {
-
-    let mut accum = 1;
+    // Initialise register accounting
+    printer.clear_registers();
 
     try!(write!(fmt, "define {} @{}({}) {{\n",
                      util::comma_separated_values(func.signature.returns()),
@@ -85,19 +125,12 @@ pub fn root_value(value: &ir::Value,
     write!(fmt, "\n")
 }
 
-pub fn name(name: &lang::Name,
-            printer: &mut Printer,
-            fmt: &mut fmt::Formatter) -> fmt::Result {
-    unimplemented!();
-}
-
-
 pub mod value
 {
-    use ir::{Module,Value,Instruction,value};
+    use ir::{Module,Value,value};
     use std::fmt;
-    use util;
     use lang;
+    use util::Identifiable;
     use super::Printer;
 
     pub fn value(value: &Value,
@@ -148,9 +181,9 @@ pub mod value
         write!(fmt, "{} {}", value.ty(), value.value())
     }
 
-    pub fn literal_struct(value: &value::literal::Struct,
-                          printer: &mut Printer,
-                          fmt: &mut fmt::Formatter) -> fmt::Result {
+    pub fn literal_struct(_: &value::literal::Struct,
+                          _: &mut Printer,
+                          _: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
         //write!(fmt, "{{ {} }}", util::comma_separated_values(value.fields()))
     }
@@ -166,7 +199,20 @@ pub mod value
                     printer: &mut Printer,
                     fmt: &mut fmt::Formatter) -> fmt::Result {
 
-        try!(write!(fmt, "%{} = ", value.name()));
+        try!(write!(fmt, "%"));
+
+        match value.name() {
+            &lang::Name::Unnamed => {
+                let number = printer.assign_register(value);
+                try!(write!(fmt, "{}", number));
+            },
+            // the register has an explicit name
+            &lang::Name::Named(ref name) => { 
+                try!(write!(fmt, "{}", name));
+            }
+        }
+
+        try!(write!(fmt, " = "));
         self::value(value.subvalue(), printer, fmt)
     }
 
@@ -193,12 +239,13 @@ pub mod value
     pub fn register_ref(value: &value::RegisterRef,
                         printer: &mut Printer,
                         fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "%<reg>")
+        let number = printer.register_number(value.get_id());
+        write!(fmt, "%{}", number)
     }
 
     pub mod instruction
     {
-        use ir::{Module,Value,Instruction};
+        use ir::{Value,Instruction};
         use ir::instruction::{self,Binary};
         use std::fmt;
         use util;
@@ -215,7 +262,7 @@ pub mod value
                 &Instruction::Shl(ref i) => arithmetic_binop("shl", i, printer, fmt),
                 &Instruction::Shr(ref i) => arithmetic_binop("shr", i, printer, fmt),
 
-                &Instruction::Call(ref i) => call(i, printer, fmt),
+                &Instruction::Call(ref i) => call(i, fmt),
                 &Instruction::Break(ref i) => br(i, printer, fmt),
                 &Instruction::Return(ref i) => ret(i, printer, fmt),
             }
@@ -237,7 +284,6 @@ pub mod value
         }
 
         pub fn call(inst: &instruction::Call,
-                    printer: &mut Printer,
                     fmt: &mut fmt::Formatter) -> fmt::Result {
             let func = if let &Value::FunctionRef(ref f) = inst.target() {
                 f

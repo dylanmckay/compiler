@@ -23,6 +23,13 @@ impl Name
 
         Name::Named(name.into())
     }
+
+    pub fn is_named(&self) -> bool {
+        match self {
+            &Name::Unnamed => false,
+            &Name::Named(..) => true,
+        }
+    }
 }
 
 impl std::fmt::Display for Name

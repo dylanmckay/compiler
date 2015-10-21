@@ -195,7 +195,7 @@ pub mod value
              match self {
                  &Value::Literal(..) => true,
                  &Value::Pointer(ref val) => val.underlying().is_simple(),
-                 &Value::Register(..) => false,
+                 &Value::Register(..) => true,
                  &Value::Instruction(..) => false,
                  &Value::GlobalRef(..) => true,
                  &Value::BlockRef(..) => true,
