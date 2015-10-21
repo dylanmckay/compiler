@@ -1,7 +1,7 @@
 
 pub use self::enums::{ByteOrder,IntegerKind,Sign};
 pub use self::architecture::Architecture;
-pub use self::id::Id;
+pub use self::id::{Id,Identifiable};
 pub use self::set::Set;
 
 pub mod enums;

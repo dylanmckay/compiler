@@ -19,7 +19,7 @@ impl<V> Global<V>
 {
     pub fn new(name: String, value: V) -> Self {
         Global {
-            id: util::Id::unspecified(),
+            id: util::Id::next(),
 
             name: name,
             value: Box::new(value),
@@ -38,11 +38,9 @@ impl<V> Global<V>
     pub fn id(&self) -> util::Id { self.id }
 }
 
-impl<V: lang::Value> util::id::Identifiable for Global<V>
+impl<V: lang::Value> util::Identifiable for Global<V>
 {
-    fn set_id(&mut self, id: util::Id) {
-        self.id = id;
-    }
+    fn get_id(&self) -> util::Id { self.id }
 }
 
 impl<V: lang::Value> std::fmt::Display for Global<V>

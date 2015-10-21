@@ -63,8 +63,6 @@ pub struct Function<V: lang::Value>
     pub name: String,
     pub signature: Signature<V>,
     pub blocks: Vec<Block<V>>,
-
-    generator: util::id::Generator,
 }
 
 impl<V> Function<V>
@@ -74,13 +72,11 @@ impl<V> Function<V>
                signature: Signature<V>,
                blocks: Vec<Block<V>>) -> Self {
         Function {
-            id: util::Id::unspecified(),
+            id: util::Id::next(),
 
             name: name,
             signature: signature,
             blocks: blocks,
-
-            generator: util::id::Generator::new(),
         }
     }
 
@@ -90,7 +86,7 @@ impl<V> Function<V>
 
     pub fn add(mut self, mut block: Block<V>) -> Self {
         // assign an ID to the block.
-        block.set_id(self.generator.next());
+        block.set_id(util::Id::next());
         self.blocks.push(block);
         self
     }
@@ -131,11 +127,9 @@ impl<V> Function<V>
     }
 }
 
-impl<V: lang::Value> util::id::Identifiable for Function<V>
+impl<V: lang::Value> util::Identifiable for Function<V>
 {
-    fn set_id(&mut self, id: util::Id) {
-        self.id = id;
-    }
+    fn get_id(&self) -> util::Id { self.id }
 }
 
 impl<V: PartialEq + lang::Value> std::cmp::PartialEq for Function<V>

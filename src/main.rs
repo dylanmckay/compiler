@@ -46,14 +46,22 @@ fn create_module() -> ir::Module {
 
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
-    let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
-    let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
-    let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
+    let bb2 = {
+        let inst_ret_void = ir::Instruction::ret_void();
+        ir::Block::empty(ir::Name::named("other".to_owned())).add(inst_ret_void)
+    };
 
-    let basicblock = ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_ret);
+    let bb1 = {
+        let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
+        let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
+        //let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
+        let inst_jump = ir::Instruction::br(ir::Value::block_ref(&bb2));
+        ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_jump)
+    };
 
     let sig = lang::Signature::new().ret(ir::Type::i32());
-    let function = ir::Function::empty("main".into(), sig).add(basicblock.clone());
+    let function = ir::Function::empty("main".into(), sig).add(bb1)
+                                                          .add(bb2);
 
     ir::Module::empty().function(function)
                        .global(global)

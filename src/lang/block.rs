@@ -19,7 +19,7 @@ impl<V> Block<V>
     pub fn new(name: lang::Name,
                body: Vec<V>) -> Self {
         Block {
-            id: util::Id::unspecified(),
+            id: util::Id::next(),
             name: name,
             body: body,
         }

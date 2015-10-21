@@ -86,6 +86,14 @@ pub mod instruction
         pub fn ret(value: Option<ir::Value>) -> Instruction {
             instruction::Return::new(value).into()
         }
+
+        pub fn ret_void() -> Instruction {
+            Self::ret(None)
+        }
+
+        pub fn br(target: ir::Value) -> Self {
+            instruction::Break::unconditional(target).into()
+        }
     }
 
     impl InstructionTrait for Instruction { }

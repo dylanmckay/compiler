@@ -5,40 +5,33 @@ use std;
 /// A set.
 // TODO: find a better name.
 #[derive(Clone)]
-pub struct Set<T>
+pub struct Set<T: util::Identifiable>
 {
     elements: Vec<T>,
-    generator: util::id::Generator,
 }
 
-impl<T: util::id::Identifiable> Set<T>
+impl<T: util::Identifiable> Set<T>
 {
     /// Creates an empty set.
     pub fn empty() -> Self {
         Set {
             elements: Vec::new(),
-            generator: util::id::Generator::new(),
         }
     }
 
     /// Gets an element from the set.
     pub fn get(&self, id: util::Id) -> &T {
-        let index = id.underlying();
-        &self.elements[index]
+        self.elements.iter().find(|&a| a.get_id() == id).unwrap()
     }
 
     /// Adds an element to the set.
     ///
     /// Returns the ID of the element.
     pub fn add(&mut self, mut element: T) -> util::Id {
-        let index = self.generator.next();
-        element.set_id(index);
-
-        // we should always be appending to the end.
-        debug_assert!(index.underlying() == self.elements.len());
+        let id = util::Id::next();
 
         self.elements.push(element);
-        index
+        id
     }
 
     /// Gets an iterator to the elements in the set.
@@ -52,7 +45,7 @@ impl<T: util::id::Identifiable> Set<T>
     }
 }
 
-impl<T> IntoIterator for Set<T>
+impl<T: util::Identifiable> IntoIterator for Set<T>
 {
     type Item = T;
     type IntoIter = std::vec::IntoIter<T>;
@@ -62,18 +55,17 @@ impl<T> IntoIterator for Set<T>
     }
 }
 
-impl<T> std::iter::FromIterator<T> for Set<T>
+impl<T: util::Identifiable> std::iter::FromIterator<T> for Set<T>
 {
     fn from_iter<I>(it: I) -> Self
         where I: IntoIterator<Item=T> {
         Set {
             elements: Vec::from_iter(it),
-            generator: util::id::Generator::new(),
         }
     }
 }
 
-impl<T: std::fmt::Debug + util::id::Identifiable> std::fmt::Debug for Set<T>
+impl<T: util::Identifiable + std::fmt::Debug> std::fmt::Debug for Set<T>
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         let elements: Vec<_> = self.iter().collect();
