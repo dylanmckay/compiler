@@ -28,7 +28,7 @@ pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
 }
 
 pub fn global(global: &ir::Global, fmt: &mut fmt::Formatter) -> fmt::Result {
-    write!(fmt, "%{} = {} {}\n", global.name(), global.ty(), global.value())
+    write!(fmt, "%{} = {}\n", global.name(), global.value())
 }
 
 pub fn function(func: &ir::Function, fmt: &mut fmt::Formatter) -> fmt::Result {
@@ -81,7 +81,7 @@ pub fn value(value: &ir::Value,
         let reg_name = ir::Name::named(format!("{}", accum));
         *accum += 1;
 
-        ir::value::Register::new(reg_name, a.ty()).into()
+        ir::value::Register::new(reg_name, a).into()
     });
 
     try!(write!(fmt, "\t"));

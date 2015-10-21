@@ -7,35 +7,35 @@ use std;
 pub struct Register
 {
     name: ir::Name,
-    ty: ir::Type,
+    value: Box<ir::Value>,
 }
 
 impl Register
 {
     /// Creates a new register.
-    pub fn new(name: ir::Name, ty: ir::Type) -> Self {
+    pub fn new(name: ir::Name, value: ir::Value) -> Self {
         Register {
             name: name,
-            ty: ty,
+            value: Box::new(value),
         }
     }
 
     /// Creates an unnamed register.
-    pub fn unnamed(ty: ir::Type) -> Self {
-        Register::new(ir::Name::Unnamed, ty)
+    pub fn unnamed(value: ir::Value) -> Self {
+        Register::new(ir::Name::Unnamed, value)
     }
 
     pub fn name(&self) -> &ir::Name { &self.name }
 
     pub fn ty(&self) -> ir::Type {
-        self.ty.clone()
+        self.value.ty()
     }
 }
 
 impl std::fmt::Display for Register
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(fmt, "{} %{}", self.ty, self.name)
+        write!(fmt, "%{}", self.name)
     }
 }
 

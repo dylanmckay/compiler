@@ -27,11 +27,8 @@ impl<T: util::Identifiable> Set<T>
     /// Adds an element to the set.
     ///
     /// Returns the ID of the element.
-    pub fn add(&mut self, mut element: T) -> util::Id {
-        let id = util::Id::next();
-
+    pub fn add(&mut self, element: T)  {
         self.elements.push(element);
-        id
     }
 
     /// Gets an iterator to the elements in the set.

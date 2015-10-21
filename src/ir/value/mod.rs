@@ -95,16 +95,16 @@ pub mod value
         }
 
         /// Creates an unnamed register.
-        pub fn register(ty: ir::Type) -> Value {
-            value::Register::unnamed(ty).into()
+        pub fn register(value: Value) -> Value {
+            value::Register::unnamed(value).into()
         }
 
         /// Creates a named register.
-        pub fn register_named<I>(name: I, ty: ir::Type) -> Value
+        pub fn register_named<I>(name: I, value: Value) -> Value
             where I: Into<String> {
 
             let name = ir::Name::named(name);
-            value::Register::new(name, ty).into()
+            value::Register::new(name, value).into()
         }
 
         pub fn as_literal(&self) -> Option<&value::Literal> {
