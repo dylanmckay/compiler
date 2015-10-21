@@ -24,9 +24,9 @@ impl Return
         Return::new(None)
     }
 
-    pub fn subvalues(&self) -> Vec<Value> {
+    pub fn subvalues(&self) -> Vec<&Value> {
         if let Some(ref value) = self.value {
-            vec![*value.clone()]
+            vec![value]
         } else {
             vec![]
         }

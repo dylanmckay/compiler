@@ -140,7 +140,7 @@ pub mod value
     {
         type Type = Type;
 
-        fn subvalues(&self) -> Vec<Self> {
+        fn subvalues(&self) -> Vec<&Self> {
             match self {
                 &ir::Value::Instruction(ref i) => i.subvalues(),
                 _ => Vec::new(),

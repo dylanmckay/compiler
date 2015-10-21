@@ -125,7 +125,7 @@ pub mod instruction
 
     impl Instruction
     {
-        pub fn subvalues(&self) -> Vec<Value> {
+        pub fn subvalues(&self) -> Vec<&Value> {
              match self {
                 &Instruction::Add(ref instr) => instr.subvalues(),
                 &Instruction::Sub(ref instr) => instr.subvalues(),
@@ -240,8 +240,8 @@ pub mod instruction
         ) => {
             impl $inst
             {
-                pub fn subvalues(&self) -> Vec<::ir::Value> {
-                    vec![$(*self.$val_name.clone()),*]
+                pub fn subvalues(&self) -> Vec<&::ir::Value> {
+                    vec![$(&self.$val_name),*]
                 }
 
                 #[allow(unused_mut,unused_variables)]

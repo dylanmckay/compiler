@@ -9,7 +9,7 @@ pub trait Value : Clone + Sized + fmt::Display + fmt::Debug
 
     /// Gets the set of values.
     /// TODO: make this an iterator once supported.
-    fn subvalues(&self) -> Vec<Self>;
+    fn subvalues(&self) -> Vec<&Self>;
 
     /// Maps values to other values.
     fn map_subvalues<F>(self, f: F) -> Self
