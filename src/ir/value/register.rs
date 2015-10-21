@@ -1,11 +1,14 @@
 
 use ir;
+use util;
 use std;
 
 /// A register.
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Register
 {
+    id: util::Id,
+
     name: ir::Name,
     value: Box<ir::Value>,
 }
@@ -15,6 +18,8 @@ impl Register
     /// Creates a new register.
     pub fn new(name: ir::Name, value: ir::Value) -> Self {
         Register {
+            id: util::Id::next(),
+
             name: name,
             value: Box::new(value),
         }
@@ -29,6 +34,13 @@ impl Register
 
     pub fn ty(&self) -> ir::Type {
         self.value.ty()
+    }
+}
+
+impl util::Identifiable for Register
+{
+    fn get_id(&self) -> util::Id {
+        self.id
     }
 }
 

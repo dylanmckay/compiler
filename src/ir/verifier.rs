@@ -3,6 +3,8 @@ use ir;
 use lang::{Module,Function,Block};
 use std;
 
+// TODO: check that each Register has only one user
+
 /// The result of verification.
 pub type Result = std::result::Result<(),String>;
 
