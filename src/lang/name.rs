@@ -29,7 +29,7 @@ impl std::fmt::Display for Name
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> Result<(),std::fmt::Error> {
         match self {
-            &Name::Unnamed => unimplemented!(), // FIXME: we need to have a global accumulator
+            &Name::Unnamed => "unnamed".fmt(fmt), // FIXME: we need to have a global accumulator
             &Name::Named(ref val) => val.fmt(fmt),
         }
     }

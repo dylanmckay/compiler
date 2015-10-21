@@ -29,7 +29,7 @@ impl RegisterRef
 impl std::fmt::Display for RegisterRef
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.id.fmt(fmt)
+        write!(fmt, "%{}", self.id)
     }
 }
 

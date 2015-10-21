@@ -94,6 +94,34 @@ pub mod instruction
         pub fn br(target: ir::Value) -> Self {
             instruction::Break::unconditional(target).into()
         }
+
+        /// Flattens the instruction.
+        ///
+        /// Subvalues are placed into registers in the block.
+        /// The resulting instruction is returned.
+        pub fn flatten(self, block: &mut ir::Block) -> Self {
+            self.map_subvalues(|v| {
+                if let Value::Instruction(mut i) = v {
+
+                    // Recursively flatten subvalues
+                    i = i.flatten(block);
+
+                    if i.ty().is_void() {
+                        i.into()
+                    } else { // instruction does not give void
+                        let new_reg = ir::value::Register::unnamed(i.into());
+                        let reg_ref = Value::register_ref(&new_reg);
+
+                        block.add(new_reg);
+                        reg_ref
+                    }
+
+
+                } else { // don't assign simple values to registers
+                    v
+                }
+            })
+        }
     }
 
     impl InstructionTrait for Instruction { }
@@ -139,7 +167,7 @@ pub mod instruction
              }
         }
         
-        pub fn map_subvalues<F>(self, f: F) -> Value
+        pub fn map_subvalues<F>(self, f: F) -> Self
             where F: FnMut(Value) -> Value {
 
             match self {
@@ -245,7 +273,7 @@ pub mod instruction
                 }
 
                 #[allow(unused_mut,unused_variables)]
-                pub fn map_subvalues<F>(mut self, mut f: F) -> ::ir::Value
+                pub fn map_subvalues<F>(mut self, mut f: F) -> Self
                     where F: FnMut(Value) -> Value {
 
                     $(*self.$val_name = f(*self.$val_name.clone()));*;

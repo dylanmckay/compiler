@@ -102,8 +102,9 @@ pub mod value
         }
 
         /// Creates an unnamed register.
-        pub fn register(value: Value) -> Value {
-            value::Register::unnamed(value).into()
+        pub fn register<V>(value: V) -> Value
+            where V: Into<Value> {
+            value::Register::unnamed(value.into()).into()
         }
 
         /// Creates a named register.
@@ -159,8 +160,17 @@ pub mod value
         fn map_subvalues<F>(self, f: F) -> Self
             where F: FnMut(Self) -> Self {
             match self {
-                Value::Instruction(i) => i.map_subvalues(f),
+                Value::Instruction(i) => i.map_subvalues(f).into(),
                 _ => self,
+            }
+        }
+
+        fn flatten(self, block: &mut ir::Block) -> Self {
+            // only instructions need flattening
+            if let Value::Instruction(i) = self {
+                i.flatten(block).into()
+            } else {
+                self
             }
         }
 

@@ -29,13 +29,27 @@ impl<V> Block<V>
         Block::new(name, Vec::new())
     }
 
-    pub fn add<T>(mut self, value: T) -> Self
+    pub fn add<T>(&mut self, value: T)
         where T: Into<V> {
         self.body.push(value.into());
-        self
     }
 
     pub fn name(&self) -> &lang::Name { &self.name }
+
+    pub fn flatten(self) -> Self {
+        let mut block = Block {
+            id: self.id.clone(),
+            name: self.name.clone(),
+            body: Vec::new(),
+        };
+
+        for value in self.subvalues() {
+            let new_value = value.flatten(&mut block);
+            block.add(new_value);
+        }
+
+        block
+    }
 
     /// Gets the ID of the block.
     ///

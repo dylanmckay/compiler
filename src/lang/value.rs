@@ -22,6 +22,9 @@ pub trait Value : Clone + Sized + fmt::Display + fmt::Debug
 
     fn ty(&self) -> Self::Type;
 
+    /// Flattens the value into registers.
+    fn flatten(self, block: &mut lang::Block<Self>) -> Self;
+
     /// Checks if a single value is critical.
     ///
     /// If a value contains another critical value, it is also a

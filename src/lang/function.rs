@@ -97,6 +97,10 @@ impl<V> Function<V>
         &self.signature
     }
 
+    pub fn flatten(self) -> Self {
+        self.map_blocks(|b| b.flatten())
+    }
+
     /// Gets the ID of the function.
     ///
     /// The ID is guaranteed to be unique for each module.

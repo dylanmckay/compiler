@@ -25,6 +25,10 @@ impl<V> Module<V>
         }
     }
 
+    pub fn flatten(self) -> Self {
+        self.map_functions(|f| f.flatten())
+    }
+
     /// Adds a function to the module.
     pub fn function(mut self, func: Function<V>) -> Self {
         self.functions.add(func);

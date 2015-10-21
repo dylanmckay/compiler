@@ -32,7 +32,7 @@ impl Return
         }
     }
 
-    pub fn map_subvalues<F>(mut self, mut f: F) -> Value
+    pub fn map_subvalues<F>(mut self, mut f: F) -> Self
         where F: FnMut(Value) -> Value {
 
         let value = match self.value {
@@ -41,7 +41,7 @@ impl Return
         };
 
         self.value = value;
-        self.into()
+        self
     }
 
     pub fn ty(&self) -> ir::Type { ir::Type::void() }

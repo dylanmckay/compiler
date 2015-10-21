@@ -26,8 +26,9 @@ fn main() {
 
     println!("Previously:\n{}", module);
 
-    module = pm.run(module);
+    //module = pm.run(module);
 
+    module = module.flatten();
     println!("Afterwards:\n{}", module);
 
     print!("Verifying...");
@@ -48,15 +49,20 @@ fn create_module() -> ir::Module {
 
     let bb2 = {
         let inst_ret_void = ir::Instruction::ret_void();
-        ir::Block::empty(ir::Name::named("other".to_owned())).add(inst_ret_void)
+        let mut block = ir::Block::empty(ir::Name::named("other".to_owned()));
+        block.add(inst_ret_void);
+        block
     };
 
     let bb1 = {
         let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
         let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
-        //let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
-        let inst_jump = ir::Instruction::br(ir::Value::block_ref(&bb2));
-        ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_jump)
+        let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
+        //let inst_jump = ir::Instruction::br(ir::Value::block_ref(&bb2));
+
+        let mut block = ir::Block::empty(ir::Name::named("entry".to_owned()));
+        block.add(inst_ret);
+        block
     };
 
     let sig = lang::Signature::new().ret(ir::Type::i32());
@@ -69,7 +75,7 @@ fn create_module() -> ir::Module {
 
 fn create_ir_pass_manager() -> pass::Manager<ir::Value> {
     pass::Manager::empty()
-        .add(pass::transforms::ConstantFolding)
+        //.add(pass::transforms::ConstantFolding)
         .add(pass::transforms::StrengthReduction)
         .add(pass::transforms::DeadCodeElimination)
 }
