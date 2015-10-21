@@ -4,30 +4,30 @@ use std::fmt;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Add
 {
-    ty:  ir::Type,
     lhs: Box<ir::Value>,
     rhs: Box<ir::Value>,
 }
 
 impl Add
 {
-    pub fn new(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn new(lhs: ir::Value, rhs: ir::Value) -> Self {
+        assert!(lhs.ty() == rhs.ty());
+
         Add {
-            ty: ty,
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }
     }
 
     pub fn ty(&self) -> ir::Type {
-        self.ty.clone()
+        self.lhs.ty()
     }
 }
 
 impl fmt::Display for Add
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "add {} {}, {}", self.ty, self.lhs, self.rhs)
+        write!(fmt, "add {}, {}", self.lhs, self.rhs)
     }
 }
 

@@ -53,28 +53,28 @@ pub mod instruction
 
     impl Instruction
     {
-        pub fn add(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instruction::Add::new(ty, lhs, rhs).into()
+        pub fn add(lhs: ir::Value, rhs: ir::Value) -> Instruction {
+            instruction::Add::new(lhs, rhs).into()
         }
 
-        pub fn sub(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instruction::Sub::new(ty, lhs, rhs).into()
+        pub fn sub(lhs: ir::Value, rhs: ir::Value) -> Instruction {
+            instruction::Sub::new(lhs, rhs).into()
         }
 
-        pub fn mul(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instruction::Mul::new(ty, lhs, rhs).into()
+        pub fn mul(lhs: ir::Value, rhs: ir::Value) -> Instruction {
+            instruction::Mul::new(lhs, rhs).into()
         }
 
-        pub fn div(ty: ir::Type, lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instruction::Div::new(ty, lhs, rhs).into()
+        pub fn div(lhs: ir::Value, rhs: ir::Value) -> Instruction {
+            instruction::Div::new(lhs, rhs).into()
         }
 
-        pub fn shl(ty: ir::Type, val: ir::Value, amount: ir::Value) -> Instruction {
-            instruction::Shl::new(ty, val, amount).into()
+        pub fn shl(val: ir::Value, amount: ir::Value) -> Instruction {
+            instruction::Shl::new(val, amount).into()
         }
 
-        pub fn shr(ty: ir::Type, val: ir::Value, amount: ir::Value) -> Instruction {
-            instruction::Shr::new(ty, val, amount).into()
+        pub fn shr(val: ir::Value, amount: ir::Value) -> Instruction {
+            instruction::Shr::new(val, amount).into()
         }
 
         pub fn ret(value: Option<ir::Value>) -> Instruction {

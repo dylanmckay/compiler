@@ -40,21 +40,20 @@ fn main() {
 }
 
 fn create_module() -> ir::Module {
-    let op_ty = ir::types::Integer::i32();
 
-    let lhs = ir::Value::integer(op_ty, 23i32).unwrap();
-    let rhs = ir::Value::integer(op_ty, 2i32).unwrap();
+    let lhs = ir::Value::i32(23);
+    let rhs = ir::Value::i32(2);
 
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
-    let inst_add1 = ir::Instruction::add(op_ty.into(), lhs.clone(), rhs.clone());
-    let inst_add2 = ir::Instruction::add(op_ty.into(), rhs.clone(), lhs.clone());
-    let inst_mul = ir::Instruction::mul(op_ty.into(), inst_add1.clone().into(), rhs.clone());
+    let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
+    let inst_add2 = ir::Instruction::add(rhs.clone(), lhs.clone());
+    let inst_mul = ir::Instruction::mul(inst_add1.clone().into(), rhs.clone());
     let inst_ret = ir::Instruction::ret(Some(inst_add1.clone().into()));
 
     let basicblock = ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_ret);
 
-    let sig = lang::Signature::new().ret(op_ty.into());
+    let sig = lang::Signature::new().ret(ir::Type::i32());
     let function = ir::Function::empty("main".into(), sig).add(basicblock.clone());
 
     ir::Module::empty().function(function)

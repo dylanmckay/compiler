@@ -77,16 +77,16 @@ pub mod fold
 fn test_binop_fold()
 {
     use ir;
-    use ir::{Instruction,Value,Type};
+    use ir::{Instruction,Value};
 
     let cases = [
         // (inst, expected value)
-        (Instruction::add(Type::i8(), Value::i8(1),Value::i8(8)), ir::Value::i8(9)),
-        (Instruction::sub(Type::i8(), Value::i8(1),Value::i8(8)), ir::Value::i8(-7)),
-        (Instruction::mul(Type::i8(), Value::i8(1),Value::i8(8)), ir::Value::i8(8)),
-        (Instruction::div(Type::i8(), Value::i8(10),Value::i8(2)), ir::Value::i8(5)),
-        (Instruction::shl(Type::u8(), Value::u8(1),Value::u8(1)), ir::Value::u8(2)),
-        (Instruction::shr(Type::u8(), Value::u8(32),Value::u8(1)), ir::Value::u8(16)),
+        (Instruction::add(Value::i8(1),Value::i8(8)), ir::Value::i8(9)),
+        (Instruction::sub(Value::i8(1),Value::i8(8)), ir::Value::i8(-7)),
+        (Instruction::mul(Value::i8(1),Value::i8(8)), ir::Value::i8(8)),
+        (Instruction::div(Value::i8(10),Value::i8(2)), ir::Value::i8(5)),
+        (Instruction::shl(Value::u8(1),Value::u8(1)), ir::Value::u8(2)),
+        (Instruction::shr(Value::u8(32),Value::u8(1)), ir::Value::u8(16)),
     ];
 
     for &(ref inst,ref expected) in cases.iter() {

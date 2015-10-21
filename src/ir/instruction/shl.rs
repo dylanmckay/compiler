@@ -5,28 +5,28 @@ use std::fmt;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Shl
 {
-    ty: ir::Type,
     value: Box<ir::Value>,
     amount: Box<ir::Value>,
 }
 
 impl Shl
 {
-    pub fn new(ty: ir::Type, value: ir::Value, amount: ir::Value) -> Self {
+    pub fn new(value: ir::Value, amount: ir::Value) -> Self {
+        assert!(value.ty() == amount.ty());
+
         Shl {
-            ty: ty,
             value: Box::new(value),
             amount: Box::new(amount),
         }
     }
 
-    pub fn ty(&self) -> ir::Type { self.ty.clone() }
+    pub fn ty(&self) -> ir::Type { self.value.ty() }
 }
 
 impl fmt::Display for Shl
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "shl {} {}, {}", self.ty, self.value, self.amount)
+        write!(fmt, "shl {}, {}", self.value, self.amount)
     }
 }
 

@@ -130,6 +130,10 @@ pub mod value
                 false
             }
         }
+
+        pub fn ty(&self) -> ir::Type {
+            lang::Value::ty(self)
+        }
     }
 
     impl lang::Value for Value
