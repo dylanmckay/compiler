@@ -2,7 +2,7 @@
 
 use ir::{self,types,Value,ValueTrait,Type};
 use util;
-use std::{self,fmt};
+use std;
 
 use num::BigInt;
 use num::bigint::ToBigInt;

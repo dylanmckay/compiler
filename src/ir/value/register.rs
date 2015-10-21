@@ -1,7 +1,6 @@
 
 use ir;
 use util;
-use std;
 
 /// A register.
 #[derive(Clone,Debug,PartialEq,Eq)]

@@ -1,7 +1,6 @@
 
 use ir::{self,types,Value,ValueTrait,Type};
 use bit_vec::BitVec;
-use std::fmt;
 
 
 /// A decimal value.

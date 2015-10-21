@@ -1,6 +1,5 @@
 
 use ir::{self,types,Value,ValueTrait,Type};
-use util;
 use std;
 
 #[derive(Clone,Debug,PartialEq,Eq)]

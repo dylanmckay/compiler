@@ -24,14 +24,14 @@ fn main() {
     let mut module = self::create_module();
     let mut pm = self::create_ir_pass_manager();
 
-    println!("Previously:\n{}", module);
+    println!("Previously:\n\n{}", module);
 
-    //module = pm.run(module);
+    module = pm.run(module);
 
     module = module.flatten();
-    println!("Afterwards:\n{}", module);
+    println!("\n\nAfterwards:\n\n{}", module);
 
-    print!("Verifying...");
+    print!("\nVerifying...");
     let result = ir::verifier::verify(&module);
 
     match result {

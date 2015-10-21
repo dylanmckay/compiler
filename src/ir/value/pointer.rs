@@ -1,6 +1,5 @@
 
 use ir;
-use std::fmt;
 
 /// A pointer.
 #[derive(Clone,Debug,PartialEq,Eq)]

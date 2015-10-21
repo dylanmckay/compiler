@@ -1,6 +1,5 @@
 
 use ir;
-use lang;
 use util;
 use ir::Value;
 use util::Identifiable;
@@ -82,8 +81,8 @@ pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
 pub fn global(global: &ir::Global,
               printer: &mut Printer,
               fmt: &mut fmt::Formatter) -> fmt::Result {
-    write!(fmt, "%{} = ", global.name());
-    self::root_value(global.value(), printer, fmt)
+    try!(write!(fmt, "%{} = ", global.name()));
+    self::value::plain(global.value(), printer, fmt)
 }
 
 pub fn function(func: &ir::Function,
@@ -121,13 +120,13 @@ pub fn root_value(value: &ir::Value,
                   printer: &mut Printer,
                   fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "\t"));
-    try!(self::value::plain_value(value, printer, fmt));
+    try!(self::value::plain(value, printer, fmt));
     write!(fmt, "\n")
 }
 
 pub mod value
 {
-    use ir::{Module,Value,value};
+    use ir::{Value,value};
     use std::fmt;
     use lang;
     use util::Identifiable;
@@ -143,7 +142,7 @@ pub mod value
             try!(write!(fmt, "("));
         }
 
-        try!(self::plain_value(value, printer, fmt));
+        try!(self::plain(value, printer, fmt));
 
         if !value.is_simple() {
             try!(write!(fmt, ")"));
@@ -152,9 +151,9 @@ pub mod value
         Ok(())
     }
 
-    pub fn plain_value(value: &Value,
-                       printer: &mut Printer,
-                       fmt: &mut fmt::Formatter) -> fmt::Result {
+    pub fn plain(value: &Value,
+                 printer: &mut Printer,
+                 fmt: &mut fmt::Formatter) -> fmt::Result {
 
         match value {
             &Value::Literal(ref val) => self::literal(val, fmt),
@@ -181,9 +180,9 @@ pub mod value
         write!(fmt, "{} {}", value.ty(), value.value())
     }
 
-    pub fn literal_struct(_: &value::literal::Struct,
-                          _: &mut Printer,
-                          _: &mut fmt::Formatter) -> fmt::Result {
+    pub fn literal_struct(_value: &value::literal::Struct,
+                          _printer: &mut Printer,
+                          _fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
         //write!(fmt, "{{ {} }}", util::comma_separated_values(value.fields()))
     }
@@ -224,15 +223,15 @@ pub mod value
         write!(fmt, "%{}", global.name())
     }
 
-    pub fn block_ref(value: &value::BlockRef,
-                     printer: &mut Printer,
-                     fmt: &mut fmt::Formatter) -> fmt::Result {
+    pub fn block_ref(_value: &value::BlockRef,
+                     _printer: &mut Printer,
+                     _fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
     }
 
-    pub fn function_ref(value: &value::FunctionRef,
-                        printer: &mut Printer,
-                        fmt: &mut fmt::Formatter) -> fmt::Result {
+    pub fn function_ref(_value: &value::FunctionRef,
+                        _printer: &mut Printer,
+                        _fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
     }
 
@@ -296,9 +295,9 @@ pub mod value
 
         }
         
-        pub fn br(inst: &instruction::Break,
-                  printer: &mut Printer,
-                  fmt: &mut fmt::Formatter) -> fmt::Result {
+        pub fn br(_inst: &instruction::Break,
+                  _printer: &mut Printer,
+                  _fmt: &mut fmt::Formatter) -> fmt::Result {
             unimplemented!();
         }
 

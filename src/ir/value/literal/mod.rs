@@ -5,7 +5,6 @@ pub use self::strukt::Struct;
 
 use ir::{types,Value,ValueTrait,Type};
 use bit_vec::BitVec;
-use std::fmt;
 
 use num::bigint::ToBigInt;
 

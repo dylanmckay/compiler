@@ -1,5 +1,4 @@
 use ir::{self,Instruction,Value};
-use std::fmt;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Add
