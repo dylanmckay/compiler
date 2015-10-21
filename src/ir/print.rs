@@ -5,7 +5,6 @@ use util;
 use ir::Value;
 use std::fmt;
 
-// TODO: pass the module to all functions so we can lookup globals et al
 
 impl fmt::Display for ir::Module
 {
@@ -14,32 +13,41 @@ impl fmt::Display for ir::Module
     }
 }
 
+pub struct Printer<'a>
+{
+    module: &'a ir::Module,
+    accum: u64,
+}
+
 pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
+
+    let mut printer = Printer {
+        module: module,
+        accum: 0,
+    };
     
-    let mut global_accum = 0;
     for global in module.globals() {
-        try!(self::global(global, module, fmt, &mut global_accum));
+        try!(self::global(global, &mut printer, fmt));
     }
 
     try!(write!(fmt, "\n"));
    
     for func in module.functions() {
-         try!(self::function(func, module, fmt));
+         try!(self::function(func, &mut printer, fmt));
     }
 
     Ok(())
 }
 
 pub fn global(global: &ir::Global,
-              module: &ir::Module,
-              fmt: &mut fmt::Formatter,
-              accum: &mut u64) -> fmt::Result {
+              printer: &mut Printer,
+              fmt: &mut fmt::Formatter) -> fmt::Result {
     write!(fmt, "%{} = ", global.name());
-    self::root_value(global.value(), module, fmt, accum)
+    self::root_value(global.value(), printer, fmt)
 }
 
 pub fn function(func: &ir::Function,
-                module: &ir::Module,
+                printer: &mut Printer,
                 fmt: &mut fmt::Formatter) -> fmt::Result {
 
     let mut accum = 1;
@@ -50,38 +58,36 @@ pub fn function(func: &ir::Function,
                      util::comma_separated_values(func.signature.parameters())));
 
     for block in func.blocks() {
-        try!(self::block(block, module, fmt, &mut accum));
+        try!(self::block(block, printer, fmt));
     }
 
     write!(fmt, "}}")
 }
 
 pub fn block(block: &ir::Block,
-             module: &ir::Module,
-             fmt: &mut fmt::Formatter,
-             accum: &mut u64) -> fmt::Result {
+             printer: &mut Printer,
+             fmt: &mut fmt::Formatter) -> fmt::Result {
 
     try!(write!(fmt, "{}:\n", block.name()));
 
     for value in block.subvalues() {
-        try!(self::root_value(&value, module, fmt, accum));
+        try!(self::root_value(&value, printer, fmt));
     }
 
     Ok(())
 }
 
 pub fn root_value(value: &ir::Value,
-                  module: &ir::Module,
-                  fmt: &mut fmt::Formatter,
-                  accum: &mut u64) -> fmt::Result {
+                  printer: &mut Printer,
+                  fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "\t"));
-    try!(self::value::plain_value(value, module, fmt, accum));
+    try!(self::value::plain_value(value, printer, fmt));
     write!(fmt, "\n")
 }
 
 pub fn name(name: &lang::Name,
-            fmt: &mut fmt::Formatter,
-            accum: &mut u64) -> fmt::Result {
+            printer: &mut Printer,
+            fmt: &mut fmt::Formatter) -> fmt::Result {
     unimplemented!();
 }
 
@@ -92,11 +98,11 @@ pub mod value
     use std::fmt;
     use util;
     use lang;
+    use super::Printer;
 
     pub fn value(value: &Value,
-                 module: &Module,
-                 fmt: &mut fmt::Formatter,
-                 accum: &mut u64) -> fmt::Result {
+                 printer: &mut Printer,
+                 fmt: &mut fmt::Formatter) -> fmt::Result {
         use lang::Value;
 
         // simple values are not parenthesised.
@@ -104,7 +110,7 @@ pub mod value
             try!(write!(fmt, "("));
         }
 
-        try!(self::plain_value(value, module, fmt, accum));
+        try!(self::plain_value(value, printer, fmt));
 
         if !value.is_simple() {
             try!(write!(fmt, ")"));
@@ -114,19 +120,18 @@ pub mod value
     }
 
     pub fn plain_value(value: &Value,
-                       module: &Module,
-                       fmt: &mut fmt::Formatter,
-                       accum: &mut u64) -> fmt::Result {
+                       printer: &mut Printer,
+                       fmt: &mut fmt::Formatter) -> fmt::Result {
 
         match value {
             &Value::Literal(ref val) => self::literal(val, fmt),
-            &Value::Pointer(ref val) => self::pointer(val, module, fmt, accum),
-            &Value::Register(ref val) => self::register(val, module, fmt, accum),
-            &Value::Instruction(ref val) => self::instruction::instruction(val, module, fmt, accum),
-            &Value::GlobalRef(ref val) => self::global_ref(val, module, fmt, accum),
-            &Value::BlockRef(ref val) => self::block_ref(val, module, fmt, accum),
-            &Value::FunctionRef(ref val) => self::function_ref(val, module, fmt, accum),
-            &Value::RegisterRef(ref val) => self::register_ref(val, module, fmt, accum),
+            &Value::Pointer(ref val) => self::pointer(val, printer, fmt),
+            &Value::Register(ref val) => self::register(val, printer, fmt),
+            &Value::Instruction(ref val) => self::instruction::instruction(val, printer, fmt),
+            &Value::GlobalRef(ref val) => self::global_ref(val, printer, fmt),
+            &Value::BlockRef(ref val) => self::block_ref(val, printer, fmt),
+            &Value::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
+            &Value::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
         }
     }
 
@@ -144,57 +149,50 @@ pub mod value
     }
 
     pub fn literal_struct(value: &value::literal::Struct,
-                          module: &Module,
-                          fmt: &mut fmt::Formatter,
-                          accum: &mut u64) -> fmt::Result {
+                          printer: &mut Printer,
+                          fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
         //write!(fmt, "{{ {} }}", util::comma_separated_values(value.fields()))
     }
 
     pub fn pointer(value: &value::Pointer,
-                   module: &Module,
-                   fmt: &mut fmt::Formatter,
-                   accum: &mut u64) -> fmt::Result {
-        try!(self::value(value.underlying(), module, fmt, accum));
+                   printer: &mut Printer,
+                   fmt: &mut fmt::Formatter) -> fmt::Result {
+        try!(self::value(value.underlying(), printer, fmt));
         write!(fmt, "*")
     }
 
     pub fn register(value: &value::Register,
-                    module: &Module,
-                    fmt: &mut fmt::Formatter,
-                    accum: &mut u64) -> fmt::Result {
+                    printer: &mut Printer,
+                    fmt: &mut fmt::Formatter) -> fmt::Result {
 
         try!(write!(fmt, "%{} = ", value.name()));
-        self::value(value.subvalue(), module, fmt, accum)
+        self::value(value.subvalue(), printer, fmt)
     }
 
     pub fn global_ref(value: &value::GlobalRef,
-                      module: &Module,
-                      fmt: &mut fmt::Formatter,
-                      accum: &mut u64) -> fmt::Result {
+                      printer: &mut Printer,
+                      fmt: &mut fmt::Formatter) -> fmt::Result {
 
-        let global = module.get_global(value.global_id());
+        let global = printer.module.get_global(value.global_id());
         write!(fmt, "%{}", global.name())
     }
 
     pub fn block_ref(value: &value::BlockRef,
-                     module: &Module,
-                     fmt: &mut fmt::Formatter,
-                     accum: &mut u64) -> fmt::Result {
+                     printer: &mut Printer,
+                     fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
     }
 
     pub fn function_ref(value: &value::FunctionRef,
-                        module: &Module,
-                        fmt: &mut fmt::Formatter,
-                        accum: &mut u64) -> fmt::Result {
+                        printer: &mut Printer,
+                        fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
     }
 
     pub fn register_ref(value: &value::RegisterRef,
-                        module: &Module,
-                        fmt: &mut fmt::Formatter,
-                        accum: &mut u64) -> fmt::Result {
+                        printer: &mut Printer,
+                        fmt: &mut fmt::Formatter) -> fmt::Result {
         write!(fmt, "%<reg>")
     }
 
@@ -204,45 +202,43 @@ pub mod value
         use ir::instruction::{self,Binary};
         use std::fmt;
         use util;
+        use super::super::Printer;
 
         pub fn instruction(inst: &Instruction,
-                           module: &Module,
-                           fmt: &mut fmt::Formatter,
-                           accum: &mut u64) -> fmt::Result {
+                           printer: &mut Printer,
+                           fmt: &mut fmt::Formatter) -> fmt::Result {
             match inst {
-                &Instruction::Add(ref i) => arithmetic_binop("add", i, module, fmt, accum),
-                &Instruction::Sub(ref i) => arithmetic_binop("sub", i, module, fmt, accum),
-                &Instruction::Mul(ref i) => arithmetic_binop("mul", i, module, fmt, accum),
-                &Instruction::Div(ref i) => arithmetic_binop("div", i, module, fmt, accum),
-                &Instruction::Shl(ref i) => arithmetic_binop("shl", i, module, fmt, accum),
-                &Instruction::Shr(ref i) => arithmetic_binop("shr", i, module, fmt, accum),
+                &Instruction::Add(ref i) => arithmetic_binop("add", i, printer, fmt),
+                &Instruction::Sub(ref i) => arithmetic_binop("sub", i, printer, fmt),
+                &Instruction::Mul(ref i) => arithmetic_binop("mul", i, printer, fmt),
+                &Instruction::Div(ref i) => arithmetic_binop("div", i, printer, fmt),
+                &Instruction::Shl(ref i) => arithmetic_binop("shl", i, printer, fmt),
+                &Instruction::Shr(ref i) => arithmetic_binop("shr", i, printer, fmt),
 
-                &Instruction::Call(ref i) => call(i, module, fmt, accum),
-                &Instruction::Break(ref i) => br(i, module, fmt, accum),
-                &Instruction::Return(ref i) => ret(i, module, fmt, accum),
+                &Instruction::Call(ref i) => call(i, printer, fmt),
+                &Instruction::Break(ref i) => br(i, printer, fmt),
+                &Instruction::Return(ref i) => ret(i, printer, fmt),
             }
         }
 
         pub fn arithmetic_binop<I>(mnemonic: &'static str,
                                    inst: &I,
-                                   module: &Module,
-                                   fmt: &mut fmt::Formatter,
-                                   accum: &mut u64) -> fmt::Result
+                                   printer: &mut Printer,
+                                   fmt: &mut fmt::Formatter) -> fmt::Result
             where I: Binary {
 
             let (lhs,rhs) = inst.operands();
 
             try!(write!(fmt, "{} ", mnemonic));
-            try!(super::value(lhs, module, fmt, accum));
+            try!(super::value(lhs, printer, fmt));
             try!(write!(fmt, ", "));
-            try!(super::value(rhs, module, fmt, accum));
+            try!(super::value(rhs, printer, fmt));
             Ok(())
         }
 
         pub fn call(inst: &instruction::Call,
-                    module: &Module,
-                    fmt: &mut fmt::Formatter,
-                    accum: &mut u64) -> fmt::Result {
+                    printer: &mut Printer,
+                    fmt: &mut fmt::Formatter) -> fmt::Result {
             let func = if let &Value::FunctionRef(ref f) = inst.target() {
                 f
             } else {
@@ -255,20 +251,18 @@ pub mod value
         }
         
         pub fn br(inst: &instruction::Break,
-                  module: &Module,
-                  fmt: &mut fmt::Formatter,
-                  accum: &mut u64) -> fmt::Result {
+                  printer: &mut Printer,
+                  fmt: &mut fmt::Formatter) -> fmt::Result {
             unimplemented!();
         }
 
         pub fn ret(inst: &instruction::Return,
-                   module: &Module,
-                   fmt: &mut fmt::Formatter,
-                   accum: &mut u64) -> fmt::Result {
+                   printer: &mut Printer,
+                   fmt: &mut fmt::Formatter) -> fmt::Result {
             try!(write!(fmt, "ret "));
 
             match inst.subvalue() {
-                Some(i) => super::value(i, module, fmt, accum),
+                Some(i) => super::value(i, printer, fmt),
                 None => write!(fmt, "void"),
             }
         }
