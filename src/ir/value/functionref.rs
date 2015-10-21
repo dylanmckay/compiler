@@ -35,13 +35,6 @@ impl FunctionRef
     }
 }
 
-impl std::fmt::Display for FunctionRef
-{
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.id.fmt(fmt)
-    }
-}
-
 impl ir::value::ValueTrait for FunctionRef { }
 
 impl Into<ir::Value> for FunctionRef

@@ -21,11 +21,4 @@ impl Mul
     pub fn ty(&self) -> ir::Type { self.lhs.ty() }
 }
 
-impl fmt::Display for Mul
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "mul {}, {}", self.lhs, self.rhs)
-    }
-}
-
 impl_instruction!(Mul: lhs, rhs);

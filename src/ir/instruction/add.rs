@@ -24,11 +24,5 @@ impl Add
     }
 }
 
-impl fmt::Display for Add
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "add {}, {}", self.lhs, self.rhs)
-    }
-}
-
 impl_instruction!(Add: lhs, rhs);
+

@@ -35,13 +35,6 @@ impl Into<Value> for Decimal
     }
 }
 
-impl fmt::Display for Decimal
-{
-    fn fmt(&self, _: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        unimplemented!()
-    }
-}
-
 impl Into<ir::value::Literal> for Decimal {
     fn into(self) -> ir::value::Literal {
         ir::value::Literal::Decimal(self)

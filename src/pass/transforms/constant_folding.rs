@@ -28,7 +28,7 @@ impl Into<pass::Info<ir::Value>> for Box<ConstantFolding>
 
 pub mod fold
 {
-    use ir::{Value,Instruction};
+    use ir::{self,Value,Instruction};
     use ir::value::literal::{Literal,Integer};
 
     pub fn value(value: Value) -> Value {
@@ -39,29 +39,29 @@ pub mod fold
     }
 
     pub fn instruction(inst: Instruction) -> Value {
-        use ir::instruction::Binary;
-        let inst_copy = inst.clone();
 
         match inst {
-            Instruction::Add(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a+b),
-            Instruction::Sub(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a-b),
-            Instruction::Mul(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a*b),
-            Instruction::Div(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a/b),
-            Instruction::Shl(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a<<b),
-            Instruction::Shr(i) => arithmetic_binop(inst_copy, i.operands(), |a,b| a>>b),
+            Instruction::Add(i) => arithmetic_binop(i, |a,b| a+b),
+            Instruction::Sub(i) => arithmetic_binop(i, |a,b| a-b),
+            Instruction::Mul(i) => arithmetic_binop(i, |a,b| a*b),
+            Instruction::Div(i) => arithmetic_binop(i, |a,b| a/b),
+            Instruction::Shl(i) => arithmetic_binop(i, |a,b| a<<b),
+            Instruction::Shr(i) => arithmetic_binop(i, |a,b| a>>b),
             _ => inst.into(),
         }
     }
 
-    pub fn arithmetic_binop<FI>(inst: Instruction,
-                                values: (Value,Value),
-                                mut f_int: FI) -> Value
-        where FI: FnMut(Integer,Integer) -> Integer {
+    pub fn arithmetic_binop<I,FI>(inst: I,
+                                  mut f_int: FI) -> Value
+        where I: ir::instruction::Binary,
+              FI: FnMut(Integer,Integer) -> Integer {
+
+        use ir::instruction::Binary;
 
         // make sure the values are constants
-        let (lhs,rhs) = match values {
-            (Value::Literal(a),Value::Literal(b)) => (a,b),
-            _ => return inst.into(), // we can only fold constants
+        let (lhs,rhs) = match inst.operands() {
+            (&Value::Literal(ref a),&Value::Literal(ref b)) => (a.clone(),b.clone()),
+            _ => return inst.clone().into(), // we can only fold constants
         };
 
         match (lhs,rhs) {

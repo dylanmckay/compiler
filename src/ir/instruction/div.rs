@@ -24,11 +24,5 @@ impl Div
     pub fn ty(&self) -> ir::Type { self.lhs.ty() }
 }
 
-impl fmt::Display for Div
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "div {}, {}", self.lhs, self.rhs)
-    }
-}
-
 impl_instruction!(Div: lhs, rhs);
+

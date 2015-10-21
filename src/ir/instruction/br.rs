@@ -28,11 +28,5 @@ impl Break
     pub fn ty(&self) -> ir::Type { ir::Type::void() }
 }
 
-impl fmt::Display for Break
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "break {} {}", self.cond, self.target)
-    }
-}
-
 impl_instruction!(Break: target);
+

@@ -27,7 +27,7 @@ impl<V> Global<V>
     }
 
     pub fn name(&self) -> &str { &self.name }
-    pub fn value(&self) -> V { *self.value.clone() }
+    pub fn value(&self) -> &V { &self.value }
     pub fn ty(&self) -> V::Type {
         self.value.ty()
     }

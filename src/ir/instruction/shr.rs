@@ -23,11 +23,5 @@ impl Shr
     pub fn ty(&self) -> ir::Type { self.value.ty() }
 }
 
-impl fmt::Display for Shr
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "shr {}, {}", self.value, self.amount)
-    }
-}
-
 impl_instruction!(Shr: value, amount);
+

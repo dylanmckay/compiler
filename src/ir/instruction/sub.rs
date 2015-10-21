@@ -22,11 +22,4 @@ impl Sub
     pub fn ty(&self) -> ir::Type { self.lhs.ty() }
 }
 
-impl fmt::Display for Sub
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "sub {}, {}", self.lhs, self.rhs)
-    }
-}
-
 impl_instruction!(Sub: lhs, rhs);

@@ -11,8 +11,8 @@ use num::bigint::ToBigInt;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Integer
 {
-    pub ty: types::Integer,
-    pub value: BigInt,
+    ty: types::Integer,
+    value: BigInt,
 }
 
 impl Integer
@@ -71,7 +71,9 @@ impl Integer
         self.count_magnitude_bits() <= magnitude_max_size
     }
 
+    pub fn integer_ty(&self) -> types::Integer { self.ty.clone() }
     pub fn ty(&self) -> Type { self.ty.clone().into() }
+    pub fn value(&self) -> BigInt { self.value.clone() }
 }
 
 impl std::ops::Add for Integer
@@ -148,13 +150,6 @@ impl std::ops::Shr<Integer> for Integer
 impl ir::value::literal::LiteralTrait for Integer { }
 
 impl ValueTrait for Integer { }
-
-impl fmt::Display for Integer
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "{} {}", self.ty, self.value)
-    }
-}
 
 impl Into<Value> for Integer
 {

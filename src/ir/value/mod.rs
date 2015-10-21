@@ -207,22 +207,6 @@ pub mod value
 
     impl ValueTrait for Value { }
 
-    impl fmt::Display for Value
-    {
-        fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-            match self {
-                &Value::Literal(ref val) => val.fmt(fmt),
-                &Value::Pointer(ref val) => val.fmt(fmt),
-                &Value::Register(ref val) => val.fmt(fmt),
-                &Value::Instruction(ref val) => val.fmt(fmt),
-                &Value::GlobalRef(ref val) => val.fmt(fmt),
-                &Value::BlockRef(ref val) => val.fmt(fmt),
-                &Value::FunctionRef(ref val) => val.fmt(fmt),
-                &Value::RegisterRef(ref val) => val.fmt(fmt),
-            }
-        }
-    }
-
     /// Implements Into<Value> for u8,i32,etc
     macro_rules! impl_into_value_for_integers {
         (

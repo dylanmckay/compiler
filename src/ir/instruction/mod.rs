@@ -18,7 +18,7 @@ pub mod instruction
     use std::fmt;
     use ir::{self,instruction,Value,Type};
 
-    pub trait InstructionTrait : fmt::Debug + fmt::Display +
+    pub trait InstructionTrait : fmt::Debug +
                                  Into<Value> +
                                  ir::ValueTrait
     {
@@ -27,13 +27,13 @@ pub mod instruction
     /// An instruction with one operand.
     pub trait Unary : InstructionTrait
     {
-        fn operand(&self) -> Value;
+        fn operand(&self) -> &Value;
     }
 
     /// An instruction with two operands.
     pub trait Binary : InstructionTrait
     {
-        fn operands(&self) -> (Value,Value);
+        fn operands(&self) -> (&Value,&Value);
     }
 
     #[derive(Clone,Debug,PartialEq,Eq)]
@@ -134,23 +134,6 @@ pub mod instruction
         }
     }
 
-    impl fmt::Display for Instruction
-    {
-        fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-            match self {
-                &Instruction::Add(ref instr) => instr.fmt(fmt),
-                &Instruction::Sub(ref instr) => instr.fmt(fmt),
-                &Instruction::Mul(ref instr) => instr.fmt(fmt),
-                &Instruction::Div(ref instr) => instr.fmt(fmt),
-                &Instruction::Shl(ref instr) => instr.fmt(fmt),
-                &Instruction::Shr(ref instr) => instr.fmt(fmt),
-                &Instruction::Call(ref instr) => instr.fmt(fmt),
-                &Instruction::Break(ref instr) => instr.fmt(fmt),
-                &Instruction::Return(ref instr) => instr.fmt(fmt),
-            }
-        }
-    }
-
     impl Instruction
     {
         pub fn subvalues(&self) -> Vec<&Value> {
@@ -233,8 +216,8 @@ pub mod instruction
             impl_instruction_internal!($inst: $op);
 
             impl ::ir::instruction::Unary for $inst {
-                fn operand(&self) -> ::ir::Value {
-                    *self.$op.clone()
+                fn operand(&self) -> &::ir::Value {
+                    &self.$op
                 }
             }
         };
@@ -244,9 +227,9 @@ pub mod instruction
             impl_instruction_internal!($inst: $op1, $op2);
 
             impl ::ir::instruction::Binary for $inst {
-                fn operands(&self) -> (::ir::Value,::ir::Value) {
-                    (*self.$op1.clone(),
-                     *self.$op2.clone())
+                fn operands(&self) -> (&::ir::Value,&::ir::Value) {
+                    (&self.$op1,
+                     &self.$op2)
                 }
             }
         };

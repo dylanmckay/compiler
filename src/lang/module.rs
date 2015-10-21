@@ -41,6 +41,22 @@ impl<V> Module<V>
         self
     }
 
+    pub fn find_global(&self, id: util::Id) -> Option<&Global<V>> {
+        self.globals.lookup(id)
+    }
+
+    pub fn get_global(&self, id: util::Id) -> &Global<V> {
+        self.find_global(id).expect("no global with that ID exists")
+    }
+
+    pub fn find_function(&self, id: util::Id) -> Option<&Function<V>> {
+        self.functions.lookup(id)
+    }
+
+    pub fn get_function(&self, id: util::Id) -> &Function<V> {
+        self.find_function(id).expect("no function with that ID exists")
+    }
+
     pub fn functions<'a>(&'a self) -> std::slice::Iter<'a,Function<V>> {
         self.functions.iter()
     }

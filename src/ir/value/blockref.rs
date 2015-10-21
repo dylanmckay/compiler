@@ -24,13 +24,6 @@ impl BlockRef
 
 impl ir::ValueTrait for BlockRef { }
 
-impl std::fmt::Display for BlockRef
-{
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.id.fmt(fmt)
-    }
-}
-
 impl Into<ir::Value> for BlockRef
 {
     fn into(self) -> ir::Value {

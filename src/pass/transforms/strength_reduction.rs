@@ -61,9 +61,9 @@ pub mod reduce
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
-        match maybe_shift_values(lhs,rhs) {
+        match maybe_shift_values(lhs.clone(),rhs.clone()) {
             Some((value,amount)) => Instruction::shl(value,amount).into(),
-            None => inst.into(),
+            None => inst.clone().into(),
         }
     }
 
@@ -72,9 +72,9 @@ pub mod reduce
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
-        match maybe_shift_values(lhs,rhs) {
+        match maybe_shift_values(lhs.clone(),rhs.clone()) {
             Some((value,amount)) => Instruction::shr(value,amount).into(),
-            None => inst.into(),
+            None => inst.clone().into(),
         }
     }
 
@@ -109,7 +109,7 @@ pub mod reduce
             // N.B. this will give that `0` is a power of two.
             //      we don't care because constant folding has already been done.
             value.as_integer()
-                 .map(|i| i.value.to_i64().unwrap())
+                 .map(|i| i.value().to_i64().unwrap())
                  .map_or(false, |x| {
                      debug_assert!(x != 0);
                      
@@ -132,8 +132,8 @@ pub mod reduce
             let const_val = value.as_integer()
                                  .expect("value must be an integer");
 
-            let ty = const_val.ty;
-            let val = const_val.value.to_f64().unwrap();
+            let ty = const_val.integer_ty();
+            let val = const_val.value().to_f64().unwrap();
 
             let log2 = 2f64.log(2.);
 

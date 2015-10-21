@@ -19,9 +19,13 @@ impl<T: util::Identifiable> Set<T>
         }
     }
 
+    pub fn lookup(&self, id: util::Id) -> Option<&T> {
+        self.elements.iter().find(|&a| a.get_id() == id)
+    }
+
     /// Gets an element from the set.
     pub fn get(&self, id: util::Id) -> &T {
-        self.elements.iter().find(|&a| a.get_id() == id).unwrap()
+        self.lookup(id).expect("no element with that ID was found")
     }
 
     /// Adds an element to the set.

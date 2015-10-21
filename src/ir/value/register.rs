@@ -32,6 +32,10 @@ impl Register
 
     pub fn name(&self) -> &ir::Name { &self.name }
 
+    pub fn subvalue(&self) -> &ir::Value {
+        &self.value
+    }
+
     pub fn ty(&self) -> ir::Type {
         self.value.ty()
     }
@@ -41,13 +45,6 @@ impl util::Identifiable for Register
 {
     fn get_id(&self) -> util::Id {
         self.id
-    }
-}
-
-impl std::fmt::Display for Register
-{
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(fmt, "%{} = {}", self.name, self.value)
     }
 }
 

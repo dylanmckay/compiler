@@ -3,7 +3,7 @@ use lang;
 use std::fmt;
 
 /// A value.
-pub trait Value : Clone + Sized + fmt::Display + fmt::Debug
+pub trait Value : Clone + Sized + fmt::Debug
 {
     type Type: lang::Type;
 

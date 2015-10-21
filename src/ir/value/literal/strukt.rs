@@ -1,7 +1,7 @@
 
 use ir::{self,types,Value,ValueTrait,Type};
 use util;
-use std::fmt;
+use std;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Struct
@@ -18,6 +18,10 @@ impl Struct
         }
     }
 
+    pub fn fields<'a>(&'a self) -> std::slice::Iter<'a,Value> {
+        self.fields.iter()
+    }
+
     pub fn ty(&self) -> Type {
         use lang::Value;
 
@@ -31,13 +35,6 @@ impl Struct
 impl ir::value::LiteralTrait for Struct { }
 
 impl ValueTrait for Struct { }
-
-impl fmt::Display for Struct
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        write!(fmt, "{{ {} }}", util::comma_separated_values(self.fields.iter()))
-    }
-}
 
 impl Into<Value> for Struct
 {

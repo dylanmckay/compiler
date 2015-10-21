@@ -32,6 +32,14 @@ impl Return
         }
     }
 
+    pub fn subvalue(&self) -> Option<&ir::Value> {
+        if let Some(ref val) = self.value {
+            Some(val)
+        } else {
+            None
+        }
+    }
+
     pub fn map_subvalues<F>(mut self, mut f: F) -> Self
         where F: FnMut(Value) -> Value {
 
@@ -45,18 +53,6 @@ impl Return
     }
 
     pub fn ty(&self) -> ir::Type { ir::Type::void() }
-}
-
-impl fmt::Display for Return
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        try!("ret ".fmt(fmt));
-        
-        match self.value {
-            Some(ref val) => { write!(fmt, "{}", val) },
-            None =>          { write!(fmt, "void")  },
-        }
-    }
 }
 
 impl Into<Instruction> for Return

@@ -47,19 +47,3 @@ impl Condition
     }
 }
 
-impl fmt::Display for Condition
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        match self {
-            &Condition::True => "true".fmt(fmt),
-            &Condition::False => "false".fmt(fmt),
-            &Condition::Equal(ref a, ref b) => write!(fmt, "{} eq {}", a, b),
-            &Condition::NotEqual(ref a, ref b) => write!(fmt, "{} neq {}", a, b),
-            &Condition::GreaterThan(ref a, ref b) => write!(fmt, "{} gt {}", a, b),
-            &Condition::GreaterThanOrEq(ref a, ref b) => write!(fmt, "{} gte {}", a, b),
-            &Condition::LessThan(ref a, ref b) => write!(fmt, "{} lt {}", a, b),
-            &Condition::LessThanOrEq(ref a, ref b) => write!(fmt, "{} lte {}", a, b),
-        }
-    }
-}
-

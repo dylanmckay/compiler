@@ -82,17 +82,6 @@ impl Literal
 
 impl ValueTrait for Literal { }
 
-impl fmt::Display for Literal
-{
-    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error> {
-        match self {
-            &Literal::Integer(ref val) => val.fmt(fmt),
-            &Literal::Decimal(ref val) => val.fmt(fmt),
-            &Literal::Struct(ref val) => val.fmt(fmt),
-        }
-    }
-}
-
 impl Into<Value> for Literal
 {
     fn into(self) -> Value {

@@ -26,13 +26,6 @@ impl RegisterRef
     }
 }
 
-impl std::fmt::Display for RegisterRef
-{
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(fmt, "%{}", self.id)
-    }
-}
-
 impl ir::value::ValueTrait for RegisterRef { }
 
 impl Into<ir::Value> for RegisterRef

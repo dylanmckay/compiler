@@ -19,15 +19,12 @@ impl GlobalRef
         }
     }
 
+    pub fn global_id(&self) -> util::Id {
+        self.id
+    }
+
     pub fn ty(&self) -> ir::Type {
         ir::Type::pointer(self.ty.clone())
-    }
-}
-
-impl std::fmt::Display for GlobalRef
-{
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        self.id.fmt(fmt)
     }
 }
 

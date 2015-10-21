@@ -30,8 +30,6 @@ macro_rules! value_mapping_test {
             for &(ref input, ref expected) in cases.iter() {
                 let mapped = $mapper(input.clone());
 
-                print!("Expected: {}\nOutput: {}\n\n", expected, mapped);
-
                 assert_eq!(&mapped, expected);
             }
         }
