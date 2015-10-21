@@ -3,6 +3,40 @@ pub use self::dce::DeadCodeElimination;
 pub use self::constant_folding::ConstantFolding;
 pub use self::strength_reduction::StrengthReduction;
 
+/// Implements a test that checks that a set of values
+/// is mapped to another set of values.
+///
+/// It is of the form
+/// ```
+/// value_mapping_test!(test_name : mapping_fn }
+///     input_value => output_value,
+/// });
+/// ```
+macro_rules! value_mapping_test {
+    (
+        $name:ident : $mapper:path {
+            $( $input:expr => $output:expr ),*
+        }
+    ) => {
+        #[test]
+        #[allow(unused_imports)]
+        fn $name() {
+            use ir::{self,Instruction,Value,Type};
+
+            let cases = [
+                $( ($input, $output) ),*
+            ];
+
+            for &(ref input, ref expected) in cases.iter() {
+                let mapped = $mapper(input.clone());
+
+                print!("Expected: {}\nOutput: {}\n\n", expected, mapped);
+
+                assert_eq!(&mapped, expected);
+            }
+        }
+    }
+}
 
 /// The dead code elimination pass.
 pub mod dce;

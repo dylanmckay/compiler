@@ -73,27 +73,13 @@ pub mod fold
     }
 }
 
-#[test]
-fn test_binop_fold()
-{
-    use ir;
-    use ir::{Instruction,Value};
 
-    let cases = [
-        // (inst, expected value)
-        (Instruction::add(Value::i8(1),Value::i8(8)), ir::Value::i8(9)),
-        (Instruction::sub(Value::i8(1),Value::i8(8)), ir::Value::i8(-7)),
-        (Instruction::mul(Value::i8(1),Value::i8(8)), ir::Value::i8(8)),
-        (Instruction::div(Value::i8(10),Value::i8(2)), ir::Value::i8(5)),
-        (Instruction::shl(Value::u8(1),Value::u8(1)), ir::Value::u8(2)),
-        (Instruction::shr(Value::u8(32),Value::u8(1)), ir::Value::u8(16)),
-    ];
+value_mapping_test!(test_binops : fold::instruction {
+    Instruction::add(ir::Value::i8(1),ir::Value::i8(8)) => ir::Value::i8(9),
+    Instruction::sub(Value::i8(1),Value::i8(8)) => ir::Value::i8(-7),
+    Instruction::mul(Value::i8(1),Value::i8(8)) => ir::Value::i8(8),
+    Instruction::div(Value::i8(10),Value::i8(2)) => ir::Value::i8(5),
+    Instruction::shl(Value::u8(1),Value::u8(1)) => ir::Value::u8(2),
+    Instruction::shr(Value::u8(32),Value::u8(1)) => ir::Value::u8(16)
+});
 
-    for &(ref inst,ref expected) in cases.iter() {
-        let folded = fold::instruction(inst.clone());
-
-        println!("{}", inst.clone());
-        assert_eq!(&folded, expected);
-    }
-
-}

@@ -2,6 +2,8 @@
 use pass;
 use ir;
 
+// FIXME: do not perform strength reduction if the value would overflow
+
 /// An IR strength reduction pass.
 pub struct StrengthReduction;
 
@@ -61,8 +63,10 @@ pub mod reduce
         let (value,shift) = match (lhs_if_shift,
                                    rhs_if_shift) {
             (None, None) => return inst.into(),
-            // constant folding should've caught this
-            (Some(_),Some(_)) => return inst.into(),
+            // Constant folding should've caught this, but handle it anyway.
+            // Both operands could be treated as the shift amount,
+            // so use RHS.
+            (Some(_),Some(v)) => (lhs.clone(),v.into()),
 
             (None, Some(v)) => (lhs.clone(),v.into()),
             (Some(v),None) => (v.into(),rhs.clone()),
@@ -116,3 +120,17 @@ pub mod reduce
         }
     }
 }
+
+value_mapping_test!(test_mul_div_shift : reduce::reduce {
+
+    // i8
+    Instruction::mul(Value::i8(2),Value::i8(1)) => Instruction::shl(Value::i8(2),Value::i8(0)),
+    Instruction::mul(Value::i8(2),Value::i8(2)) => Instruction::shl(Value::i8(2),Value::i8(1)),
+
+    // u32
+    Instruction::mul(Value::u32(2),Value::u32(1)) => Instruction::shl(Value::u32(2),Value::u32(0)),
+    Instruction::mul(Value::u32(2),Value::u32(2)) => Instruction::shl(Value::u32(2),Value::u32(1)),
+
+    // Cases we shouldn't handle (non-powers of two).
+    Instruction::mul(Value::i16(5),Value::i16(3)) => Instruction::mul(Value::i16(5),Value::i16(3))
+});
