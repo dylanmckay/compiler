@@ -47,9 +47,8 @@ fn create_module() -> ir::Module {
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
     let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
-    let inst_add2 = ir::Instruction::add(rhs.clone(), lhs.clone());
-    let inst_mul = ir::Instruction::mul(inst_add1.clone().into(), rhs.clone());
-    let inst_ret = ir::Instruction::ret(Some(inst_add1.clone().into()));
+    let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
+    let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
 
     let basicblock = ir::Block::empty(ir::Name::named("entry".to_owned())).add(inst_ret);
 
@@ -62,7 +61,7 @@ fn create_module() -> ir::Module {
 
 fn create_ir_pass_manager() -> pass::Manager<ir::Value> {
     pass::Manager::empty()
-//        .add(pass::transforms::ConstantFolding)
+        .add(pass::transforms::ConstantFolding)
         .add(pass::transforms::StrengthReduction)
         .add(pass::transforms::DeadCodeElimination)
 }
