@@ -43,6 +43,7 @@ pub mod reduce
 
         match inst {
             Instruction::Mul(i) => self::mul(i),
+            Instruction::Div(i) => self::div(i),
             _ => inst,
         }
     }
@@ -51,28 +52,50 @@ pub mod reduce
         self::mul_pow2_shl(inst)
     }
 
+    pub fn div(inst: instruction::Div) -> ir::Instruction {
+        self::div_pow2_shr(inst)
+    }
+
+    /// Converts a multiplication instruction into a shift instruction if possible.
     pub fn mul_pow2_shl(inst: instruction::Mul) -> ir::Instruction {
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
+        match maybe_shift_values(lhs,rhs) {
+            Some((value,amount)) => Instruction::shl(value,amount).into(),
+            None => inst.into(),
+        }
+    }
 
-        let lhs_if_shift = lhs.as_literal().and_then(|a| util::get_mul_shift_amount(a));
-        let rhs_if_shift = rhs.as_literal().and_then(|a| util::get_mul_shift_amount(a));
+    /// Converts a division instruction into a shift instruction if possible.
+    pub fn div_pow2_shr(inst: instruction::Div) -> ir::Instruction {
+        use ir::instruction::Binary;
+
+        let (lhs,rhs) = inst.operands();
+        match maybe_shift_values(lhs,rhs) {
+            Some((value,amount)) => Instruction::shr(value,amount).into(),
+            None => inst.into(),
+        }
+    }
+
+    /// Tries to convert the operands of a mul or div instruction into the operands
+    /// of a shift instruction.
+    pub fn maybe_shift_values(lhs: ir::Value, rhs: ir::Value) -> Option<(ir::Value,ir::Value)> {
+        let lhs_if_shift = lhs.as_literal().and_then(|a| util::get_shift_amount(a));
+        let rhs_if_shift = rhs.as_literal().and_then(|a| util::get_shift_amount(a));
 
         // multiplication is commutative so switch the order if necessary.
-        let (value,shift) = match (lhs_if_shift,
+        match (lhs_if_shift,
                                    rhs_if_shift) {
-            (None, None) => return inst.into(),
+            (None, None) => None,
             // Constant folding should've caught this, but handle it anyway.
             // Both operands could be treated as the shift amount,
             // so use RHS.
-            (Some(_),Some(v)) => (lhs.clone(),v.into()),
+            (Some(_),Some(v)) => Some((lhs.clone(),v.into())),
 
-            (None, Some(v)) => (lhs.clone(),v.into()),
-            (Some(v),None) => (v.into(),rhs.clone()),
-        };
-
-        Instruction::shl(value, shift).into()
+            (None, Some(v)) => Some((lhs.clone(),v.into())),
+            (Some(v),None) => Some((v.into(),rhs.clone())),
+        }
     }
 
     pub mod util {
@@ -98,7 +121,7 @@ pub mod reduce
         /// number of bits that would make an equivalent shift.
         /// 
         /// Returns `None` if the value is not a power of two.
-        pub fn get_mul_shift_amount(value: &value::Literal) -> Option<Value> {
+        pub fn get_shift_amount(value: &value::Literal) -> Option<Value> {
             use ::num::traits::ToPrimitive;
 
             if !is_power_of_two(&value) {
@@ -126,11 +149,16 @@ value_mapping_test!(test_mul_div_shift : reduce::reduce {
     // i8
     Instruction::mul(2 as i8,1 as i8) => Instruction::shl(2 as i8,0 as i8),
     Instruction::mul(2 as i8,2 as i8) => Instruction::shl(2 as i8,1 as i8),
+    Instruction::div(2 as i8,1 as i8) => Instruction::shr(2 as i8,0 as i8),
+    Instruction::div(2 as i8,2 as i8) => Instruction::shr(2 as i8,1 as i8),
 
     // u32
     Instruction::mul(2 as u32,1 as u32) => Instruction::shl(2 as u32,0 as u32),
     Instruction::mul(2 as u32,2 as u32) => Instruction::shl(2 as u32,1 as u32),
+    Instruction::div(2 as u32,1 as u32) => Instruction::shr(2 as u32,0 as u32),
+    Instruction::div(2 as u32,2 as u32) => Instruction::shr(2 as u32,1 as u32),
 
     // Cases we shouldn't handle (non-powers of two).
-    Instruction::mul(5 as i16,3 as i16) => Instruction::mul(5 as i16,3 as i16)
+    Instruction::mul(5 as i16,3 as i16) => Instruction::mul(5 as i16,3 as i16),
+    Instruction::div(5 as i16,3 as i16) => Instruction::div(5 as i16,3 as i16)
 });
