@@ -34,7 +34,7 @@ impl Struct
     }
 
     /// Gets the fields of the structure.
-    pub fn fields<'a>(&'a self) -> std::slice::Iter<'a,Type> {
+    pub fn fields(&self) -> std::slice::Iter<Type> {
         self.fields.iter()
     }
 }

@@ -23,8 +23,8 @@ pub enum Condition
 impl Condition
 {
     /// Checks if the condition is `true` or `false`.
-    pub fn is_trivial(self) -> bool {
-        match self {
+    pub fn is_trivial(&self) -> bool {
+        match *self {
             Condition::True |
             Condition::False => true,
             _ => false,
@@ -32,8 +32,8 @@ impl Condition
     }
 
     /// Gets the textual abbreviation of the code.
-    pub fn abbreviation(self) -> &'static str {
-        match self {
+    pub fn abbreviation(&self) -> &'static str {
+        match *self {
             Condition::True => "true",
             Condition::False => "false",
             Condition::Equal(..) => "eq",

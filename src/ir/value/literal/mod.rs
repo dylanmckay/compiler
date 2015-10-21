@@ -71,10 +71,10 @@ impl Literal
     }
 
     pub fn ty(&self) -> Type {
-        match self {
-            &Literal::Integer(ref val) => val.ty(),
-            &Literal::Decimal(ref val) => val.ty(),
-            &Literal::Struct(ref val) => val.ty(),
+        match *self {
+            Literal::Integer(ref val) => val.ty(),
+            Literal::Decimal(ref val) => val.ty(),
+            Literal::Struct(ref val) => val.ty(),
         }
     }
 }

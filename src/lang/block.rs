@@ -73,9 +73,9 @@ impl<V> Block<V>
         self
     }
 
-    pub fn map_subvalues<F>(mut self, mut f: F) -> Self
+    pub fn map_subvalues<F>(mut self, f: F) -> Self
         where F: FnMut(V) -> V {
-        self.body = self.body.into_iter().map(|a| f(a)).collect();
+        self.body = self.body.into_iter().map(f).collect();
         self
     }
 

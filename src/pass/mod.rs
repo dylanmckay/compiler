@@ -24,23 +24,23 @@ pub enum Info<V: lang::Value>
 impl<V: lang::Value> Metadata for Info<V>
 {
     fn id(&self) -> Id {
-        match self {
-            &Info::Analysis(ref p) => p.id(),
-            &Info::Transform(ref p) => p.id(),
+        match *self {
+            Info::Analysis(ref p) => p.id(),
+            Info::Transform(ref p) => p.id(),
         }
     }
 
     fn dependencies(&self) -> &'static [Id] {
-        match self {
-            &Info::Analysis(ref p) => p.dependencies(),
-            &Info::Transform(ref p) => p.dependencies(),
+        match *self {
+            Info::Analysis(ref p) => p.dependencies(),
+            Info::Transform(ref p) => p.dependencies(),
         }
     }
 
     fn name(&self) -> &'static str {
-        match self {
-            &Info::Analysis(ref p) => p.name(),
-            &Info::Transform(ref p) => p.name(),
+        match *self {
+            Info::Analysis(ref p) => p.name(),
+            Info::Transform(ref p) => p.name(),
         }
     }
 }

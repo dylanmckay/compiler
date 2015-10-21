@@ -137,16 +137,16 @@ pub mod instruction
     impl Instruction
     {
         pub fn subvalues(&self) -> Vec<&Value> {
-             match self {
-                &Instruction::Add(ref instr) => instr.subvalues(),
-                &Instruction::Sub(ref instr) => instr.subvalues(),
-                &Instruction::Mul(ref instr) => instr.subvalues(),
-                &Instruction::Div(ref instr) => instr.subvalues(),
-                &Instruction::Shl(ref instr) => instr.subvalues(),
-                &Instruction::Shr(ref instr) => instr.subvalues(),
-                &Instruction::Call(ref instr) => instr.subvalues(),
-                &Instruction::Break(ref instr) => instr.subvalues(),
-                &Instruction::Return(ref instr) => instr.subvalues(),
+             match *self {
+                Instruction::Add(ref instr) => instr.subvalues(),
+                Instruction::Sub(ref instr) => instr.subvalues(),
+                Instruction::Mul(ref instr) => instr.subvalues(),
+                Instruction::Div(ref instr) => instr.subvalues(),
+                Instruction::Shl(ref instr) => instr.subvalues(),
+                Instruction::Shr(ref instr) => instr.subvalues(),
+                Instruction::Call(ref instr) => instr.subvalues(),
+                Instruction::Break(ref instr) => instr.subvalues(),
+                Instruction::Return(ref instr) => instr.subvalues(),
              }
         }
         
@@ -167,38 +167,38 @@ pub mod instruction
         }
 
         pub fn is_single_critical(&self) -> bool {
-            match self {
-                &ir::Instruction::Add(..) => false,
-                &ir::Instruction::Sub(..) => false,
-                &ir::Instruction::Mul(..) => false,
-                &ir::Instruction::Div(..) => false,
-                &ir::Instruction::Shl(..) => false,
-                &ir::Instruction::Shr(..) => false,
-                &ir::Instruction::Call(..) => true,
-                &ir::Instruction::Break(..) => true,
-                &ir::Instruction::Return(..) => true,
+            match *self {
+                ir::Instruction::Add(..) => false,
+                ir::Instruction::Sub(..) => false,
+                ir::Instruction::Mul(..) => false,
+                ir::Instruction::Div(..) => false,
+                ir::Instruction::Shl(..) => false,
+                ir::Instruction::Shr(..) => false,
+                ir::Instruction::Call(..) => true,
+                ir::Instruction::Break(..) => true,
+                ir::Instruction::Return(..) => true,
             }
         }
 
         pub fn is_terminator(&self) -> bool {
-            match self {
-                &ir::Instruction::Return(..) => true,
-                &ir::Instruction::Break(..) => true,
+            match *self {
+                ir::Instruction::Return(..) => true,
+                ir::Instruction::Break(..) => true,
                 _ => false,
             }
         }
 
         pub fn ty(&self) -> ir::Type {
-            match self {
-                &Instruction::Add(ref instr) => instr.ty(),
-                &Instruction::Sub(ref instr) => instr.ty(),
-                &Instruction::Mul(ref instr) => instr.ty(),
-                &Instruction::Div(ref instr) => instr.ty(),
-                &Instruction::Shl(ref instr) => instr.ty(),
-                &Instruction::Shr(ref instr) => instr.ty(),
-                &Instruction::Call(ref instr) => instr.ty(),
-                &Instruction::Break(ref instr) => instr.ty(),
-                &Instruction::Return(ref instr) => instr.ty(),
+            match *self {
+                Instruction::Add(ref instr) => instr.ty(),
+                Instruction::Sub(ref instr) => instr.ty(),
+                Instruction::Mul(ref instr) => instr.ty(),
+                Instruction::Div(ref instr) => instr.ty(),
+                Instruction::Shl(ref instr) => instr.ty(),
+                Instruction::Shr(ref instr) => instr.ty(),
+                Instruction::Call(ref instr) => instr.ty(),
+                Instruction::Break(ref instr) => instr.ty(),
+                Instruction::Return(ref instr) => instr.ty(),
              }
         }
 

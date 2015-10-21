@@ -36,12 +36,12 @@ impl<T: util::Identifiable> Set<T>
     }
 
     /// Gets an iterator to the elements in the set.
-    pub fn iter<'a>(&'a self) -> std::slice::Iter<'a,T> {
+    pub fn iter(&self) -> std::slice::Iter<T> {
         self.elements.iter()
     }
 
     /// Gets a mutable iterator to the elements in the set,
-    pub fn iter_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,T> {
+    pub fn iter_mut(&mut self) -> std::slice::IterMut<T> {
         self.elements.iter_mut()
     }
 }

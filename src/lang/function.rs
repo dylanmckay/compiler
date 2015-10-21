@@ -32,11 +32,11 @@ impl<V> Signature<V>
         self
     }
 
-    pub fn returns<'a>(&'a self) -> std::slice::Iter<'a,V::Type> {
+    pub fn returns(&self) -> std::slice::Iter<V::Type> {
         self.return_types.iter()
     }
 
-    pub fn parameters<'a>(&'a self) -> std::slice::Iter<'a,V::Type> {
+    pub fn parameters(&self) -> std::slice::Iter<V::Type> {
         self.param_types.iter()
     }
 }
@@ -106,18 +106,18 @@ impl<V> Function<V>
     /// The ID is guaranteed to be unique for each module.
     pub fn id(&self) -> util::Id { self.id }
 
-    pub fn blocks<'a>(&'a self) -> std::slice::Iter<'a,Block<V>> {
+    pub fn blocks(&self) -> std::slice::Iter<Block<V>> {
         self.blocks.iter()
     }
 
-    pub fn blocks_mut<'a>(&'a mut self) -> std::slice::IterMut<'a,Block<V>> {
+    pub fn blocks_mut(&mut self) -> std::slice::IterMut<Block<V>> {
         self.blocks.iter_mut()
     }
 
-    pub fn map_blocks<F>(mut self, mut f: F) -> Self
+    pub fn map_blocks<F>(mut self, f: F) -> Self
         where F: FnMut(Block<V>) -> Block<V> {
 
-        let blocks = self.blocks.into_iter().map(|a| f(a));
+        let blocks = self.blocks.into_iter().map(f);
         self.blocks = blocks.collect();
 
         self

@@ -11,7 +11,7 @@ impl Return
 {
     pub fn new(value: Option<ir::Value>) -> Return {
         Return {
-            value: value.map(|v| Box::new(v)),
+            value: value.map(Box::new),
         }
     }
 

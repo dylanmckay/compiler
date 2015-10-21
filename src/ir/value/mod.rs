@@ -116,8 +116,8 @@ pub mod value
         }
 
         pub fn as_literal(&self) -> Option<&value::Literal> {
-            match self {
-                &Value::Literal(ref v) => Some(v),
+            match *self {
+                Value::Literal(ref v) => Some(v),
                 _ => None,
             }
         }
@@ -151,8 +151,8 @@ pub mod value
         // FIXME: subvalue support is patchy
 
         fn subvalues(&self) -> Vec<&Self> {
-            match self {
-                &ir::Value::Instruction(ref i) => i.subvalues(),
+            match *self {
+                ir::Value::Instruction(ref i) => i.subvalues(),
                 _ => Vec::new(),
             }
         }
@@ -175,9 +175,9 @@ pub mod value
         }
 
         fn is_single_critical(&self) -> bool {
-            match self {
-                &ir::Value::Literal(..) => false,
-                &ir::Value::Instruction(ref i) => i.is_single_critical(),
+            match *self {
+                ir::Value::Literal(..) => false,
+                ir::Value::Instruction(ref i) => i.is_single_critical(),
                 _ => true,
             }
         }
@@ -192,28 +192,28 @@ pub mod value
         }
 
         fn is_simple(&self) -> bool {
-             match self {
-                 &Value::Literal(..) => true,
-                 &Value::Pointer(ref val) => val.underlying().is_simple(),
-                 &Value::Register(..) => true,
-                 &Value::Instruction(..) => false,
-                 &Value::GlobalRef(..) => true,
-                 &Value::BlockRef(..) => true,
-                 &Value::FunctionRef(..) => true,
-                 &Value::RegisterRef(..) => true,
+             match *self {
+                 Value::Literal(..) => true,
+                 Value::Pointer(ref val) => val.underlying().is_simple(),
+                 Value::Register(..) => true,
+                 Value::Instruction(..) => false,
+                 Value::GlobalRef(..) => true,
+                 Value::BlockRef(..) => true,
+                 Value::FunctionRef(..) => true,
+                 Value::RegisterRef(..) => true,
              }
         }
 
         fn ty(&self) -> Type {
-             match self {
-                &Value::Literal(ref val) => val.ty(),
-                &Value::Pointer(ref val) => val.ty(),
-                &Value::Register(ref val) => val.ty(),
-                &Value::Instruction(ref val) => val.ty(),
-                &Value::GlobalRef(ref val) => val.ty(),
-                &Value::BlockRef(ref val) => val.ty(),
-                &Value::FunctionRef(ref val) => val.ty(),
-                &Value::RegisterRef(ref val) => val.ty(),
+             match *self {
+                Value::Literal(ref val) => val.ty(),
+                Value::Pointer(ref val) => val.ty(),
+                Value::Register(ref val) => val.ty(),
+                Value::Instruction(ref val) => val.ty(),
+                Value::GlobalRef(ref val) => val.ty(),
+                Value::BlockRef(ref val) => val.ty(),
+                Value::FunctionRef(ref val) => val.ty(),
+                Value::RegisterRef(ref val) => val.ty(),
             }
         }
     }

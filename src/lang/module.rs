@@ -57,27 +57,27 @@ impl<V> Module<V>
         self.find_function(id).expect("no function with that ID exists")
     }
 
-    pub fn functions<'a>(&'a self) -> std::slice::Iter<'a,Function<V>> {
+    pub fn functions(&self) -> std::slice::Iter<Function<V>> {
         self.functions.iter()
     }
 
-    pub fn map_functions<F>(mut self, mut f: F) -> Self
+    pub fn map_functions<F>(mut self, f: F) -> Self
         where F: FnMut(Function<V>) -> Function<V> {
 
-        let funcs = self.functions.into_iter().map(|a| f(a));
+        let funcs = self.functions.into_iter().map(f);
         self.functions = funcs.collect();
 
         self
     }
 
-    pub fn globals<'a>(&'a self) -> std::slice::Iter<'a,Global<V>> {
+    pub fn globals(&self) -> std::slice::Iter<Global<V>> {
         self.globals.iter()
     }
 
-    pub fn map_globals<F>(mut self, mut f: F) -> Self
+    pub fn map_globals<F>(mut self, f: F) -> Self
         where F: FnMut(Global<V>) -> Global<V> {
 
-        let globals = self.globals.into_iter().map(|a| f(a));
+        let globals = self.globals.into_iter().map(f);
         self.globals = globals.collect();
 
         self

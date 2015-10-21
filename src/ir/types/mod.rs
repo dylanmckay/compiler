@@ -131,16 +131,16 @@ pub mod ty
     impl TypeTrait for Type
     {
         fn size(&self) -> u64 {
-            match self {
-                &Type::Void(ref ty) => { ty.size() },
-                &Type::Pointer(ref ty) => ty.size(),
-                &Type::Integer(ref ty) => { ty.size() },
-                &Type::Decimal(ref ty) => { ty.size() },
-                &Type::Vector(ref ty) => { ty.size() },
-                &Type::Array(ref ty) => { ty.size() },
-                &Type::Struct(ref ty) => { ty.size() },
-                &Type::Function(ref ty) => { ty.size() },
-                &Type::Block(ref ty) => { ty.size() },
+            match *self {
+                Type::Void(ref ty) => { ty.size() },
+                Type::Pointer(ref ty) => ty.size(),
+                Type::Integer(ref ty) => { ty.size() },
+                Type::Decimal(ref ty) => { ty.size() },
+                Type::Vector(ref ty) => { ty.size() },
+                Type::Array(ref ty) => { ty.size() },
+                Type::Struct(ref ty) => { ty.size() },
+                Type::Function(ref ty) => { ty.size() },
+                Type::Block(ref ty) => { ty.size() },
             }
         }
     }
@@ -149,16 +149,16 @@ pub mod ty
     {
         fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result
         {
-            match self {
-                &Type::Void(ty) => ty.fmt(fmt),
-                &Type::Pointer(ref ty) => ty.fmt(fmt),
-                &Type::Integer(ref ty) => ty.fmt(fmt),
-                &Type::Decimal(ref ty) => ty.fmt(fmt),
-                &Type::Vector(ref ty) => ty.fmt(fmt),
-                &Type::Array(ref ty) => ty.fmt(fmt),
-                &Type::Struct(ref ty) => ty.fmt(fmt),
-                &Type::Function(ref ty) => ty.fmt(fmt),
-                &Type::Block(ref ty) => ty.fmt(fmt),
+            match *self {
+                Type::Void(ty) => ty.fmt(fmt),
+                Type::Pointer(ref ty) => ty.fmt(fmt),
+                Type::Integer(ref ty) => ty.fmt(fmt),
+                Type::Decimal(ref ty) => ty.fmt(fmt),
+                Type::Vector(ref ty) => ty.fmt(fmt),
+                Type::Array(ref ty) => ty.fmt(fmt),
+                Type::Struct(ref ty) => ty.fmt(fmt),
+                Type::Function(ref ty) => ty.fmt(fmt),
+                Type::Block(ref ty) => ty.fmt(fmt),
             }
         }
     }

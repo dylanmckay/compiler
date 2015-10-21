@@ -25,7 +25,7 @@ pub mod target
         fn pointer_width(&self) -> u16;
 
         /// Gets the register classes the target supports.
-        fn register_classes<'a>(&'a self) -> std::slice::Iter<'a,RegisterClass>;
+        fn register_classes(&self) -> std::slice::Iter<RegisterClass>;
     }
 }
 

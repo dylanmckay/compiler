@@ -25,9 +25,9 @@ impl Name
     }
 
     pub fn is_named(&self) -> bool {
-        match self {
-            &Name::Unnamed => false,
-            &Name::Named(..) => true,
+        match *self {
+            Name::Unnamed => false,
+            Name::Named(..) => true,
         }
     }
 }
@@ -35,9 +35,9 @@ impl Name
 impl std::fmt::Display for Name
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> Result<(),std::fmt::Error> {
-        match self {
-            &Name::Unnamed => "unnamed".fmt(fmt), // FIXME: we need to have a global accumulator
-            &Name::Named(ref val) => val.fmt(fmt),
+        match *self {
+            Name::Unnamed => "unnamed".fmt(fmt), // FIXME: we need to have a global accumulator
+            Name::Named(ref val) => val.fmt(fmt),
         }
     }
 }

@@ -17,7 +17,7 @@ impl Struct
         }
     }
 
-    pub fn fields<'a>(&'a self) -> std::slice::Iter<'a,Value> {
+    pub fn fields(&self) -> std::slice::Iter<Value> {
         self.fields.iter()
     }
 

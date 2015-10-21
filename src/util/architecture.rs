@@ -14,10 +14,10 @@ impl fmt::Display for Architecture
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(),fmt::Error>
     {
-        match self {
-            &Architecture::x86 => "x86",
-            &Architecture::x86_64 => "x86-64",
-            &Architecture::AVR => "AVR",
+        match *self {
+            Architecture::x86 => "x86",
+            Architecture::x86_64 => "x86-64",
+            Architecture::AVR => "AVR",
         }.fmt(fmt)
     }
 }

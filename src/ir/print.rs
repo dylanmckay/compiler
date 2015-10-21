@@ -155,22 +155,22 @@ pub mod value
                  printer: &mut Printer,
                  fmt: &mut fmt::Formatter) -> fmt::Result {
 
-        match value {
-            &Value::Literal(ref val) => self::literal(val, fmt),
-            &Value::Pointer(ref val) => self::pointer(val, printer, fmt),
-            &Value::Register(ref val) => self::register(val, printer, fmt),
-            &Value::Instruction(ref val) => self::instruction::instruction(val, printer, fmt),
-            &Value::GlobalRef(ref val) => self::global_ref(val, printer, fmt),
-            &Value::BlockRef(ref val) => self::block_ref(val, printer, fmt),
-            &Value::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
-            &Value::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
+        match *value {
+            Value::Literal(ref val) => self::literal(val, fmt),
+            Value::Pointer(ref val) => self::pointer(val, printer, fmt),
+            Value::Register(ref val) => self::register(val, printer, fmt),
+            Value::Instruction(ref val) => self::instruction::instruction(val, printer, fmt),
+            Value::GlobalRef(ref val) => self::global_ref(val, printer, fmt),
+            Value::BlockRef(ref val) => self::block_ref(val, printer, fmt),
+            Value::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
+            Value::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
         }
     }
 
     pub fn literal(value: &value::Literal,
                    fmt: &mut fmt::Formatter) -> fmt::Result {
-        match value {
-            &value::Literal::Integer(ref val) => self::literal_integer(val, fmt),
+        match *value {
+            value::Literal::Integer(ref val) => self::literal_integer(val, fmt),
             _ => unimplemented!(),
         }
     }
@@ -200,13 +200,13 @@ pub mod value
 
         try!(write!(fmt, "%"));
 
-        match value.name() {
-            &lang::Name::Unnamed => {
+        match *value.name() {
+            lang::Name::Unnamed => {
                 let number = printer.assign_register(value);
                 try!(write!(fmt, "{}", number));
             },
             // the register has an explicit name
-            &lang::Name::Named(ref name) => { 
+            lang::Name::Named(ref name) => { 
                 try!(write!(fmt, "{}", name));
             }
         }
@@ -253,17 +253,17 @@ pub mod value
         pub fn instruction(inst: &Instruction,
                            printer: &mut Printer,
                            fmt: &mut fmt::Formatter) -> fmt::Result {
-            match inst {
-                &Instruction::Add(ref i) => arithmetic_binop("add", i, printer, fmt),
-                &Instruction::Sub(ref i) => arithmetic_binop("sub", i, printer, fmt),
-                &Instruction::Mul(ref i) => arithmetic_binop("mul", i, printer, fmt),
-                &Instruction::Div(ref i) => arithmetic_binop("div", i, printer, fmt),
-                &Instruction::Shl(ref i) => arithmetic_binop("shl", i, printer, fmt),
-                &Instruction::Shr(ref i) => arithmetic_binop("shr", i, printer, fmt),
+            match *inst {
+                Instruction::Add(ref i) => arithmetic_binop("add", i, printer, fmt),
+                Instruction::Sub(ref i) => arithmetic_binop("sub", i, printer, fmt),
+                Instruction::Mul(ref i) => arithmetic_binop("mul", i, printer, fmt),
+                Instruction::Div(ref i) => arithmetic_binop("div", i, printer, fmt),
+                Instruction::Shl(ref i) => arithmetic_binop("shl", i, printer, fmt),
+                Instruction::Shr(ref i) => arithmetic_binop("shr", i, printer, fmt),
 
-                &Instruction::Call(ref i) => call(i, fmt),
-                &Instruction::Break(ref i) => br(i, printer, fmt),
-                &Instruction::Return(ref i) => ret(i, printer, fmt),
+                Instruction::Call(ref i) => call(i, fmt),
+                Instruction::Break(ref i) => br(i, printer, fmt),
+                Instruction::Return(ref i) => ret(i, printer, fmt),
             }
         }
 

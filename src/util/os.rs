@@ -14,10 +14,10 @@ impl fmt::Display for OsKind
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(), fmt::Error>
     {
-        match self {
-            &OsKind::None    => "None".fmt(fmt),
-            &OsKind::Windows => "Windows".fmt(fmt),
-            &OsKind::Unix(kind) => kind.fmt(fmt),
+        match *self {
+            OsKind::None    => "None".fmt(fmt),
+            OsKind::Windows => "Windows".fmt(fmt),
+            OsKind::Unix(kind) => kind.fmt(fmt),
         }
     }
 }
@@ -40,15 +40,15 @@ impl fmt::Display for UnixKind
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(), fmt::Error>
     {
-        match self {
-            &UnixKind::Unknown => "Unix".fmt(fmt),
-            &UnixKind::Linux   => "Linux".fmt(fmt),
-            &UnixKind::SystemV => "SystemV".fmt(fmt),
-            &UnixKind::HP_UX   => "HP-UX".fmt(fmt),
-            &UnixKind::Solaris => "Solaris".fmt(fmt),
-            &UnixKind::AIX     => "AIX".fmt(fmt),
-            &UnixKind::IRIX    => "IRIX".fmt(fmt),
-            &UnixKind::BSD(kind) => {
+        match *self {
+            UnixKind::Unknown => "Unix".fmt(fmt),
+            UnixKind::Linux   => "Linux".fmt(fmt),
+            UnixKind::SystemV => "SystemV".fmt(fmt),
+            UnixKind::HP_UX   => "HP-UX".fmt(fmt),
+            UnixKind::Solaris => "Solaris".fmt(fmt),
+            UnixKind::AIX     => "AIX".fmt(fmt),
+            UnixKind::IRIX    => "IRIX".fmt(fmt),
+            UnixKind::BSD(kind) => {
                 try!(kind.fmt(fmt));
                 "BSD".fmt(fmt)
             }
@@ -67,10 +67,10 @@ pub enum BSDKind
 impl fmt::Display for BSDKind {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(), fmt::Error>
     {
-        match self {
-            &BSDKind::Net => "Net",
-            &BSDKind::Free => "Free",
-            &BSDKind::Open => "Open",
+        match *self {
+            BSDKind::Net => "Net",
+            BSDKind::Free => "Free",
+            BSDKind::Open => "Open",
         }.fmt(fmt)
     }
 }

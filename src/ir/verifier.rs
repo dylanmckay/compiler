@@ -41,7 +41,7 @@ pub fn verify_block(module: &ir::Module,
 
     try!(util::verify_name(block.name()));
 
-    for value in block.subvalues().iter() {
+    for value in &block.subvalues() {
         try!(self::verify_value(module, value));
     }
 
@@ -69,9 +69,9 @@ mod util
     /// Checks if a name is valid.
     pub fn verify_name(name: &ir::Name) -> Result
     {
-        match name {
-            &ir::Name::Unnamed(..) => Ok(()),
-            &ir::Name::Named(ref ident) => self::verify_ident(ident),
+        match *name {
+            ir::Name::Unnamed(..) => Ok(()),
+            ir::Name::Named(ref ident) => self::verify_ident(ident),
         }
     }
 
