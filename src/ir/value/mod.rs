@@ -191,6 +191,19 @@ pub mod value
             }
         }
 
+        fn is_simple(&self) -> bool {
+             match self {
+                 &Value::Literal(..) => true,
+                 &Value::Pointer(ref val) => val.underlying().is_simple(),
+                 &Value::Register(..) => false,
+                 &Value::Instruction(..) => false,
+                 &Value::GlobalRef(..) => true,
+                 &Value::BlockRef(..) => true,
+                 &Value::FunctionRef(..) => true,
+                 &Value::RegisterRef(..) => true,
+             }
+        }
+
         fn ty(&self) -> Type {
              match self {
                 &Value::Literal(ref val) => val.ty(),

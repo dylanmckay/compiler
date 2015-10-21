@@ -22,6 +22,11 @@ pub trait Value : Clone + Sized + fmt::Debug
 
     fn ty(&self) -> Self::Type;
 
+    /// Checks if the value is simple.
+    ///
+    /// Simple values are printed without parentheses.
+    fn is_simple(&self) -> bool;
+
     /// Flattens the value into registers.
     fn flatten(self, block: &mut lang::Block<Self>) -> Self;
 

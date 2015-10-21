@@ -75,7 +75,7 @@ pub fn root_value(value: &ir::Value,
                   fmt: &mut fmt::Formatter,
                   accum: &mut u64) -> fmt::Result {
     try!(write!(fmt, "\t"));
-    try!(self::value::value(value, module, fmt, accum));
+    try!(self::value::plain_value(value, module, fmt, accum));
     write!(fmt, "\n")
 }
 
@@ -91,11 +91,32 @@ pub mod value
     use ir::{Module,Value,Instruction,value};
     use std::fmt;
     use util;
+    use lang;
 
     pub fn value(value: &Value,
                  module: &Module,
                  fmt: &mut fmt::Formatter,
                  accum: &mut u64) -> fmt::Result {
+        use lang::Value;
+
+        // simple values are not parenthesised.
+        if !value.is_simple() {
+            try!(write!(fmt, "("));
+        }
+
+        try!(self::plain_value(value, module, fmt, accum));
+
+        if !value.is_simple() {
+            try!(write!(fmt, ")"));
+        }
+
+        Ok(())
+    }
+
+    pub fn plain_value(value: &Value,
+                       module: &Module,
+                       fmt: &mut fmt::Formatter,
+                       accum: &mut u64) -> fmt::Result {
 
         match value {
             &Value::Literal(ref val) => self::literal(val, fmt),
