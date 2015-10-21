@@ -53,28 +53,34 @@ pub mod instruction
 
     impl Instruction
     {
-        pub fn add(lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instruction::Add::new(lhs, rhs).into()
+        pub fn add<V>(lhs: V, rhs: V) -> Instruction
+            where V: Into<Value> {
+            instruction::Add::new(lhs.into(), rhs.into()).into()
         }
 
-        pub fn sub(lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instruction::Sub::new(lhs, rhs).into()
+        pub fn sub<V>(lhs: V, rhs: V) -> Instruction
+            where V: Into<Value> {
+            instruction::Sub::new(lhs.into(), rhs.into()).into()
         }
 
-        pub fn mul(lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instruction::Mul::new(lhs, rhs).into()
+        pub fn mul<V>(lhs: V, rhs: V) -> Instruction
+            where V: Into<Value> {
+            instruction::Mul::new(lhs.into(), rhs.into()).into()
         }
 
-        pub fn div(lhs: ir::Value, rhs: ir::Value) -> Instruction {
-            instruction::Div::new(lhs, rhs).into()
+        pub fn div<V>(lhs: V, rhs: V) -> Instruction
+            where V: Into<Value> {
+            instruction::Div::new(lhs.into(), rhs.into()).into()
         }
 
-        pub fn shl(val: ir::Value, amount: ir::Value) -> Instruction {
-            instruction::Shl::new(val, amount).into()
+        pub fn shl<V>(val: V, amount: V) -> Instruction
+            where V: Into<Value> {
+            instruction::Shl::new(val.into(), amount.into()).into()
         }
 
-        pub fn shr(val: ir::Value, amount: ir::Value) -> Instruction {
-            instruction::Shr::new(val, amount).into()
+        pub fn shr<V>(val: V, amount: V) -> Instruction
+            where V: Into<Value> {
+            instruction::Shr::new(val.into(), amount.into()).into()
         }
 
         pub fn ret(value: Option<ir::Value>) -> Instruction {

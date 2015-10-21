@@ -124,13 +124,13 @@ pub mod reduce
 value_mapping_test!(test_mul_div_shift : reduce::reduce {
 
     // i8
-    Instruction::mul(Value::i8(2),Value::i8(1)) => Instruction::shl(Value::i8(2),Value::i8(0)),
-    Instruction::mul(Value::i8(2),Value::i8(2)) => Instruction::shl(Value::i8(2),Value::i8(1)),
+    Instruction::mul(2 as i8,1 as i8) => Instruction::shl(2 as i8,0 as i8),
+    Instruction::mul(2 as i8,2 as i8) => Instruction::shl(2 as i8,1 as i8),
 
     // u32
-    Instruction::mul(Value::u32(2),Value::u32(1)) => Instruction::shl(Value::u32(2),Value::u32(0)),
-    Instruction::mul(Value::u32(2),Value::u32(2)) => Instruction::shl(Value::u32(2),Value::u32(1)),
+    Instruction::mul(2 as u32,1 as u32) => Instruction::shl(2 as u32,0 as u32),
+    Instruction::mul(2 as u32,2 as u32) => Instruction::shl(2 as u32,1 as u32),
 
     // Cases we shouldn't handle (non-powers of two).
-    Instruction::mul(Value::i16(5),Value::i16(3)) => Instruction::mul(Value::i16(5),Value::i16(3))
+    Instruction::mul(5 as i16,3 as i16) => Instruction::mul(5 as i16,3 as i16)
 });

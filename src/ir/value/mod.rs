@@ -201,4 +201,22 @@ pub mod value
             }
         }
     }
+
+    /// Implements Into<Value> for u8,i32,etc
+    macro_rules! impl_into_value_for_integers {
+        (
+            $( $ty:ident ),*
+        ) => {
+            $(
+                impl Into<Value> for $ty
+                {
+                    fn into(self) -> Value {
+                        Value::$ty(self)
+                    }
+                }
+            )*
+        }
+    }
+
+    impl_into_value_for_integers!(u8,u16,u32,u64,i8,i16,i32,i64);
 }
