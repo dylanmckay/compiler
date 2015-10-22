@@ -39,7 +39,7 @@ pub fn verify_block(module: &ir::Module,
 
     use lang::Value;
 
-    try!(util::verify_name(block.name()));
+    try!(util::verify_ident(block.name()));
 
     for value in &block.subvalues() {
         try!(self::verify_value(module, value));

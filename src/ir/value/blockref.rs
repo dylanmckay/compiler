@@ -16,6 +16,10 @@ impl BlockRef
         }
     }
 
+    pub fn block_id(&self) -> util::Id {
+        self.id
+    }
+
     pub fn ty(&self) -> ir::Type {
         ir::Type::block()
     }

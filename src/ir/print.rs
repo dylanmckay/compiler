@@ -116,6 +116,30 @@ pub fn block(block: &ir::Block,
     Ok(())
 }
 
+pub fn condition(cond: &ir::Condition,
+                 printer: &mut Printer,
+                 fmt: &mut fmt::Formatter) -> fmt::Result {
+    match *cond {
+        // trivial conditions
+        ir::Condition::True => write!(fmt, "true"),
+        ir::Condition::False => write!(fmt, "false"),
+
+        // binary conditions
+        ir::Condition::Equal(ref lhs, ref rhs) |
+        ir::Condition::NotEqual(ref lhs, ref rhs) |
+        ir::Condition::GreaterThan(ref lhs, ref rhs) |
+        ir::Condition::GreaterThanOrEq(ref lhs, ref rhs) |
+        ir::Condition::LessThan(ref lhs, ref rhs) |
+        ir::Condition::LessThanOrEq(ref lhs, ref rhs) => {
+            try!(value::value(lhs, printer, fmt));
+            try!(write!(fmt, " {} ", cond.abbreviation()));
+            try!(value::value(rhs, printer, fmt));
+
+            Ok(())
+        },
+    }
+}
+
 pub fn root_value(value: &ir::Value,
                   printer: &mut Printer,
                   fmt: &mut fmt::Formatter) -> fmt::Result {
@@ -223,10 +247,11 @@ pub mod value
         write!(fmt, "%{}", global.name())
     }
 
-    pub fn block_ref(_value: &value::BlockRef,
-                     _printer: &mut Printer,
-                     _fmt: &mut fmt::Formatter) -> fmt::Result {
-        unimplemented!();
+    pub fn block_ref(value: &value::BlockRef,
+                     printer: &mut Printer,
+                     fmt: &mut fmt::Formatter) -> fmt::Result {
+        let block = printer.module.get_block(value.block_id());
+        write!(fmt, "{}", block.name())
     }
 
     pub fn function_ref(_value: &value::FunctionRef,
@@ -295,10 +320,13 @@ pub mod value
 
         }
         
-        pub fn br(_inst: &instruction::Break,
-                  _printer: &mut Printer,
-                  _fmt: &mut fmt::Formatter) -> fmt::Result {
-            unimplemented!();
+        pub fn br(inst: &instruction::Break,
+                  printer: &mut Printer,
+                  fmt: &mut fmt::Formatter) -> fmt::Result {
+            try!(write!(fmt, "break "));
+            try!(super::super::condition(inst.condition(), printer, fmt));
+            try!(write!(fmt, " "));
+            super::value(inst.target(), printer, fmt)
         }
 
         pub fn ret(inst: &instruction::Return,

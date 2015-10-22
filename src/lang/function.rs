@@ -84,11 +84,8 @@ impl<V> Function<V>
         Function::new(name, sig, Vec::new())
     }
 
-    pub fn add(mut self, mut block: Block<V>) -> Self {
-        // assign an ID to the block.
-        block.set_id(util::Id::next());
+    pub fn add(&mut self, block: Block<V>) {
         self.blocks.push(block);
-        self
     }
 
     pub fn name(&self) -> &str { &self.name }

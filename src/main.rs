@@ -51,25 +51,26 @@ fn create_module() -> ir::Module {
 
     let bb2 = {
         let inst_ret_void = ir::Instruction::ret_void();
-        let mut block = ir::Block::empty(ir::Name::named("other".to_owned()));
+        let mut block = ir::Block::empty("other".to_owned());
         block.add(inst_ret_void);
         block
     };
 
     let bb1 = {
-        let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
-        let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
-        let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
-        //let inst_jump = ir::Instruction::br(ir::Value::block_ref(&bb2));
+        //let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
+        //let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
+        //let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
+        let inst_br = ir::Instruction::br(ir::Value::block_ref(&bb2));
 
-        let mut block = ir::Block::empty(ir::Name::named("entry".to_owned()));
-        block.add(inst_ret);
+        let mut block = ir::Block::empty("entry".to_owned());
+        block.add(inst_br);
         block
     };
 
     let sig = lang::Signature::new().ret(ir::Type::i32());
-    let function = ir::Function::empty("main".into(), sig).add(bb1)
-                                                          .add(bb2);
+    let mut function = ir::Function::empty("main".into(), sig);
+    function.add(bb1);
+    function.add(bb2);
 
     ir::Module::empty().function(function)
                        .global(global)

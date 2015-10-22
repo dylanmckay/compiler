@@ -57,6 +57,15 @@ impl<V> Module<V>
         self.find_function(id).expect("no function with that ID exists")
     }
 
+    pub fn find_block(&self, id: util::Id) -> Option<&lang::Block<V>> {
+        self.functions().flat_map(|f| f.blocks())
+                        .find(|b| b.id() == id)
+    }
+
+    pub fn get_block(&self, id: util::Id) -> &lang::Block<V> {
+        self.find_block(id).expect("no block with that ID exists")
+    }
+
     pub fn functions(&self) -> std::slice::Iter<Function<V>> {
         self.functions.iter()
     }

@@ -24,6 +24,14 @@ impl Break
         Break::conditional(ir::Condition::True, target)
     }
 
+    pub fn condition(&self) -> &ir::Condition {
+        &self.cond
+    }
+
+    pub fn target(&self) -> &ir::Value {
+        &self.target
+    }
+
     pub fn ty(&self) -> ir::Type { ir::Type::void() }
 }
 

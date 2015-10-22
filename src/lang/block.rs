@@ -9,23 +9,25 @@ pub struct Block<V>
 {
     id: util::Id,
 
-    pub name: lang::Name,
-    pub body: Vec<V>,
+    name: String,
+    body: Vec<V>,
 }
 
 impl<V> Block<V>
     where V: lang::Value
 {
-    pub fn new(name: lang::Name,
-               body: Vec<V>) -> Self {
+    pub fn new<N>(name: N,
+                  body: Vec<V>) -> Self
+        where N: Into<String> {
         Block {
             id: util::Id::next(),
-            name: name,
+            name: name.into(),
             body: body,
         }
     }
 
-    pub fn empty(name: lang::Name) -> Self {
+    pub fn empty<N>(name: N) -> Self
+        where N: Into<String> {
         Block::new(name, Vec::new())
     }
 
@@ -34,7 +36,7 @@ impl<V> Block<V>
         self.body.push(value.into());
     }
 
-    pub fn name(&self) -> &lang::Name { &self.name }
+    pub fn name(&self) -> &str { &self.name }
 
     pub fn flatten(self) -> Self {
         let mut block = Block {
