@@ -50,27 +50,28 @@ fn create_module() -> ir::Module {
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
     let bb2 = {
-        let inst_ret_void = ir::Instruction::ret_void();
-        let mut block = ir::Block::empty("other".to_owned());
-        block.add(inst_ret_void);
+
+        let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
+        let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
+        let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
+
+        let mut block = ir::Block::empty("other");
+        block.append_value(inst_ret);
         block
     };
 
     let bb1 = {
-        //let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
-        //let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
-        //let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
         let inst_br = ir::Instruction::br(ir::Value::block_ref(&bb2));
 
-        let mut block = ir::Block::empty("entry".to_owned());
-        block.add(inst_br);
+        let mut block = ir::Block::empty("entry");
+        block.append_value(inst_br);
         block
     };
 
     let sig = lang::Signature::new().ret(ir::Type::i32());
-    let mut function = ir::Function::empty("main".into(), sig);
-    function.add(bb1);
-    function.add(bb2);
+    let mut function = ir::Function::empty("main", sig);
+    function.append_block(bb1);
+    function.append_block(bb2);
 
     ir::Module::empty().function(function)
                        .global(global)
@@ -78,7 +79,7 @@ fn create_module() -> ir::Module {
 
 fn create_ir_pass_manager() -> pass::Manager<ir::Value> {
     pass::Manager::empty()
-        //.add(pass::transforms::ConstantFolding)
-        .add(pass::transforms::StrengthReduction)
-        .add(pass::transforms::DeadCodeElimination)
+        //.add_pass(pass::transforms::ConstantFolding)
+        .add_pass(pass::transforms::StrengthReduction)
+        .add_pass(pass::transforms::DeadCodeElimination)
 }

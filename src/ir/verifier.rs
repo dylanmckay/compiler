@@ -63,17 +63,7 @@ pub fn verify_value(_: &ir::Module,
 /// Utility methods.
 mod util
 {
-    use ir;
     use super::Result;
-
-    /// Checks if a name is valid.
-    pub fn verify_name(name: &ir::Name) -> Result
-    {
-        match *name {
-            ir::Name::Unnamed(..) => Ok(()),
-            ir::Name::Named(ref ident) => self::verify_ident(ident),
-        }
-    }
 
     /// Checks if an identifier is valid.
     pub fn verify_ident(ident: &str) -> Result

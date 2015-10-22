@@ -112,7 +112,7 @@ pub mod instruction
                         let new_reg = ir::value::Register::unnamed(i.into());
                         let reg_ref = Value::register_ref(&new_reg);
 
-                        block.add(new_reg);
+                        block.append_value(new_reg);
                         reg_ref
                     }
 

@@ -31,7 +31,7 @@ impl<V> Block<V>
         Block::new(name, Vec::new())
     }
 
-    pub fn add<T>(&mut self, value: T)
+    pub fn append_value<T>(&mut self, value: T)
         where T: Into<V> {
         self.body.push(value.into());
     }
@@ -47,7 +47,7 @@ impl<V> Block<V>
 
         for value in self.subvalues() {
             let new_value = value.flatten(&mut block);
-            block.add(new_value);
+            block.append_value(new_value);
         }
 
         block

@@ -18,7 +18,7 @@ impl<V: lang::Value> Manager<V>
     }
 
     /// Adds a pass to the manager.
-    pub fn add<P>(mut self, pass: P) -> Self
+    pub fn add_pass<P>(mut self, pass: P) -> Self
         where Box<P>: Into<pass::Info<V>> {
 
         self.passes.push(Box::new(pass).into());

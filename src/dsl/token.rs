@@ -127,12 +127,12 @@ impl<I> Tokenizer<I>
         if chars.contains('.') { // a float
             match chars.parse() {
                 Ok(c) => Ok(Token::FloatLiteral(c)),
-                Err(e) => { return Err(e.description().into()); }
+                Err(e) => Err(e.description().into()),
             }    
         } else { // an integer
             match i64::from_str_radix(&chars, base) {
                 Ok(c) => Ok(Token::IntegerLiteral(c)),
-                Err(e) => { return Err(e.description().into()); },
+                Err(e) => Err(e.description().into()),
             }
         }
     }

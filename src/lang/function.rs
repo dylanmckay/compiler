@@ -68,23 +68,27 @@ pub struct Function<V: lang::Value>
 impl<V> Function<V>
     where V: lang::Value
 {
-    pub fn new(name: String,
-               signature: Signature<V>,
-               blocks: Vec<Block<V>>) -> Self {
+    pub fn new<N>(name: N,
+                  signature: Signature<V>,
+                  blocks: Vec<Block<V>>) -> Self
+        where N: Into<String> {
+
         Function {
             id: util::Id::next(),
 
-            name: name,
+            name: name.into(),
             signature: signature,
             blocks: blocks,
         }
     }
 
-    pub fn empty(name: String, sig: Signature<V>) -> Self {
+    pub fn empty<N>(name: N, sig: Signature<V>) -> Self
+        where N: Into<String> {
+
         Function::new(name, sig, Vec::new())
     }
 
-    pub fn add(&mut self, block: Block<V>) {
+    pub fn append_block(&mut self, block: Block<V>) {
         self.blocks.push(block);
     }
 
