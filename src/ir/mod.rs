@@ -5,20 +5,21 @@ pub use lang::Name;
 pub use ir::instruction::{Instruction,InstructionTrait};
 pub use self::cond::Condition;
 
+/// Where types are implemented.
 pub mod types;
+/// Contains the different value kinds.
 pub mod value;
-pub mod cond;
-
+/// Where instruction definitions are located.
 pub mod instruction;
-
 /// The IR verifier.
 pub mod verifier;
 /// Routines for printing modules.
 pub mod print;
 
-use lang;
-pub type Module = lang::Module<Value>;
-pub type Global = lang::Global<Value>;
-pub type Function = lang::Function<Value>;
-pub type Block = lang::Block<Value>;
-pub type Signature = lang::Signature<Value>;
+pub mod cond;
+
+pub type Module = ::lang::Module<Value>;
+pub type Global = ::lang::Global<Value>;
+pub type Function = ::lang::Function<Value>;
+pub type Block = ::lang::Block<Value>;
+pub type Signature = ::lang::Signature<Value>;

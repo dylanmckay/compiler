@@ -5,6 +5,7 @@ use std::fmt;
 /// A value.
 pub trait Value : Clone + Sized + fmt::Debug
 {
+    /// The type that values can have.
     type Type: lang::Type;
 
     /// Gets the set of values.
@@ -15,11 +16,7 @@ pub trait Value : Clone + Sized + fmt::Debug
     fn map_subvalues<F>(self, f: F) -> Self
         where F: FnMut(Self) -> Self;
 
-    fn map<F,T>(self, f: F) -> T
-        where F: Fn(Self) -> T {
-        f(self)
-    }
-
+    /// Gets the type of the value.
     fn ty(&self) -> Self::Type;
 
     /// Checks if the value is simple.
@@ -28,6 +25,13 @@ pub trait Value : Clone + Sized + fmt::Debug
     fn is_simple(&self) -> bool;
 
     /// Flattens the value into registers.
+    /// 
+    /// This takes all subvalues that are not simple and
+    /// hoists them out of the value, into a register which is
+    /// then appended to the block, and then the register reference
+    /// is then used.
+    /// 
+    /// This will convert an SSA value into a non-SSA value.
     fn flatten(self, block: &mut lang::Block<Self>) -> Self;
 
     /// Checks if a single value is critical.
@@ -39,7 +43,8 @@ pub trait Value : Clone + Sized + fmt::Debug
     /// This does not check if subvalues are critical.
     // TODO: Find a better name.
     fn is_single_critical(&self) -> bool {
-        true // conservately mark all values critical by default
+        // conservately mark all values critical by default
+        true
     }
 
     /// Checks if a value is critical.

@@ -5,6 +5,9 @@ use std;
 
 use lang::Block;
 
+/// A function signature.
+/// 
+/// Holds the return and parameter types.
 #[derive(Clone,Debug)]
 pub struct Signature<V: lang::Value>
 {
@@ -15,27 +18,32 @@ pub struct Signature<V: lang::Value>
 impl<V> Signature<V>
     where V: lang::Value
 {
-    pub fn new() -> Self {
+    /// Creates a signature with no return types and no parameter types.
+    pub fn empty() -> Self {
         Signature {
             param_types: Vec::new(),
             return_types: Vec::new(),
         }
     }
 
+    /// Appends a return type.
     pub fn ret(mut self, ty: V::Type) -> Self {
         self.return_types.push(ty);
         self
     }
 
+    /// Appends a parameter type.
     pub fn param(mut self, ty: V::Type) -> Self {
         self.param_types.push(ty);
         self
     }
 
+    /// Gets the return types.
     pub fn returns(&self) -> std::slice::Iter<V::Type> {
         self.return_types.iter()
     }
 
+    /// Gets the parameter types.
     pub fn parameters(&self) -> std::slice::Iter<V::Type> {
         self.param_types.iter()
     }
@@ -55,19 +63,21 @@ impl<V: lang::Value> std::cmp::Eq for Signature<V>
 {
 }
 
+/// A function.
 #[derive(Clone,Debug)]
 pub struct Function<V: lang::Value>
 {
     id: util::Id,
 
-    pub name: String,
-    pub signature: Signature<V>,
-    pub blocks: Vec<Block<V>>,
+    name: String,
+    signature: Signature<V>,
+    blocks: Vec<Block<V>>,
 }
 
 impl<V> Function<V>
     where V: lang::Value
 {
+    /// Creates a new function.
     pub fn new<N>(name: N,
                   signature: Signature<V>,
                   blocks: Vec<Block<V>>) -> Self
@@ -82,39 +92,44 @@ impl<V> Function<V>
         }
     }
 
+    /// Creates an empty function.
     pub fn empty<N>(name: N, sig: Signature<V>) -> Self
         where N: Into<String> {
-
         Function::new(name, sig, Vec::new())
     }
 
+    /// Appends a block to the function.
     pub fn append_block(&mut self, block: Block<V>) {
         self.blocks.push(block);
     }
 
+    /// Gets the name of the function.
     pub fn name(&self) -> &str { &self.name }
 
+    /// Gets the signature of the function.
     pub fn signature(&self) -> &Signature<V> {
         &self.signature
     }
 
+    /// Flattens the values in the function.
     pub fn flatten(self) -> Self {
         self.map_blocks(|b| b.flatten())
     }
 
     /// Gets the ID of the function.
-    ///
-    /// The ID is guaranteed to be unique for each module.
     pub fn id(&self) -> util::Id { self.id }
 
+    /// Gets the blocks that the function contains.
     pub fn blocks(&self) -> std::slice::Iter<Block<V>> {
         self.blocks.iter()
     }
 
+    /// Gets a mutable iterator to the contained blocks.
     pub fn blocks_mut(&mut self) -> std::slice::IterMut<Block<V>> {
         self.blocks.iter_mut()
     }
 
+    /// Performs a mapping over the blocks of the function.
     pub fn map_blocks<F>(mut self, f: F) -> Self
         where F: FnMut(Block<V>) -> Block<V> {
 
@@ -124,6 +139,7 @@ impl<V> Function<V>
         self
     }
 
+    /// Sets the blocks that the function contains.
     pub fn with_blocks<I>(mut self, blocks: I) -> Self
         where I: Iterator<Item=Block<V>> {
 

@@ -90,11 +90,12 @@ pub fn function(func: &ir::Function,
                 fmt: &mut fmt::Formatter) -> fmt::Result {
     // Initialise register accounting
     printer.clear_registers();
+    let signature = func.signature();
 
     try!(write!(fmt, "define {} @{}({}) {{\n",
-                     util::comma_separated_values(func.signature.returns()),
+                     util::comma_separated_values(signature.returns()),
                      func.name(),
-                     util::comma_separated_values(func.signature.parameters())));
+                     util::comma_separated_values(signature.parameters())));
 
     for block in func.blocks() {
         try!(self::block(block, printer, fmt));
@@ -109,7 +110,7 @@ pub fn block(block: &ir::Block,
 
     try!(write!(fmt, "{}:\n", block.name()));
 
-    for value in block.subvalues() {
+    for value in block.values() {
         try!(self::root_value(&value, printer, fmt));
     }
 

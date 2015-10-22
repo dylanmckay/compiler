@@ -18,6 +18,7 @@ pub fn verify(module: &ir::Module) -> Result {
     Ok(())
 }
 
+/// Verifies that a function is well-formed.
 pub fn verify_function(module: &ir::Module,
                        func: &ir::Function) -> Result {
 
@@ -34,6 +35,7 @@ pub fn verify_function(module: &ir::Module,
     Ok(())
 }
 
+/// Verifies that a block is well-formed.
 pub fn verify_block(module: &ir::Module,
                     block: &ir::Block) -> Result {
 
@@ -41,12 +43,12 @@ pub fn verify_block(module: &ir::Module,
 
     try!(util::verify_ident(block.name()));
 
-    for value in &block.subvalues() {
+    for value in &block.values() {
         try!(self::verify_value(module, value));
     }
 
     // TODO: handle the (erroneous) empty block case
-    let last = block.subvalues().into_iter().last().unwrap();
+    let last = block.values().into_iter().last().unwrap();
 
     if !last.is_terminator() {
         return Err("every basic block must end with a terminating instruction".into());
@@ -55,6 +57,7 @@ pub fn verify_block(module: &ir::Module,
     Ok(())
 }
 
+/// Verifies that a value is well-formed.
 pub fn verify_value(_: &ir::Module,
                     _: &ir::Value) -> Result {
     Ok(())

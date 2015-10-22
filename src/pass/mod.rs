@@ -90,7 +90,7 @@ pub trait Analysis<V> : Metadata
     /// Run the pass on a basic block.
     fn run_block(&mut self, block: &lang::Block<V>) {
 
-        for value in block.subvalues() {
+        for value in block.values() {
             self.run_value_recursive(&value);
         }
     }
@@ -142,7 +142,7 @@ pub trait Transform<V> : Metadata
     fn run_block(&mut self, block: lang::Block<V>)
         -> lang::Block<V> {
 
-        block.map_subvalues(|a| self.run_value_recursive(a))
+        block.map_values(|a| self.run_value_recursive(a))
     }
 
     /// Run the pass on a value.

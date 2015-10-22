@@ -68,7 +68,7 @@ fn create_module() -> ir::Module {
         block
     };
 
-    let sig = lang::Signature::new().ret(ir::Type::i32());
+    let sig = lang::Signature::empty().ret(ir::Type::i32());
     let mut function = ir::Function::empty("main", sig);
     function.append_block(bb1);
     function.append_block(bb2);

@@ -4,37 +4,37 @@ use util;
 
 use std;
 
+/// A global variable.
 #[derive(Clone,Debug)]
 pub struct Global<V: lang::Value>
 {
     id: util::Id,
-
+    /// The name of the global.
     name: String,
-    // TODO: does this need to be boxed
-    value: Box<V>,
+    /// The variable value.
+    value: V,
 }
 
 impl<V> Global<V>
     where V: lang::Value
 {
+    /// Creates a new global variable.
     pub fn new(name: String, value: V) -> Self {
         Global {
             id: util::Id::next(),
 
             name: name,
-            value: Box::new(value),
+            value: value,
         }
     }
 
+    /// Gets the name of the global.
     pub fn name(&self) -> &str { &self.name }
+    /// Gets the value of the global.
     pub fn value(&self) -> &V { &self.value }
-    pub fn ty(&self) -> V::Type {
-        self.value.ty()
-    }
-
+    /// Gets the type of the value the global contains.
+    pub fn ty(&self) -> V::Type { self.value.ty() }
     /// Gets the ID of the global.
-    ///
-    /// The ID is guaranteed to be unique for each module.
     pub fn id(&self) -> util::Id { self.id }
 }
 
