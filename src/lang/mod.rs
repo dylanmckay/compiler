@@ -6,6 +6,7 @@ pub use self::function::{Function,Signature};
 pub use self::block::Block;
 pub use self::value::Value;
 pub use self::ty::Type;
+pub use self::users::Users;
 
 pub mod name;
 pub mod module;
@@ -14,3 +15,5 @@ pub mod function;
 pub mod block;
 pub mod value;
 pub mod ty;
+pub mod users;
+
