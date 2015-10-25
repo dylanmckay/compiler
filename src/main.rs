@@ -49,31 +49,53 @@ fn create_module() -> ir::Module {
 
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
-    let bb2 = {
+    let func2 = {
+        let bb2 = {
 
-        let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
-        let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
-        let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
+            let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
+            let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
+            let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
 
-        let mut block = ir::Block::empty("other");
-        block.append_value(inst_ret);
-        block
+            let mut block = ir::Block::empty("other");
+            block.append_value(inst_ret);
+            block
+        };
+
+        let bb1 = {
+            let inst_br = ir::Instruction::br(ir::Value::block_ref(&bb2));
+
+            let mut block = ir::Block::empty("entry");
+            block.append_value(inst_br);
+            block
+        };
+
+        let sig = lang::Signature::empty().ret(ir::Type::i32());
+        let mut f = ir::Function::empty("do_thing", sig);
+
+        f.append_block(bb1);
+        f.append_block(bb2);
+        f
     };
 
-    let bb1 = {
-        let inst_br = ir::Instruction::br(ir::Value::block_ref(&bb2));
+    let func1 = {
+        let bb = {
+            let inst_call = ir::Instruction::call(ir::Value::function_ref(&func2));
+            let inst_ret = ir::Instruction::ret(Some(inst_call.into()));
 
-        let mut block = ir::Block::empty("entry");
-        block.append_value(inst_br);
-        block
+            let mut block = ir::Block::empty("main");
+            block.append_value(inst_ret);
+            block
+        };
+
+        let sig = lang::Signature::empty().ret(ir::Type::i32());
+        let mut f = ir::Function::empty("main", sig);
+        f.append_block(bb);
+        f
     };
 
-    let sig = lang::Signature::empty().ret(ir::Type::i32());
-    let mut function = ir::Function::empty("main", sig);
-    function.append_block(bb1);
-    function.append_block(bb2);
 
-    ir::Module::empty().function(function)
+    ir::Module::empty().function(func2)
+                       .function(func1)
                        .global(global)
 }
 

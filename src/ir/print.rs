@@ -73,6 +73,7 @@ pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
    
     for func in module.functions() {
          try!(self::function(func, &mut printer, fmt));
+         try!(write!(fmt, "\n"));
     }
 
     Ok(())
@@ -82,7 +83,8 @@ pub fn global(global: &ir::Global,
               printer: &mut Printer,
               fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "%{} = ", global.name()));
-    self::value::plain(global.value(), printer, fmt)
+    try!(self::value::plain(global.value(), printer, fmt));
+    write!(fmt, "\n")
 }
 
 pub fn function(func: &ir::Function,
@@ -101,7 +103,7 @@ pub fn function(func: &ir::Function,
         try!(self::block(block, printer, fmt));
     }
 
-    write!(fmt, "}}")
+    write!(fmt, "}}\n")
 }
 
 pub fn block(block: &ir::Block,

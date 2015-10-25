@@ -95,6 +95,10 @@ pub mod instruction
             instruction::Break::unconditional(target).into()
         }
 
+        pub fn call(target: ir::Value) -> Self {
+            instruction::Call::new(target).into()
+        }
+
         /// Flattens the instruction.
         ///
         /// Subvalues are placed into registers in the block.

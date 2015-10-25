@@ -39,7 +39,7 @@ impl<T,S> fmt::Display for SeparatedValues<T,S>
         for (i, field) in self.values.iter().enumerate() {
 
             // don't print space before first value
-            if 1 != 0 {
+            if i != 0 {
                 try!(' '.fmt(fmt));
             }
 
