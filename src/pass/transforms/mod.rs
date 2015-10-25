@@ -2,6 +2,7 @@
 pub use self::dce::DeadCodeElimination;
 pub use self::constant_folding::ConstantFolding;
 pub use self::strength_reduction::StrengthReduction;
+pub use self::inliner::Inliner;
 
 /// Implements a test that checks that a set of values
 /// is mapped to another set of values.
@@ -42,3 +43,5 @@ pub mod dce;
 pub mod constant_folding;
 /// The strength reduction pass.
 pub mod strength_reduction;
+/// The inliner.
+pub mod inliner;
