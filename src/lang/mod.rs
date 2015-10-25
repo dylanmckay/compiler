@@ -7,6 +7,7 @@ pub use self::block::Block;
 pub use self::value::Value;
 pub use self::ty::Type;
 pub use self::users::Users;
+pub use self::attrs::{CallingConvention,InlineHint,ComplexityHint};
 
 pub mod name;
 pub mod module;
@@ -16,4 +17,5 @@ pub mod block;
 pub mod value;
 pub mod ty;
 pub mod users;
+pub mod attrs;
 
