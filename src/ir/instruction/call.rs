@@ -20,7 +20,7 @@ impl Call
     }
 
     pub fn ty(&self) -> ir::Type {
-        ir::Type::void()
+        self.target.ty()
     }
 }
 
