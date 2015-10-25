@@ -43,7 +43,7 @@ pub fn verify_block(module: &ir::Module,
 
     try!(util::verify_ident(block.name()));
 
-    for value in &block.values() {
+    for value in block.values() {
         try!(self::verify_value(module, value));
     }
 

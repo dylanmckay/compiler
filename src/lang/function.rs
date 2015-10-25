@@ -146,6 +146,12 @@ impl<V> Function<V>
         self.blocks = blocks.collect();
         self
     }
+
+    pub fn values(&self) -> std::vec::IntoIter<&V> {
+        // FIXME: return 'impl Iterator' once supported
+        let vals: Vec<_> = self.blocks.iter().flat_map(Block::values).collect();
+        vals.into_iter()
+    }
 }
 
 impl<V: lang::Value> util::Identifiable for Function<V>

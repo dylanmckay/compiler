@@ -104,4 +104,5 @@ fn create_ir_pass_manager() -> pass::Manager<ir::Value> {
         //.add_pass(pass::transforms::ConstantFolding)
         .add_pass(pass::transforms::StrengthReduction)
         .add_pass(pass::transforms::DeadCodeElimination)
+        .add_pass(pass::transforms::Inliner)
 }

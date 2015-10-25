@@ -79,6 +79,11 @@ impl<V> Module<V>
         self.functions.iter()
     }
 
+    /// Gets the functions that the module contains as mutable.
+    pub fn functions_mut(&mut self) -> std::slice::IterMut<Function<V>> {
+        self.functions.iter_mut()
+    }
+
     /// Performs a mapping over the functions that the module contains.
     pub fn map_functions<F>(mut self, f: F) -> Self
         where F: FnMut(Function<V>) -> Function<V> {
@@ -94,6 +99,11 @@ impl<V> Module<V>
         self.globals.iter()
     }
 
+    /// Gets the globals that the module contains as mutable.
+    pub fn globals_mut(&mut self) -> std::slice::IterMut<Global<V>> {
+        self.globals.iter_mut()
+    }
+
     /// Performs a mapping over the global variables that the module contains.
     pub fn map_globals<F>(mut self, f: F) -> Self
         where F: FnMut(Global<V>) -> Global<V> {
@@ -103,5 +113,16 @@ impl<V> Module<V>
 
         self
     }
+
+    pub fn values(&self) -> std::vec::IntoIter<&V> {
+        // FIXME: use 'impl Iterator' once supported
+        let vals: Vec<_> = self.globals.iter()
+                                       .map(|g| g.value())
+                                       .chain(self.functions.iter()
+                                                            .flat_map(Function::values))
+                                       .collect();
+        vals.into_iter()
+    }
 }
+
 

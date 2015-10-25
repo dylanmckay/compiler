@@ -50,7 +50,7 @@ impl<V> Block<V>
             body: Vec::new(),
         };
 
-        for value in self.values() {
+        for value in self.body {
             let new_value = value.flatten(&mut block);
             block.append_value(new_value);
         }
@@ -62,8 +62,13 @@ impl<V> Block<V>
     pub fn id(&self) -> util::Id { self.id }
 
     /// Gets the values that the block contains.
-    pub fn values(&self) -> Vec<V> {
-        self.body.clone()
+    pub fn values(&self) -> ::std::slice::Iter<V> {
+        self.body.iter()
+    }
+
+    /// Gets the values that the block contains as mutable.
+    pub fn values_mut(&mut self) -> ::std::slice::IterMut<V> {
+        self.body.iter_mut()
     }
 
     /// Sets the values that the block contains.
