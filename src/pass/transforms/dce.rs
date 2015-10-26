@@ -15,7 +15,7 @@ pub struct DeadCodeElimination;
 impl pass::Metadata for DeadCodeElimination
 {
     fn id(&self) -> pass::Id { pass::Id(0xbb2af3bc) }
-    fn name(&self) -> &'static str { "Dead code elimination" }
+    fn name(&self) -> &'static str { "dead code elimination" }
 }
 
 impl pass::Transform<ir::Value> for DeadCodeElimination

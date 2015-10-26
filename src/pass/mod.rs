@@ -149,7 +149,7 @@ pub trait Transform<V> : Metadata
     fn run_value(&mut self,
                  _: V) -> V {
 
-        panic!("the pass is not implemented");
+        panic!("the {} pass is not implemented", self.name());
     }
 
     fn run_value_recursive(&mut self,

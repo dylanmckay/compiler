@@ -10,7 +10,7 @@ pub struct StrengthReduction;
 impl pass::Metadata for StrengthReduction
 {
     fn id(&self) -> pass::Id { pass::Id(0x242343a1) }
-    fn name(&self) -> &'static str { "Strength reduction" }
+    fn name(&self) -> &'static str { "strength reduction" }
 }
 
 impl pass::Transform<ir::Value> for StrengthReduction

@@ -8,7 +8,7 @@ pub struct ConstantFolding;
 impl pass::Metadata for ConstantFolding
 {
     fn id(&self) -> pass::Id { pass::Id(0x32fabb11) }
-    fn name(&self) -> &'static str { "Constant folding" }
+    fn name(&self) -> &'static str { "constant folding" }
 }
 
 impl pass::Transform<ir::Value> for ConstantFolding
