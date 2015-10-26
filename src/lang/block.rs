@@ -58,6 +58,15 @@ impl<V> Block<V>
         block
     }
 
+    /// Gets the last instruction in the block.
+    /// Panics if the block is empty, or the last value it is not a terminator.
+    pub fn terminator(&self) -> &V {
+        let last = self.body.last().expect("the basic block is empty");
+
+        assert!(last.is_terminator(), "the basic block is not terminated");
+        last
+    }
+
     /// Gets the ID of the block.
     pub fn id(&self) -> util::Id { self.id }
 

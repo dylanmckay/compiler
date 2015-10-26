@@ -72,6 +72,11 @@ pub struct Function<V: lang::Value>
     name: String,
     signature: Signature<V>,
     blocks: Vec<Block<V>>,
+
+    cc: lang::CallingConvention,
+
+    inline_hint: lang::InlineHint,
+    complexity_hint: lang::ComplexityHint,
 }
 
 impl<V> Function<V>
@@ -89,6 +94,10 @@ impl<V> Function<V>
             name: name.into(),
             signature: signature,
             blocks: blocks,
+
+            cc: lang::CallingConvention::default(),
+            inline_hint: lang::InlineHint::default(),
+            complexity_hint: lang::ComplexityHint::default(),
         }
     }
 
@@ -147,10 +156,26 @@ impl<V> Function<V>
         self
     }
 
+    /// Gets the values that the function contains.
     pub fn values(&self) -> std::vec::IntoIter<&V> {
         // FIXME: return 'impl Iterator' once supported
         let vals: Vec<_> = self.blocks.iter().flat_map(Block::values).collect();
         vals.into_iter()
+    }
+
+    /// Gets the calling convention.
+    pub fn calling_convention(&self) -> lang::CallingConvention {
+        self.cc
+    }
+
+    /// Gets the inline hint.
+    pub fn inline_hint(&self) -> lang::InlineHint {
+        self.inline_hint
+    }
+
+    /// Gets the complexity hint.
+    pub fn complexity_hint(&self) -> lang::ComplexityHint {
+        self.complexity_hint
     }
 }
 

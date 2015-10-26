@@ -26,6 +26,13 @@ pub enum InlineHint
     MustInline
 }
 
+impl Default for InlineHint
+{
+    fn default() -> Self {
+        InlineHint::None
+    }
+}
+
 /// Specifies constraints on the complexity of the generated code.
 #[derive(Copy,Clone,Debug,PartialEq,Eq)]
 pub enum ComplexityHint
@@ -34,4 +41,11 @@ pub enum ComplexityHint
     None,
     /// The code generated must run in constant time w.r.t inputs.
     ConstantTime,
+}
+
+impl Default for ComplexityHint
+{
+    fn default() -> Self {
+        ComplexityHint::None
+    }
 }
