@@ -19,6 +19,14 @@ impl Call
         &self.target
     }
 
+    pub fn target_id(&self) -> ::util::Id {
+        if let ir::Value::FunctionRef(ref r) = *self.target() {
+            r.function_id()
+        } else {
+            panic!("a call instruction must have a function reference as its target");
+        }
+    }
+
     pub fn ty(&self) -> ir::Type {
         self.target.ty()
     }

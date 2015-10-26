@@ -5,19 +5,19 @@ use util;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct BlockRef
 {
-    id: util::Id,
+    block_id: util::Id,
 }
 
 impl BlockRef
 {
     pub fn reference(block: &ir::Block) -> Self {
         BlockRef {
-            id: block.id(),
+            block_id: block.id(),
         }
     }
 
     pub fn block_id(&self) -> util::Id {
-        self.id
+        self.block_id
     }
 
     pub fn ty(&self) -> ir::Type {
