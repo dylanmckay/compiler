@@ -13,6 +13,10 @@ impl pass::Metadata for Inliner
 
 impl pass::Transform<ir::Value> for Inliner
 {
+    fn run_function(&mut self, func: ir::Function)
+        -> ir::Function {
+        func
+    }
 }
 
 // TODO: blamket impl for all passes
@@ -30,6 +34,6 @@ pub fn inline(inst: ir::Instruction) -> ir::Value {
     }
 }
 
-pub fn inline_call(inst: ir::instruction::Call) -> ir::Value {
+pub fn inline_call(_inst: ir::instruction::Call) -> ir::Value {
     unimplemented!();
 }
