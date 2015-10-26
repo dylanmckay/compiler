@@ -76,8 +76,8 @@ impl<V> Block<V>
     }
 
     /// Gets the values that the block contains as mutable.
-    pub fn values_mut(&mut self) -> ::std::slice::IterMut<V> {
-        self.body.iter_mut()
+    pub fn values_mut(&mut self) -> values::ValuesMut<V> {
+        values::ValuesMut::new(self)
     }
 
     /// Sets the values that the block contains.
@@ -105,3 +105,55 @@ impl<V> Block<V>
     }
 }
 
+pub mod values
+{
+    use super::Block;
+    use lang;
+
+    pub struct ValuesMut<'a, V: lang::Value+'a>
+    {
+        block: &'a mut Block<V>,
+        cur_idx: usize,
+    }
+
+    impl<'a,V> ValuesMut<'a,V>
+        where V: lang::Value
+    {
+        pub fn new(block: &'a mut Block<V>) -> Self {
+            ValuesMut {
+                block: block,
+                cur_idx: 0,
+            }
+        }
+
+        pub fn insert_before(&mut self, value: V) {
+            self.block.body.insert(self.cur_idx, value);
+            self.cur_idx += 1;
+        }
+
+        pub fn insert_after(&mut self, value: V) {
+            self.block.body.insert(self.cur_idx+1, value);
+        }
+    }
+
+    impl<'a,V> Iterator for ValuesMut<'a,V>
+        where V: lang::Value
+    {
+        type Item = &'a mut V;
+
+        fn next(&mut self) -> Option<&'a mut V> {
+            let next: Option<&mut V> = self.block.body.get_mut(self.cur_idx);
+
+            if next.is_some() {
+                self.cur_idx += 1;
+            }
+            // transmute the lifetime.
+            unsafe {::std::mem::transmute(next) }
+        }
+
+        fn size_hint(&self) -> (usize,Option<usize>) {
+            let len = self.block.body.len();
+            (len, Some(len))
+        }
+    }
+}
