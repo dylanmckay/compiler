@@ -123,19 +123,31 @@ pub mod value
         }
 
         pub fn is_literal(&self) -> bool {
-            if let &Value::Literal(..) = self {
-                true
-            } else {
-                false
+            match *self {
+                Value::Literal(..) => true,
+                _ => false,
             }
         }
 
         /// Checks if the value is an instruction.
         pub fn is_instruction(&self) -> bool {
-            if let &Value::Instruction(..) = self {
-                true
-            } else {
-                false
+            match *self {
+                Value::Instruction(..) => true,
+                _ => false,
+            }
+        }
+
+        pub fn is_function_ref(&self) -> bool {
+            match *self {
+                Value::FunctionRef(..) => true,
+                _ => false,
+            }
+        }
+
+        pub fn is_block_ref(&self) -> bool {
+            match *self {
+                Value::BlockRef(..) => true,
+                _ => false,
             }
         }
 

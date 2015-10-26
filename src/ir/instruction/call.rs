@@ -1,6 +1,8 @@
 
 use ir::{self,Instruction,Value};
 
+// TODO: allow passing values as arguments.
+
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Call
 {

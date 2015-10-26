@@ -36,7 +36,9 @@ impl Register
     }
 
     pub fn ty(&self) -> ir::Type {
-        self.value.ty()
+        // the register itself has no type.
+        // only references to the register have one.
+        ir::Type::void()
     }
 }
 
