@@ -49,7 +49,7 @@ impl<V: lang::Value> Metadata for Info<V>
 pub trait Metadata
 {
     fn id(&self) -> Id;
-    
+
     /// Gets the identifiers of the passes this pass
     /// depends on.
     fn dependencies(&self) -> &'static [Id] {
@@ -63,7 +63,8 @@ pub trait Analysis<V> : Metadata
     where V: lang::Value
 {
     /// Run the pass on an entire module.
-    fn run_module(&mut self, module: &lang::Module<V>) {
+    fn run_module(&mut self,
+                  module: &lang::Module<V>) {
 
         for global in module.globals() {
             self.run_global(global);
@@ -75,20 +76,23 @@ pub trait Analysis<V> : Metadata
     }
 
     /// Run the pass on a global variable.
-    fn run_global(&mut self, _: &lang::Global<V>) {
+    fn run_global(&mut self,
+                  _: &lang::Global<V>) {
         // do nothing unless overidden
     }
 
     /// Run the pass on a function.
-    fn run_function(&mut self, function: &lang::Function<V>) {
-        
+    fn run_function(&mut self,
+                    function: &lang::Function<V>) {
+
         for bb in function.blocks() {
             self.run_block(bb);
         }
     }
 
     /// Run the pass on a basic block.
-    fn run_block(&mut self, block: &lang::Block<V>) {
+    fn run_block(&mut self,
+                 block: &lang::Block<V>) {
 
         for value in block.values() {
             self.run_value_recursive(&value);
@@ -118,13 +122,15 @@ pub trait Transform<V> : Metadata
     where V: lang::Value
 {
     /// Run the pass on an entire module.
-    fn run_module(&mut self, module: lang::Module<V>) -> lang::Module<V> {
+    fn run_module(&mut self,
+                  module: lang::Module<V>) -> lang::Module<V> {
         module.map_globals(|a| self.run_global(a))
               .map_functions(|a| self.run_function(a))
     }
 
     /// Run the pass on a global.
-    fn run_global(&mut self, global: lang::Global<V>)
+    fn run_global(&mut self,
+                  global: lang::Global<V>)
         -> lang::Global<V> {
 
         // do nothing unless overridden
@@ -132,14 +138,16 @@ pub trait Transform<V> : Metadata
     }
 
     /// Run the pass on a function.
-    fn run_function(&mut self, function: lang::Function<V>)
+    fn run_function(&mut self,
+                    function: lang::Function<V>)
         -> lang::Function<V> {
 
         function.map_blocks(|a| self.run_block(a))
     }
 
     /// Run the pass on a basic block.
-    fn run_block(&mut self, block: lang::Block<V>)
+    fn run_block(&mut self,
+                 block: lang::Block<V>)
         -> lang::Block<V> {
 
         block.map_values(|a| self.run_value_recursive(a))
