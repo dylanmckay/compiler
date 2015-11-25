@@ -125,7 +125,7 @@ pub trait Transform<V> : Metadata
     fn run_module(&mut self,
                   module: lang::Module<V>) -> lang::Module<V> {
         module.map_globals(|a| self.run_global(a))
-              .map_functions(|a| self.run_function(a))
+              .map_functions(|a,module| self.run_function(a,module))
     }
 
     /// Run the pass on a global.
@@ -139,7 +139,8 @@ pub trait Transform<V> : Metadata
 
     /// Run the pass on a function.
     fn run_function(&mut self,
-                    function: lang::Function<V>)
+                    function: lang::Function<V>,
+                    module: &lang::Module<V>)
         -> lang::Function<V> {
 
         function.map_blocks(|a| self.run_block(a))

@@ -13,7 +13,9 @@ impl pass::Metadata for Inliner
 
 impl pass::Transform<ir::Value> for Inliner
 {
-    fn run_function(&mut self, func: ir::Function)
+    fn run_function(&mut self, 
+                    func: ir::Function,
+                    module: &ir::Module)
         -> ir::Function {
         func
     }

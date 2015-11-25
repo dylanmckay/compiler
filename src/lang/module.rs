@@ -28,7 +28,7 @@ impl<V> Module<V>
     /// Flattens the module so that it is no longer in
     /// SSA-form (if it was already).
     pub fn flatten(self) -> Self {
-        self.map_functions(|f| f.flatten())
+        self.map_functions(|f,_| f.flatten())
     }
 
     /// Adds a function to the module.
@@ -85,12 +85,22 @@ impl<V> Module<V>
     }
 
     /// Performs a mapping over the functions that the module contains.
-    pub fn map_functions<F>(mut self, f: F) -> Self
-        where F: FnMut(Function<V>) -> Function<V> {
+    pub fn map_functions<F>(mut self, mut f: F) -> Self
+        where F: FnMut(Function<V>, &Self) -> Function<V> {
 
-        let funcs = self.functions.into_iter().map(f);
-        self.functions = funcs.collect();
+        // Here we unsafely get a reference to the module so that
+        // it persists after we mutably borrow the module while mapping.
+        //
+        // The 'Set' class will recognize whatever function is being mapped,
+        // and not allow it to be looked up while mapping.
+        //
+        // This allows us to map the functions in a module while
+        // having immutable access to the rest of the module safely.
+        let self_ref: &Self = unsafe {
+            ::std::mem::transmute(&self as *const Self)
+        };
 
+        self.functions.map_in_place(|func| f(func, self_ref));
         self
     }
 
@@ -124,5 +134,4 @@ impl<V> Module<V>
         vals.into_iter()
     }
 }
-
 

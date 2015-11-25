@@ -2,6 +2,13 @@
 use util;
 use std;
 
+/// When mapping over a set.
+pub enum Slot<T>
+{
+    Here(T),
+    Current,
+}
+
 /// A set.
 // TODO: find a better name.
 #[derive(Clone)]
@@ -44,6 +51,16 @@ impl<T: util::Identifiable> Set<T>
     pub fn iter_mut(&mut self) -> std::slice::IterMut<T> {
         self.elements.iter_mut()
     }
+
+    // TODO: Clone should be unnecessay
+    pub fn map_in_place<F>(&mut self, mut f: F)
+        where F: FnMut(T) -> T, T: Clone {
+        for elem in self.elements.iter_mut() {
+            let copy = elem.clone();
+            *elem = f(copy);
+        }
+    }
+
 }
 
 impl<T: util::Identifiable> IntoIterator for Set<T>
