@@ -120,7 +120,7 @@ pub mod ty
 
         /// Checks if the type is void.
         pub fn is_void(&self) -> bool {
-            if let &Type::Void(..) = self {
+            if let Type::Void(..) = *self {
                 true
             } else {
                 false

@@ -47,7 +47,7 @@ impl Literal
     }
 
     pub fn as_integer(&self) -> Option<&Integer> {
-        if let &Literal::Integer(ref i) = self {
+        if let Literal::Integer(ref i) = *self {
             Some(i)
         } else {
             None
@@ -55,7 +55,7 @@ impl Literal
     }
 
     pub fn as_decimal(&self) -> Option<&Decimal> {
-        if let &Literal::Decimal(ref i) = self {
+        if let Literal::Decimal(ref i) = *self {
             Some(i)
         } else {
             None
@@ -63,7 +63,7 @@ impl Literal
     }
 
     pub fn as_struct(&self) -> Option<&Struct> {
-        if let &Literal::Struct(ref i) = self {
+        if let Literal::Struct(ref i) = *self {
             Some(i)
         } else {
             None

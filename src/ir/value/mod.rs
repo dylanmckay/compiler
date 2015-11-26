@@ -196,7 +196,7 @@ pub mod value
 
         fn is_terminator(&self) -> bool {
             // only instructions can be terminators
-            if let &ir::Value::Instruction(ref inst) = self {
+            if let ir::Value::Instruction(ref inst) = *self {
                 inst.is_terminator()
             } else {
                 false

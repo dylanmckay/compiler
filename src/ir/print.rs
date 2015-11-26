@@ -312,7 +312,7 @@ pub mod value
 
         pub fn call(inst: &instruction::Call,
                     fmt: &mut fmt::Formatter) -> fmt::Result {
-            let func = if let &Value::FunctionRef(ref f) = inst.target() {
+            let func = if let Value::FunctionRef(ref f) = *inst.target() {
                 f
             } else {
                 unreachable!(); // target must be function
@@ -322,7 +322,7 @@ pub mod value
                    func.name())
 
         }
-        
+
         pub fn br(inst: &instruction::Break,
                   printer: &mut Printer,
                   fmt: &mut fmt::Formatter) -> fmt::Result {
