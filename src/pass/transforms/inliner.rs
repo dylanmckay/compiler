@@ -20,7 +20,7 @@ impl pass::Transform<ir::Value> for Inliner
 
         use ::util::Identifiable;
 
-        let function = module.get_function(func.get_id());
+        let _function = module.get_function(func.get_id());
         func
     }
 }

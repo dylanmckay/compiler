@@ -170,9 +170,10 @@ mod util
 
         let valid = ident.chars().all(|c| c.is_alphanumeric() || c == '_');
 
-        match valid {
-            true => Ok(()),
-            false => Err("identifier can only contain alphanumeric characters or numbers".into()),
+        if valid {
+            Ok(())
+        } else {
+            Err("identifier can only contain alphanumeric characters or numbers".into())
         }
     }
 }

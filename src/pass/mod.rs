@@ -140,7 +140,7 @@ pub trait Transform<V> : Metadata
     /// Run the pass on a function.
     fn run_function(&mut self,
                     function: lang::Function<V>,
-                    module: &lang::Module<V>)
+                    _module: &lang::Module<V>)
         -> lang::Function<V> {
 
         function.map_blocks(|a| self.run_block(a))
