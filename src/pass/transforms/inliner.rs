@@ -17,6 +17,10 @@ impl pass::Transform<ir::Value> for Inliner
                     func: ir::Function,
                     module: &ir::Module)
         -> ir::Function {
+
+        use ::util::Identifiable;
+
+        let function = module.get_function(func.get_id());
         func
     }
 }
@@ -39,3 +43,4 @@ pub fn inline(inst: ir::Instruction) -> ir::Value {
 pub fn inline_call(_inst: ir::instruction::Call) -> ir::Value {
     unimplemented!();
 }
+

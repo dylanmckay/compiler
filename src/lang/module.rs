@@ -50,7 +50,8 @@ impl<V> Module<V>
 
     /// Gets a global from its ID, `panic`ing if it does not exist.
     pub fn get_global(&self, id: util::Id) -> &Global<V> {
-        self.find_global(id).expect("no global with that ID exists")
+        self.find_global(id)
+            .expect("no global with that ID exists, or that global is locked")
     }
 
     /// Finds a function by its ID.
@@ -60,7 +61,8 @@ impl<V> Module<V>
 
     /// Gets a function from its ID, `panic`ing if it does not exist.
     pub fn get_function(&self, id: util::Id) -> &Function<V> {
-        self.find_function(id).expect("no function with that ID exists")
+        self.find_function(id)
+            .expect("no function with that ID exists, or that function is locked")
     }
 
     /// Finds a block by its ID.
