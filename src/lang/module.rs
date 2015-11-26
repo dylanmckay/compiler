@@ -44,7 +44,7 @@ impl<V> Module<V>
     }
 
     /// Finds a global by its ID.
-    pub fn find_global(&self, id: util::Id) -> Option<&Global<V>> {
+    pub fn find_global(&self, id: util::Id) -> util::Slot<&Global<V>> {
         self.globals.lookup(id)
     }
 
@@ -54,7 +54,7 @@ impl<V> Module<V>
     }
 
     /// Finds a function by its ID.
-    pub fn find_function(&self, id: util::Id) -> Option<&Function<V>> {
+    pub fn find_function(&self, id: util::Id) -> util::Slot<&Function<V>> {
         self.functions.lookup(id)
     }
 

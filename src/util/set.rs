@@ -9,6 +9,37 @@ pub enum Slot<T>
     Current,
 }
 
+impl<T> Slot<T>
+{
+    pub fn expect<S>(self, msg: S) -> T
+        where S: Into<String> {
+        match self {
+            Slot::Here(a) => a,
+            Slot::Current => panic!(msg.into()),
+        }
+    }
+}
+
+impl<T> From<Option<T>> for Slot<T>
+{
+    fn from(option: Option<T>) -> Slot<T> {
+        match option {
+            Some(thing) => Slot::Here(thing),
+            None => Slot::Current,
+        }
+    }
+}
+
+impl<T> Into<Option<T>> for Slot<T>
+{
+    fn into(self) -> Option<T> {
+        match self {
+            Slot::Here(t) => Some(t),
+            Slot::Current => None,
+        }
+    }
+}
+
 /// A set.
 // TODO: find a better name.
 #[derive(Clone)]
@@ -26,8 +57,8 @@ impl<T: util::Identifiable> Set<T>
         }
     }
 
-    pub fn lookup(&self, id: util::Id) -> Option<&T> {
-        self.elements.iter().find(|&a| a.get_id() == id)
+    pub fn lookup(&self, id: util::Id) -> Slot<&T> {
+        self.elements.iter().find(|&a| a.get_id() == id).into()
     }
 
     /// Gets an element from the set.
