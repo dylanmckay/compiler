@@ -15,6 +15,8 @@ pub mod instruction;
 pub mod verifier;
 /// Routines for printing modules.
 pub mod print;
+/// Value user information.
+pub mod users;
 
 pub mod cond;
 
