@@ -46,6 +46,7 @@ impl<T> Into<Option<T>> for Slot<T>
 pub struct Set<T: util::Identifiable>
 {
     elements: Vec<T>,
+    locked_indices: Vec<usize>,
 }
 
 impl<T: util::Identifiable> Set<T>
@@ -54,11 +55,17 @@ impl<T: util::Identifiable> Set<T>
     pub fn empty() -> Self {
         Set {
             elements: Vec::new(),
+            locked_indices: Vec::new(),
         }
     }
 
     pub fn lookup(&self, id: util::Id) -> Slot<&T> {
-        self.elements.iter().find(|&a| a.get_id() == id).into()
+        self.elements.iter()
+                     .enumerate()
+                     .filter(|&(index, _)| !self.is_index_locked(index))
+                     .map(|(_,a)| a)
+                     .find(|&a| a.get_id() == id)
+                     .into()
     }
 
     /// Gets an element from the set.
@@ -84,14 +91,35 @@ impl<T: util::Identifiable> Set<T>
     }
 
     // TODO: Clone should be unnecessay
+    //       It should be possible to replace the locked element with
+    //       garbage data and move the value out.
     pub fn map_in_place<F>(&mut self, mut f: F)
         where F: FnMut(T) -> T, T: Clone {
-        for elem in self.elements.iter_mut() {
-            let copy = elem.clone();
-            *elem = f(copy);
+
+        for index in 0..self.elements.len() {
+            self.lock_index(index);
+            {
+                let copy = self.elements[index].clone();
+                self.elements[index] = f(copy);
+            }
+            self.unlock_index(index);
         }
     }
 
+    fn lock_index(&mut self, index: usize) {
+        self.locked_indices.push(index);
+    }
+
+    fn unlock_index(&mut self, index: usize) {
+        let i = self.locked_indices.iter()
+                                   .position(|&i| i==index)
+                                   .expect("the index does not exist");
+        self.locked_indices.remove(i);
+    }
+
+    fn is_index_locked(&self, index: usize) -> bool {
+        self.locked_indices.contains(&index)
+    }
 }
 
 impl<T: util::Identifiable> IntoIterator for Set<T>
@@ -110,6 +138,7 @@ impl<T: util::Identifiable> std::iter::FromIterator<T> for Set<T>
         where I: IntoIterator<Item=T> {
         Set {
             elements: Vec::from_iter(it),
+            locked_indices: Vec::new(),
         }
     }
 }
@@ -121,3 +150,4 @@ impl<T: util::Identifiable + std::fmt::Debug> std::fmt::Debug for Set<T>
         std::fmt::Debug::fmt(&elements, fmt)
     }
 }
+
