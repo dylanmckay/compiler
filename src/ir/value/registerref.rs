@@ -30,11 +30,11 @@ impl util::Identifiable for RegisterRef
     fn get_id(&self) -> util::Id { self.id }
 }
 
-impl ir::value::ValueTrait for RegisterRef { }
+impl ir::value::ExpressionTrait for RegisterRef { }
 
-impl Into<ir::Value> for RegisterRef
+impl Into<ir::Expression> for RegisterRef
 {
-    fn into(self) -> ir::Value {
-        ir::Value::RegisterRef(self)
+    fn into(self) -> ir::Expression {
+        ir::Expression::RegisterRef(self)
     }
 }

@@ -11,34 +11,34 @@ impl pass::Metadata for ConstantFolding
     fn name(&self) -> &'static str { "constant folding" }
 }
 
-impl pass::Transform<ir::Value> for ConstantFolding
+impl pass::Transform<ir::Expression> for ConstantFolding
 {
-    fn run_value(&mut self, value: ir::Value) -> ir::Value {
+    fn run_value(&mut self, value: ir::Expression) -> ir::Expression {
         self::fold::value(value)
     }
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Value>> for Box<ConstantFolding>
+impl Into<pass::Info<ir::Expression>> for Box<ConstantFolding>
 {
-    fn into(self) -> pass::Info<ir::Value> {
+    fn into(self) -> pass::Info<ir::Expression> {
         pass::Info::Transform(self)
     }
 }
 
 pub mod fold
 {
-    use ir::{self,Value,Instruction};
+    use ir::{self,Expression,Instruction};
     use ir::value::literal::{Literal,Integer};
 
-    pub fn value(value: Value) -> Value {
+    pub fn value(value: Expression) -> Expression {
         match value {
-            Value::Instruction(i) => instruction(i),
+            Expression::Instruction(i) => instruction(i),
             _ => value,
         }
     }
 
-    pub fn instruction(inst: Instruction) -> Value {
+    pub fn instruction(inst: Instruction) -> Expression {
 
         match inst {
             Instruction::Add(i) => arithmetic_binop(i, |a,b| a+b),
@@ -52,7 +52,7 @@ pub mod fold
     }
 
     pub fn arithmetic_binop<I,FI>(inst: I,
-                                  mut f_int: FI) -> Value
+                                  mut f_int: FI) -> Expression
         where I: ir::instruction::Binary,
               FI: FnMut(Integer,Integer) -> Integer {
 
@@ -60,7 +60,7 @@ pub mod fold
 
         // make sure the values are constants
         let (lhs,rhs) = match inst.operands() {
-            (&Value::Literal(ref a),&Value::Literal(ref b)) => (a.clone(),b.clone()),
+            (&Expression::Literal(ref a),&Expression::Literal(ref b)) => (a.clone(),b.clone()),
             _ => return inst.clone().into(), // we can only fold constants
         };
 
@@ -75,11 +75,11 @@ pub mod fold
 
 
 value_mapping_test!(test_binops : fold::instruction {
-    Instruction::add(1 as i8, 8 as i8) => ir::Value::i8(9),
-    Instruction::sub(1 as i8, 8 as i8) => ir::Value::i8(-7),
-    Instruction::mul(1 as i8, 8 as i8) => ir::Value::i8(8),
-    Instruction::div(10 as i8,2 as i8) => ir::Value::i8(5),
-    Instruction::shl(1 as u8,1 as u8) => ir::Value::u8(2),
-    Instruction::shr(32 as u8,1 as u8) => ir::Value::u8(16)
+    Instruction::add(1 as i8, 8 as i8) => ir::Expression::i8(9),
+    Instruction::sub(1 as i8, 8 as i8) => ir::Expression::i8(-7),
+    Instruction::mul(1 as i8, 8 as i8) => ir::Expression::i8(8),
+    Instruction::div(10 as i8,2 as i8) => ir::Expression::i8(5),
+    Instruction::shl(1 as u8,1 as u8) => ir::Expression::u8(2),
+    Instruction::shr(32 as u8,1 as u8) => ir::Expression::u8(16)
 });
 

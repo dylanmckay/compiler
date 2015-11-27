@@ -27,11 +27,11 @@ impl GlobalRef
     }
 }
 
-impl ir::value::ValueTrait for GlobalRef { }
+impl ir::value::ExpressionTrait for GlobalRef { }
 
-impl Into<ir::Value> for GlobalRef
+impl Into<ir::Expression> for GlobalRef
 {
-    fn into(self) -> ir::Value {
-        ir::Value::GlobalRef(self)
+    fn into(self) -> ir::Expression {
+        ir::Expression::GlobalRef(self)
     }
 }

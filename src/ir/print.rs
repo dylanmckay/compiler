@@ -1,7 +1,7 @@
 
 use ir;
 use util;
-use ir::Value;
+use ir::Expression;
 use util::Identifiable;
 use std::fmt;
 use std::collections::HashMap;
@@ -143,7 +143,7 @@ pub fn condition(cond: &ir::Condition,
     }
 }
 
-pub fn root_value(value: &ir::Value,
+pub fn root_value(value: &ir::Expression,
                   printer: &mut Printer,
                   fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "\t"));
@@ -153,13 +153,13 @@ pub fn root_value(value: &ir::Value,
 
 pub mod value
 {
-    use ir::{Value,value};
+    use ir::{Expression,value};
     use std::fmt;
     use lang;
     use util::Identifiable;
     use super::Printer;
 
-    pub fn value(value: &Value,
+    pub fn value(value: &Expression,
                  printer: &mut Printer,
                  fmt: &mut fmt::Formatter) -> fmt::Result {
         use lang::Value;
@@ -178,19 +178,19 @@ pub mod value
         Ok(())
     }
 
-    pub fn plain(value: &Value,
+    pub fn plain(value: &Expression,
                  printer: &mut Printer,
                  fmt: &mut fmt::Formatter) -> fmt::Result {
 
         match *value {
-            Value::Literal(ref val) => self::literal(val, fmt),
-            Value::Pointer(ref val) => self::pointer(val, printer, fmt),
-            Value::Register(ref val) => self::register(val, printer, fmt),
-            Value::Instruction(ref val) => self::instruction::instruction(val, printer, fmt),
-            Value::GlobalRef(ref val) => self::global_ref(val, printer, fmt),
-            Value::BlockRef(ref val) => self::block_ref(val, printer, fmt),
-            Value::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
-            Value::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
+            Expression::Literal(ref val) => self::literal(val, fmt),
+            Expression::Pointer(ref val) => self::pointer(val, printer, fmt),
+            Expression::Register(ref val) => self::register(val, printer, fmt),
+            Expression::Instruction(ref val) => self::instruction::instruction(val, printer, fmt),
+            Expression::GlobalRef(ref val) => self::global_ref(val, printer, fmt),
+            Expression::BlockRef(ref val) => self::block_ref(val, printer, fmt),
+            Expression::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
+            Expression::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
         }
     }
 
@@ -272,7 +272,7 @@ pub mod value
 
     pub mod instruction
     {
-        use ir::{Value,Instruction};
+        use ir::{Expression,Instruction};
         use ir::instruction::{self,Binary};
         use std::fmt;
         use util;
@@ -312,7 +312,7 @@ pub mod value
 
         pub fn call(inst: &instruction::Call,
                     fmt: &mut fmt::Formatter) -> fmt::Result {
-            let func = if let Value::FunctionRef(ref f) = *inst.target() {
+            let func = if let Expression::FunctionRef(ref f) = *inst.target() {
                 f
             } else {
                 unreachable!(); // target must be function

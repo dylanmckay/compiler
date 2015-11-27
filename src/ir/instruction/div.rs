@@ -1,16 +1,16 @@
 
-use ir::{self,Instruction,Value};
+use ir::{self,Instruction,Expression};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Div
 {
-    lhs: Box<ir::Value>,
-    rhs: Box<ir::Value>,
+    lhs: Box<ir::Expression>,
+    rhs: Box<ir::Expression>,
 }
 
 impl Div
 {
-    pub fn new(lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn new(lhs: ir::Expression, rhs: ir::Expression) -> Self {
         use lang::Value;
         assert!(lhs.ty() == rhs.ty());
 

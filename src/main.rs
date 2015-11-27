@@ -44,8 +44,8 @@ fn main() {
 
 fn create_module() -> ir::Module {
 
-    let lhs = ir::Value::i32(23);
-    let rhs = ir::Value::i32(2);
+    let lhs = ir::Expression::i32(23);
+    let rhs = ir::Expression::i32(2);
 
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
@@ -62,7 +62,7 @@ fn create_module() -> ir::Module {
         };
 
         let bb1 = {
-            let inst_br = ir::Instruction::br(ir::Value::block_ref(&bb2));
+            let inst_br = ir::Instruction::br(ir::Expression::block_ref(&bb2));
 
             let mut block = ir::Block::empty("entry");
             block.append_value(inst_br);
@@ -79,7 +79,7 @@ fn create_module() -> ir::Module {
 
     let func1 = {
         let bb = {
-            let inst_call = ir::Instruction::call(ir::Value::function_ref(&func2));
+            let inst_call = ir::Instruction::call(ir::Expression::function_ref(&func2));
             let inst_ret = ir::Instruction::ret(Some(inst_call.into()));
 
             let mut block = ir::Block::empty("main");
@@ -99,7 +99,7 @@ fn create_module() -> ir::Module {
                        .global(global)
 }
 
-fn create_ir_pass_manager() -> pass::Manager<ir::Value> {
+fn create_ir_pass_manager() -> pass::Manager<ir::Expression> {
     pass::Manager::empty()
         //.add_pass(pass::transforms::ConstantFolding)
         .add_pass(pass::transforms::StrengthReduction)

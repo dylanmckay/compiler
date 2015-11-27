@@ -16,24 +16,24 @@ pub use self::br::Break;
 pub mod instruction
 {
     use std::fmt;
-    use ir::{self,instruction,Value,Type};
+    use ir::{self,instruction,Expression,Type};
 
     pub trait InstructionTrait : fmt::Debug +
-                                 Into<Value> +
-                                 ir::ValueTrait
+                                 Into<Expression> +
+                                 ir::ExpressionTrait
     {
     }
 
     /// An instruction with one operand.
     pub trait Unary : InstructionTrait
     {
-        fn operand(&self) -> &Value;
+        fn operand(&self) -> &Expression;
     }
 
     /// An instruction with two operands.
     pub trait Binary : InstructionTrait
     {
-        fn operands(&self) -> (&Value,&Value);
+        fn operands(&self) -> (&Expression,&Expression);
     }
 
     #[derive(Clone,Debug,PartialEq,Eq)]
@@ -54,36 +54,36 @@ pub mod instruction
     impl Instruction
     {
         pub fn add<V1,V2>(lhs: V1, rhs: V2) -> Instruction
-            where V1: Into<Value>, V2: Into<Value> {
+            where V1: Into<Expression>, V2: Into<Expression> {
             instruction::Add::new(lhs.into(), rhs.into()).into()
         }
 
         pub fn sub<V1,V2>(lhs: V1, rhs: V2) -> Instruction
-            where V1: Into<Value>, V2: Into<Value> {
+            where V1: Into<Expression>, V2: Into<Expression> {
             instruction::Sub::new(lhs.into(), rhs.into()).into()
         }
 
         pub fn mul<V1,V2>(lhs: V1, rhs: V2) -> Instruction
-            where V1: Into<Value>, V2: Into<Value> {
+            where V1: Into<Expression>, V2: Into<Expression> {
             instruction::Mul::new(lhs.into(), rhs.into()).into()
         }
 
         pub fn div<V1,V2>(lhs: V1, rhs: V2) -> Instruction
-            where V1: Into<Value>, V2: Into<Value> {
+            where V1: Into<Expression>, V2: Into<Expression> {
             instruction::Div::new(lhs.into(), rhs.into()).into()
         }
 
         pub fn shl<V1,V2>(val: V1, amount: V2) -> Instruction
-            where V1: Into<Value>, V2: Into<Value> {
+            where V1: Into<Expression>, V2: Into<Expression> {
             instruction::Shl::new(val.into(), amount.into()).into()
         }
 
         pub fn shr<V1,V2>(val: V1, amount: V2) -> Instruction
-            where V1: Into<Value>, V2: Into<Value> {
+            where V1: Into<Expression>, V2: Into<Expression> {
             instruction::Shr::new(val.into(), amount.into()).into()
         }
 
-        pub fn ret(value: Option<ir::Value>) -> Instruction {
+        pub fn ret(value: Option<ir::Expression>) -> Instruction {
             instruction::Return::new(value).into()
         }
 
@@ -91,11 +91,11 @@ pub mod instruction
             Self::ret(None)
         }
 
-        pub fn br(target: ir::Value) -> Self {
+        pub fn br(target: ir::Expression) -> Self {
             instruction::Break::unconditional(target).into()
         }
 
-        pub fn call(target: ir::Value) -> Self {
+        pub fn call(target: ir::Expression) -> Self {
             instruction::Call::new(target).into()
         }
 
@@ -105,7 +105,7 @@ pub mod instruction
         /// The resulting instruction is returned.
         pub fn flatten(self, block: &mut ir::Block) -> Self {
             self.map_subvalues(|v| {
-                if let Value::Instruction(mut i) = v {
+                if let Expression::Instruction(mut i) = v {
 
                     // Recursively flatten subvalues
                     i = i.flatten(block);
@@ -114,7 +114,7 @@ pub mod instruction
                         i.into()
                     } else { // instruction does not give void
                         let new_reg = ir::value::Register::unnamed(i.into());
-                        let reg_ref = Value::register_ref(&new_reg);
+                        let reg_ref = Expression::register_ref(&new_reg);
 
                         block.append_value(new_reg);
                         reg_ref
@@ -129,18 +129,18 @@ pub mod instruction
     }
 
     impl InstructionTrait for Instruction { }
-    impl ir::ValueTrait for Instruction { }
+    impl ir::ExpressionTrait for Instruction { }
 
-    impl Into<Value> for Instruction
+    impl Into<Expression> for Instruction
     {
-        fn into(self) -> Value {
-            Value::Instruction(self)
+        fn into(self) -> Expression {
+            Expression::Instruction(self)
         }
     }
 
     impl Instruction
     {
-        pub fn subvalues(&self) -> Vec<&Value> {
+        pub fn subvalues(&self) -> Vec<&Expression> {
              match *self {
                 Instruction::Add(ref instr) => instr.subvalues(),
                 Instruction::Sub(ref instr) => instr.subvalues(),
@@ -155,7 +155,7 @@ pub mod instruction
         }
         
         pub fn map_subvalues<F>(self, f: F) -> Self
-            where F: FnMut(Value) -> Value {
+            where F: FnMut(Expression) -> Expression {
 
             match self {
                ir::Instruction::Add(instr) => instr.map_subvalues(f).into(),
@@ -220,7 +220,7 @@ pub mod instruction
             impl_instruction_internal!($inst: $op);
 
             impl ::ir::instruction::Unary for $inst {
-                fn operand(&self) -> &::ir::Value {
+                fn operand(&self) -> &::ir::Expression {
                     &self.$op
                 }
             }
@@ -231,7 +231,7 @@ pub mod instruction
             impl_instruction_internal!($inst: $op1, $op2);
 
             impl ::ir::instruction::Binary for $inst {
-                fn operands(&self) -> (&::ir::Value,&::ir::Value) {
+                fn operands(&self) -> (&::ir::Expression,&::ir::Expression) {
                     (&self.$op1,
                      &self.$op2)
                 }
@@ -255,13 +255,13 @@ pub mod instruction
         ) => {
             impl $inst
             {
-                pub fn subvalues(&self) -> Vec<&::ir::Value> {
+                pub fn subvalues(&self) -> Vec<&::ir::Expression> {
                     vec![$(&self.$val_name),*]
                 }
 
                 #[allow(unused_mut,unused_variables)]
                 pub fn map_subvalues<F>(mut self, mut f: F) -> Self
-                    where F: FnMut(Value) -> Value {
+                    where F: FnMut(Expression) -> Expression {
 
                     $(*self.$val_name = f(*self.$val_name.clone()));*;
                     self.into()
@@ -270,7 +270,7 @@ pub mod instruction
 
             impl ::ir::InstructionTrait for $inst { }
 
-            impl ::ir::ValueTrait for $inst { }
+            impl ::ir::ExpressionTrait for $inst { }
 
             impl Into<::ir::Instruction> for $inst
             {
@@ -279,10 +279,10 @@ pub mod instruction
                 }
             }
 
-            impl Into<::ir::Value> for $inst
+            impl Into<::ir::Expression> for $inst
             {
-                fn into(self) -> ir::Value {
-                    ir::Value::Instruction(self.into())
+                fn into(self) -> ir::Expression {
+                    ir::Expression::Instruction(self.into())
                 }
             }
         }

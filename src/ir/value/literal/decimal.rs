@@ -1,5 +1,5 @@
 
-use ir::{self,types,Value,ValueTrait,Type};
+use ir::{self,types,Expression,ExpressionTrait,Type};
 use bit_vec::BitVec;
 
 
@@ -25,12 +25,12 @@ impl Decimal
 
 impl ir::value::LiteralTrait for Decimal { }
 
-impl ValueTrait for Decimal { }
+impl ExpressionTrait for Decimal { }
 
-impl Into<Value> for Decimal
+impl Into<Expression> for Decimal
 {
-    fn into(self) -> Value {
-        Value::Literal(self.into())
+    fn into(self) -> Expression {
+        Expression::Literal(self.into())
     }
 }
 

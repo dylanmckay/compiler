@@ -1,16 +1,16 @@
 
-use ir::{self,Instruction,Value};
+use ir::{self,Instruction,Expression};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Shl
 {
-    value: Box<ir::Value>,
-    amount: Box<ir::Value>,
+    value: Box<ir::Expression>,
+    amount: Box<ir::Expression>,
 }
 
 impl Shl
 {
-    pub fn new(value: ir::Value, amount: ir::Value) -> Self {
+    pub fn new(value: ir::Expression, amount: ir::Expression) -> Self {
         assert!(value.ty() == amount.ty());
 
         Shl {

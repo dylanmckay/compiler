@@ -1,21 +1,21 @@
 
-use ir::{self,Instruction,Value};
+use ir::{self,Instruction,Expression};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Return
 {
-    value: Option<Box<ir::Value>>,
+    value: Option<Box<ir::Expression>>,
 }
 
 impl Return
 {
-    pub fn new(value: Option<ir::Value>) -> Return {
+    pub fn new(value: Option<ir::Expression>) -> Return {
         Return {
             value: value.map(Box::new),
         }
     }
 
-    pub fn value(value: ir::Value) -> Return {
+    pub fn value(value: ir::Expression) -> Return {
         Return::new(Some(value))
     }
 
@@ -23,7 +23,7 @@ impl Return
         Return::new(None)
     }
 
-    pub fn subvalues(&self) -> Vec<&Value> {
+    pub fn subvalues(&self) -> Vec<&Expression> {
         if let Some(ref value) = self.value {
             vec![value]
         } else {
@@ -31,7 +31,7 @@ impl Return
         }
     }
 
-    pub fn subvalue(&self) -> Option<&ir::Value> {
+    pub fn subvalue(&self) -> Option<&ir::Expression> {
         if let Some(ref val) = self.value {
             Some(val)
         } else {
@@ -40,7 +40,7 @@ impl Return
     }
 
     pub fn map_subvalues<F>(mut self, mut f: F) -> Self
-        where F: FnMut(Value) -> Value {
+        where F: FnMut(Expression) -> Expression {
 
         let value = match self.value {
             Some(val) => Some(Box::new(f(*val.clone()))),
@@ -61,9 +61,9 @@ impl Into<Instruction> for Return
     }
 }
 
-impl Into<Value> for Return
+impl Into<Expression> for Return
 {
-    fn into(self) -> Value {
-        ir::Value::Instruction(self.into())
+    fn into(self) -> Expression {
+        ir::Expression::Instruction(self.into())
     }
 }

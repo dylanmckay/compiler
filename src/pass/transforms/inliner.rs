@@ -11,7 +11,7 @@ impl pass::Metadata for Inliner
     fn name(&self) -> &'static str { "inliner" }
 }
 
-impl pass::Transform<ir::Value> for Inliner
+impl pass::Transform<ir::Expression> for Inliner
 {
     fn run_function(&mut self, 
                     func: ir::Function,
@@ -26,21 +26,21 @@ impl pass::Transform<ir::Value> for Inliner
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Value>> for Box<Inliner>
+impl Into<pass::Info<ir::Expression>> for Box<Inliner>
 {
-    fn into(self) -> pass::Info<ir::Value> {
+    fn into(self) -> pass::Info<ir::Expression> {
         pass::Info::Transform(self)
     }
 }
 
-pub fn inline(inst: ir::Instruction) -> ir::Value {
+pub fn inline(inst: ir::Instruction) -> ir::Expression {
     match inst {
         ir::Instruction::Call(i) => self::inline_call(i),
         _ => panic!("{} instructions cannot be inlined"),
     }
 }
 
-pub fn inline_call(_inst: ir::instruction::Call) -> ir::Value {
+pub fn inline_call(_inst: ir::instruction::Call) -> ir::Expression {
     unimplemented!();
 }
 

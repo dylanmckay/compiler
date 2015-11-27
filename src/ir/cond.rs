@@ -11,13 +11,13 @@ pub enum Condition
     False,
 
     /// Equal to.
-    Equal(Box<ir::Value>, Box<ir::Value>),
-    NotEqual(Box<ir::Value>, Box<ir::Value>),
+    Equal(Box<ir::Expression>, Box<ir::Expression>),
+    NotEqual(Box<ir::Expression>, Box<ir::Expression>),
 
-    GreaterThan(Box<ir::Value>, Box<ir::Value>),
-    GreaterThanOrEq(Box<ir::Value>, Box<ir::Value>),
-    LessThan(Box<ir::Value>, Box<ir::Value>),
-    LessThanOrEq(Box<ir::Value>, Box<ir::Value>),
+    GreaterThan(Box<ir::Expression>, Box<ir::Expression>),
+    GreaterThanOrEq(Box<ir::Expression>, Box<ir::Expression>),
+    LessThan(Box<ir::Expression>, Box<ir::Expression>),
+    LessThanOrEq(Box<ir::Expression>, Box<ir::Expression>),
 }
 
 impl Condition

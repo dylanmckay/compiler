@@ -22,7 +22,7 @@ macro_rules! value_mapping_test {
         #[test]
         #[allow(unused_imports)]
         fn $name() {
-            use ir::{self,Instruction,Value,Type};
+            use ir::{self,Instruction,Expression,Type};
 
             let cases = [
                 $( ($input, $output) ),*

@@ -25,11 +25,11 @@ impl BlockRef
     }
 }
 
-impl ir::ValueTrait for BlockRef { }
+impl ir::ExpressionTrait for BlockRef { }
 
-impl Into<ir::Value> for BlockRef
+impl Into<ir::Expression> for BlockRef
 {
-    fn into(self) -> ir::Value {
-        ir::Value::BlockRef(self)
+    fn into(self) -> ir::Expression {
+        ir::Expression::BlockRef(self)
     }
 }

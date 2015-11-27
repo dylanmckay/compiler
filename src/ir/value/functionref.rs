@@ -38,11 +38,11 @@ impl FunctionRef
     }
 }
 
-impl ir::value::ValueTrait for FunctionRef { }
+impl ir::value::ExpressionTrait for FunctionRef { }
 
-impl Into<ir::Value> for FunctionRef
+impl Into<ir::Expression> for FunctionRef
 {
-    fn into(self) -> ir::Value {
-        ir::Value::FunctionRef(self)
+    fn into(self) -> ir::Expression {
+        ir::Expression::FunctionRef(self)
     }
 }

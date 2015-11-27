@@ -13,13 +13,13 @@ impl pass::Metadata for StrengthReduction
     fn name(&self) -> &'static str { "strength reduction" }
 }
 
-impl pass::Transform<ir::Value> for StrengthReduction
+impl pass::Transform<ir::Expression> for StrengthReduction
 {
-    fn run_value(&mut self, value: ir::Value) -> ir::Value {
+    fn run_value(&mut self, value: ir::Expression) -> ir::Expression {
 
         // check if the value is an instruction
         let inst = match value {
-            ir::Value::Instruction(i) => i,
+            ir::Expression::Instruction(i) => i,
             _ => return value,
         };
 
@@ -28,9 +28,9 @@ impl pass::Transform<ir::Value> for StrengthReduction
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Value>> for Box<StrengthReduction>
+impl Into<pass::Info<ir::Expression>> for Box<StrengthReduction>
 {
-    fn into(self) -> pass::Info<ir::Value> {
+    fn into(self) -> pass::Info<ir::Expression> {
         pass::Info::Transform(self)
     }
 }
@@ -80,7 +80,7 @@ pub mod reduce
 
     /// Tries to convert the operands of a mul or div instruction into the operands
     /// of a shift instruction.
-    pub fn maybe_shift_values(lhs: ir::Value, rhs: ir::Value) -> Option<(ir::Value,ir::Value)> {
+    pub fn maybe_shift_values(lhs: ir::Expression, rhs: ir::Expression) -> Option<(ir::Expression,ir::Expression)> {
         let lhs_if_shift = lhs.as_literal().and_then(|a| util::get_shift_amount(a));
         let rhs_if_shift = rhs.as_literal().and_then(|a| util::get_shift_amount(a));
 
@@ -99,7 +99,7 @@ pub mod reduce
     }
 
     pub mod util {
-        use ir::{value,Value};
+        use ir::{value,Expression};
 
         /// Checks if a value is an integer and a power of two.
         pub fn is_power_of_two(value: &value::Literal) -> bool {
@@ -121,7 +121,7 @@ pub mod reduce
         /// number of bits that would make an equivalent shift.
         /// 
         /// Returns `None` if the value is not a power of two.
-        pub fn get_shift_amount(value: &value::Literal) -> Option<Value> {
+        pub fn get_shift_amount(value: &value::Literal) -> Option<Expression> {
             use ::num::traits::ToPrimitive;
 
             if !is_power_of_two(&value) {
@@ -139,7 +139,7 @@ pub mod reduce
 
             let n = (val.log(2.) / log2) as u64;
 
-            Some(Value::integer(ty, n).unwrap())
+            Some(Expression::integer(ty, n).unwrap())
         }
     }
 }

@@ -5,22 +5,22 @@ use ir;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Pointer
 {
-    to: Box<ir::Value>,
+    to: Box<ir::Expression>,
 }
 
 impl Pointer
 {
-    pub fn to(value: ir::Value) -> Self {
+    pub fn to(value: ir::Expression) -> Self {
         Pointer {
             to: Box::new(value),
         }
     }
 
-    pub fn deref(self) -> ir::Value {
+    pub fn deref(self) -> ir::Expression {
         *self.to
     }
 
-    pub fn underlying(&self) -> &ir::Value {
+    pub fn underlying(&self) -> &ir::Expression {
         &self.to
     }
 
@@ -30,11 +30,11 @@ impl Pointer
     }
 }
 
-impl ir::value::ValueTrait for Pointer { }
+impl ir::value::ExpressionTrait for Pointer { }
 
-impl Into<ir::Value> for Pointer
+impl Into<ir::Expression> for Pointer
 {
-    fn into(self) -> ir::Value {
-        ir::Value::Pointer(self)
+    fn into(self) -> ir::Expression {
+        ir::Expression::Pointer(self)
     }
 }

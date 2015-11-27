@@ -1,18 +1,18 @@
 
-use ir::{self,Instruction,Value};
+use ir::{self,Instruction,Expression};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Break
 {
     cond: ir::Condition,
-    target: Box<ir::Value>,
+    target: Box<ir::Expression>,
 }
 
 impl Break
 {
     /// Creates a conditional branch.
     pub fn conditional(cond: ir::Condition,
-                       target: ir::Value) -> Self {
+                       target: ir::Expression) -> Self {
         Break {
             cond: cond,
             target: Box::new(target),
@@ -20,7 +20,7 @@ impl Break
     }
 
     /// Creates an unconditional branch.
-    pub fn unconditional(target: ir::Value) -> Self {
+    pub fn unconditional(target: ir::Expression) -> Self {
         Break::conditional(ir::Condition::True, target)
     }
 
@@ -28,7 +28,7 @@ impl Break
         &self.cond
     }
 
-    pub fn target(&self) -> &ir::Value {
+    pub fn target(&self) -> &ir::Expression {
         &self.target
     }
 

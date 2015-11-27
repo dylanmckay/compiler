@@ -1,23 +1,23 @@
 
-use ir::{self,types,Value,ValueTrait,Type};
+use ir::{self,types,Expression,ExpressionTrait,Type};
 use std;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Struct
 {
-    fields: Vec<Value>,
+    fields: Vec<Expression>,
 }
 
 impl Struct
 {
-    pub fn new(fields: Vec<Value>) -> Self {
+    pub fn new(fields: Vec<Expression>) -> Self {
 
         Struct {
             fields: fields,
         }
     }
 
-    pub fn fields(&self) -> std::slice::Iter<Value> {
+    pub fn fields(&self) -> std::slice::Iter<Expression> {
         self.fields.iter()
     }
 
@@ -33,12 +33,12 @@ impl Struct
 
 impl ir::value::LiteralTrait for Struct { }
 
-impl ValueTrait for Struct { }
+impl ExpressionTrait for Struct { }
 
-impl Into<Value> for Struct
+impl Into<Expression> for Struct
 {
-    fn into(self) -> Value {
-        Value::Literal(self.into())
+    fn into(self) -> Expression {
+        Expression::Literal(self.into())
     }
 }
 

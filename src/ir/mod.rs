@@ -1,6 +1,6 @@
 
 pub use self::types::{Type,TypeTrait};
-pub use self::value::{Value,ValueTrait};
+pub use self::value::{Expression,ExpressionTrait};
 pub use lang::Name;
 pub use ir::instruction::{Instruction,InstructionTrait};
 pub use self::cond::Condition;
@@ -15,13 +15,13 @@ pub mod instruction;
 pub mod verifier;
 /// Routines for printing modules.
 pub mod print;
-/// Value user information.
+/// Expression user information.
 pub mod users;
 
 pub mod cond;
 
-pub type Module = ::lang::Module<Value>;
-pub type Global = ::lang::Global<Value>;
-pub type Function = ::lang::Function<Value>;
-pub type Block = ::lang::Block<Value>;
-pub type Signature = ::lang::Signature<Value>;
+pub type Module = ::lang::Module<Expression>;
+pub type Global = ::lang::Global<Expression>;
+pub type Function = ::lang::Function<Expression>;
+pub type Block = ::lang::Block<Expression>;
+pub type Signature = ::lang::Signature<Expression>;

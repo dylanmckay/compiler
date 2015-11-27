@@ -75,9 +75,9 @@ pub fn verify_block(module: &ir::Module,
 
 /// Verifies that a value is well-formed.
 pub fn verify_value(module: &ir::Module,
-                    value: &ir::Value) -> Result {
+                    value: &ir::Expression) -> Result {
     match *value {
-        ir::Value::Instruction(ref val) => values::instruction(module, val),
+        ir::Expression::Instruction(ref val) => values::instruction(module, val),
         _ => Ok(()),
     }
 }
