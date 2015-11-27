@@ -17,6 +17,114 @@ pub mod blockref;
 pub mod functionref;
 pub mod registerref;
 
+use ir;
+use ir::Type;
+
+#[derive(Clone,Debug,PartialEq,Eq)]
+pub struct Value
+{
+    expression: Expression,
+}
+
+impl Value
+{
+    pub fn new(expression: Expression) -> Self {
+        Value {
+            expression: expression,
+        }
+    }
+
+    pub fn expression(&self) -> &Expression {
+        &self.expression
+    }
+
+    pub fn expression_mut(&mut self) -> &mut Expression {
+        &mut self.expression
+    }
+}
+
+impl ::lang::Value for Value
+{
+    type Type = Type;
+
+    // FIXME: subvalue support is patchy
+
+    fn subvalues(&self) -> Vec<&Self> {
+        match self.expression {
+            Expression::Instruction(ref i) => i.subvalues(),
+            _ => Vec::new(),
+        }
+    }
+
+    fn map_subvalues<F>(mut self, f: F) -> Self
+        where F: FnMut(Self) -> Self {
+
+        let expr = match self.expression {
+            Expression::Instruction(i) => i.map_subvalues(f).into(),
+            e => e,
+        };
+
+        self.expression = expr;
+        self
+    }
+
+    fn flatten(mut self, block: &mut ir::Block) -> Self {
+        // only instructions need flattening
+        let expr = if let Expression::Instruction(i) = self.expression {
+            i.flatten(block).into()
+        } else {
+            self.expression
+        };
+
+        self.expression = expr;
+        self
+    }
+
+    fn is_single_critical(&self) -> bool {
+        match self.expression {
+            ir::Expression::Literal(..) => false,
+            ir::Expression::Instruction(ref i) => i.is_single_critical(),
+            _ => true,
+        }
+    }
+
+    fn is_terminator(&self) -> bool {
+        // only instructions can be terminators
+        if let ir::Expression::Instruction(ref inst) = self.expression {
+            inst.is_terminator()
+        } else {
+            false
+        }
+    }
+
+    fn is_simple(&self) -> bool {
+         match self.expression {
+             Expression::Literal(..) => true,
+             Expression::Pointer(ref val) => val.underlying().is_simple(),
+             Expression::Register(..) => true,
+             Expression::Instruction(..) => false,
+             Expression::GlobalRef(..) => true,
+             Expression::BlockRef(..) => true,
+             Expression::FunctionRef(..) => true,
+             Expression::RegisterRef(..) => true,
+         }
+    }
+
+    fn ty(&self) -> Type {
+         match self.expression {
+            Expression::Literal(ref val) => val.ty(),
+            Expression::Pointer(ref val) => val.ty(),
+            Expression::Register(ref val) => val.ty(),
+            Expression::Instruction(ref val) => val.ty(),
+            Expression::GlobalRef(ref val) => val.ty(),
+            Expression::BlockRef(ref val) => val.ty(),
+            Expression::FunctionRef(ref val) => val.ty(),
+            Expression::RegisterRef(ref val) => val.ty(),
+        }
+    }
+}
+
+
 pub mod value
 {
     use ir::{self,types,value,Type};
@@ -153,80 +261,6 @@ pub mod value
 
         pub fn ty(&self) -> ir::Type {
             lang::Value::ty(self)
-        }
-    }
-
-    impl lang::Value for Expression
-    {
-        type Type = Type;
-
-        // FIXME: subvalue support is patchy
-
-        fn subvalues(&self) -> Vec<&Self> {
-            match *self {
-                ir::Expression::Instruction(ref i) => i.subvalues(),
-                _ => Vec::new(),
-            }
-        }
-
-        fn map_subvalues<F>(self, f: F) -> Self
-            where F: FnMut(Self) -> Self {
-            match self {
-                Expression::Instruction(i) => i.map_subvalues(f).into(),
-                _ => self,
-            }
-        }
-
-        fn flatten(self, block: &mut ir::Block) -> Self {
-            // only instructions need flattening
-            if let Expression::Instruction(i) = self {
-                i.flatten(block).into()
-            } else {
-                self
-            }
-        }
-
-        fn is_single_critical(&self) -> bool {
-            match *self {
-                ir::Expression::Literal(..) => false,
-                ir::Expression::Instruction(ref i) => i.is_single_critical(),
-                _ => true,
-            }
-        }
-
-        fn is_terminator(&self) -> bool {
-            // only instructions can be terminators
-            if let ir::Expression::Instruction(ref inst) = *self {
-                inst.is_terminator()
-            } else {
-                false
-            }
-        }
-
-        fn is_simple(&self) -> bool {
-             match *self {
-                 Expression::Literal(..) => true,
-                 Expression::Pointer(ref val) => val.underlying().is_simple(),
-                 Expression::Register(..) => true,
-                 Expression::Instruction(..) => false,
-                 Expression::GlobalRef(..) => true,
-                 Expression::BlockRef(..) => true,
-                 Expression::FunctionRef(..) => true,
-                 Expression::RegisterRef(..) => true,
-             }
-        }
-
-        fn ty(&self) -> Type {
-             match *self {
-                Expression::Literal(ref val) => val.ty(),
-                Expression::Pointer(ref val) => val.ty(),
-                Expression::Register(ref val) => val.ty(),
-                Expression::Instruction(ref val) => val.ty(),
-                Expression::GlobalRef(ref val) => val.ty(),
-                Expression::BlockRef(ref val) => val.ty(),
-                Expression::FunctionRef(ref val) => val.ty(),
-                Expression::RegisterRef(ref val) => val.ty(),
-            }
         }
     }
 
