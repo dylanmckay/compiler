@@ -41,6 +41,24 @@ impl Value
     pub fn expression_mut(&mut self) -> &mut Expression {
         &mut self.expression
     }
+
+    pub fn into_expression(self) -> Expression {
+        self.expression
+    }
+}
+
+impl Into<Expression> for Value
+{
+    fn into(self) -> Expression {
+        self.expression
+    }
+}
+
+impl Into<Value> for Expression
+{
+    fn into(self) -> Value {
+        Value::new(self)
+    }
 }
 
 impl ::lang::Value for Value
@@ -58,14 +76,16 @@ impl ::lang::Value for Value
 
     fn map_subvalues<F>(mut self, f: F) -> Self
         where F: FnMut(Self) -> Self {
-
-        let expr = match self.expression {
-            Expression::Instruction(i) => i.map_subvalues(f).into(),
-            e => e,
-        };
-
-        self.expression = expr;
-        self
+        // TODO: fix this
+        unimplemented!();
+        //
+        // let expr = match self.expression {
+        //     Expression::Instruction(i) => i.map_subvalues(f).into(),
+        //     e => e,
+        // };
+        //
+        // self.expression = expr;
+        // self
     }
 
     fn flatten(mut self, block: &mut ir::Block) -> Self {
@@ -88,38 +108,20 @@ impl ::lang::Value for Value
         }
     }
 
+    fn is_simple(&self) -> bool {
+        self.expression.is_simple()
+    }
+
+    fn ty(&self) -> ir::Type {
+        self.expression.ty()
+    }
+
     fn is_terminator(&self) -> bool {
         // only instructions can be terminators
         if let ir::Expression::Instruction(ref inst) = self.expression {
             inst.is_terminator()
         } else {
             false
-        }
-    }
-
-    fn is_simple(&self) -> bool {
-         match self.expression {
-             Expression::Literal(..) => true,
-             Expression::Pointer(ref val) => val.underlying().is_simple(),
-             Expression::Register(..) => true,
-             Expression::Instruction(..) => false,
-             Expression::GlobalRef(..) => true,
-             Expression::BlockRef(..) => true,
-             Expression::FunctionRef(..) => true,
-             Expression::RegisterRef(..) => true,
-         }
-    }
-
-    fn ty(&self) -> Type {
-         match self.expression {
-            Expression::Literal(ref val) => val.ty(),
-            Expression::Pointer(ref val) => val.ty(),
-            Expression::Register(ref val) => val.ty(),
-            Expression::Instruction(ref val) => val.ty(),
-            Expression::GlobalRef(ref val) => val.ty(),
-            Expression::BlockRef(ref val) => val.ty(),
-            Expression::FunctionRef(ref val) => val.ty(),
-            Expression::RegisterRef(ref val) => val.ty(),
         }
     }
 }
@@ -132,6 +134,7 @@ pub mod value
     use std::fmt;
     use lang;
     use util;
+    use super::Value;
 
     use num::bigint::ToBigInt;
 
@@ -185,7 +188,7 @@ pub mod value
             value::Literal::decimal(ty,bits).into()
         }
 
-        pub fn strukt(fields: Vec<Expression>) -> Expression {
+        pub fn strukt(fields: Vec<Value>) -> Expression {
             value::Literal::strukt(fields).into()
         }
 
@@ -211,7 +214,7 @@ pub mod value
 
         /// Creates an unnamed register.
         pub fn register<V>(value: V) -> Expression
-            where V: Into<Expression> {
+            where V: Into<Value> {
             value::Register::unnamed(value.into()).into()
         }
 
@@ -220,7 +223,7 @@ pub mod value
             where I: Into<String> {
 
             let name = ir::Name::named(name);
-            value::Register::new(name, value).into()
+            value::Register::new(name, value.into()).into()
         }
 
         pub fn as_literal(&self) -> Option<&value::Literal> {
@@ -260,7 +263,29 @@ pub mod value
         }
 
         pub fn ty(&self) -> ir::Type {
-            lang::Value::ty(self)
+             match *self {
+                Expression::Literal(ref val) => val.ty(),
+                Expression::Pointer(ref val) => val.ty(),
+                Expression::Register(ref val) => val.ty(),
+                Expression::Instruction(ref val) => val.ty(),
+                Expression::GlobalRef(ref val) => val.ty(),
+                Expression::BlockRef(ref val) => val.ty(),
+                Expression::FunctionRef(ref val) => val.ty(),
+                Expression::RegisterRef(ref val) => val.ty(),
+            }
+        }
+
+        pub fn is_simple(&self) -> bool {
+             match *self{
+                 Expression::Literal(..) => true,
+                 Expression::Pointer(ref val) => val.underlying().is_simple(),
+                 Expression::Register(..) => true,
+                 Expression::Instruction(..) => false,
+                 Expression::GlobalRef(..) => true,
+                 Expression::BlockRef(..) => true,
+                 Expression::FunctionRef(..) => true,
+                 Expression::RegisterRef(..) => true,
+             }
         }
     }
 

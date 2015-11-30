@@ -11,30 +11,30 @@ impl pass::Metadata for ConstantFolding
     fn name(&self) -> &'static str { "constant folding" }
 }
 
-impl pass::Transform<ir::Expression> for ConstantFolding
+impl pass::Transform<ir::Value> for ConstantFolding
 {
-    fn run_value(&mut self, value: ir::Expression) -> ir::Expression {
+    fn run_value(&mut self, value: ir::Value) -> ir::Value {
         self::fold::value(value)
     }
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Expression>> for Box<ConstantFolding>
+impl Into<pass::Info<ir::Value>> for Box<ConstantFolding>
 {
-    fn into(self) -> pass::Info<ir::Expression> {
+    fn into(self) -> pass::Info<ir::Value> {
         pass::Info::Transform(self)
     }
 }
 
 pub mod fold
 {
-    use ir::{self,Expression,Instruction};
+    use ir::{self,Value,Expression,Instruction};
     use ir::value::literal::{Literal,Integer};
 
-    pub fn value(value: Expression) -> Expression {
-        match value {
-            Expression::Instruction(i) => instruction(i),
-            _ => value,
+    pub fn value(value: Value) -> Value {
+        match value.into_expression() {
+            Expression::Instruction(i) => Value::new(instruction(i)),
+            e => Value::new(e),
         }
     }
 
@@ -75,11 +75,11 @@ pub mod fold
 
 
 value_mapping_test!(test_binops : fold::instruction {
-    Instruction::add(1 as i8, 8 as i8) => ir::Expression::i8(9),
-    Instruction::sub(1 as i8, 8 as i8) => ir::Expression::i8(-7),
-    Instruction::mul(1 as i8, 8 as i8) => ir::Expression::i8(8),
-    Instruction::div(10 as i8,2 as i8) => ir::Expression::i8(5),
-    Instruction::shl(1 as u8,1 as u8) => ir::Expression::u8(2),
-    Instruction::shr(32 as u8,1 as u8) => ir::Expression::u8(16)
+    Instruction::add(1 as i8, 8 as i8) => ir::Value::i8(9),
+    Instruction::sub(1 as i8, 8 as i8) => ir::Value::i8(-7),
+    Instruction::mul(1 as i8, 8 as i8) => ir::Value::i8(8),
+    Instruction::div(10 as i8,2 as i8) => ir::Value::i8(5),
+    Instruction::shl(1 as u8,1 as u8) => ir::Value::u8(2),
+    Instruction::shr(32 as u8,1 as u8) => ir::Value::u8(16)
 });
 

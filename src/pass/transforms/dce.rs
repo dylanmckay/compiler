@@ -18,7 +18,7 @@ impl pass::Metadata for DeadCodeElimination
     fn name(&self) -> &'static str { "dead code elimination" }
 }
 
-impl pass::Transform<ir::Expression> for DeadCodeElimination
+impl pass::Transform<ir::Value> for DeadCodeElimination
 {
     fn run_block(&mut self, block: ir::Block)
         -> ir::Block {
@@ -28,9 +28,9 @@ impl pass::Transform<ir::Expression> for DeadCodeElimination
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Expression>> for Box<DeadCodeElimination>
+impl Into<pass::Info<ir::Value>> for Box<DeadCodeElimination>
 {
-    fn into(self) -> pass::Info<ir::Expression> {
+    fn into(self) -> pass::Info<ir::Value> {
         pass::Info::Transform(self)
     }
 }

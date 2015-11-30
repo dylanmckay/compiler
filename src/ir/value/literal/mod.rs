@@ -3,7 +3,7 @@ pub use self::integer::Integer;
 pub use self::decimal::Decimal;
 pub use self::strukt::Struct;
 
-use ir::{types,Expression,ExpressionTrait,Type};
+use ir::{types,Value,Expression,ExpressionTrait,Type};
 use bit_vec::BitVec;
 
 use num::bigint::ToBigInt;
@@ -38,7 +38,7 @@ impl Literal
         Decimal::new(ty,bits).into()
     }
 
-    pub fn strukt(fields: Vec<Expression>) -> Literal {
+    pub fn strukt(fields: Vec<Value>) -> Literal {
         Struct::new(fields).into()
     }
 

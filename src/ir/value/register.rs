@@ -9,13 +9,13 @@ pub struct Register
     id: util::Id,
 
     name: ir::Name,
-    value: Box<ir::Expression>,
+    value: Box<ir::Value>,
 }
 
 impl Register
 {
     /// Creates a new register.
-    pub fn new(name: ir::Name, value: ir::Expression) -> Self {
+    pub fn new(name: ir::Name, value: ir::Value) -> Self {
         Register {
             id: util::Id::next(),
 
@@ -25,13 +25,13 @@ impl Register
     }
 
     /// Creates an unnamed register.
-    pub fn unnamed(value: ir::Expression) -> Self {
+    pub fn unnamed(value: ir::Value) -> Self {
         Register::new(ir::Name::Unnamed, value)
     }
 
     pub fn name(&self) -> &ir::Name { &self.name }
 
-    pub fn subvalue(&self) -> &ir::Expression {
+    pub fn subvalue(&self) -> &ir::Value {
         &self.value
     }
 

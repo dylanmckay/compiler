@@ -83,7 +83,7 @@ pub fn global(global: &ir::Global,
               printer: &mut Printer,
               fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "%{} = ", global.name()));
-    try!(self::value::plain(global.value(), printer, fmt));
+    try!(self::value::plain(global.value().expression(), printer, fmt));
     write!(fmt, "\n")
 }
 
@@ -113,7 +113,7 @@ pub fn block(block: &ir::Block,
     try!(write!(fmt, "{}:\n", block.name()));
 
     for value in block.values() {
-        try!(self::root_value(&value, printer, fmt));
+        try!(self::root_value(value.expression(), printer, fmt));
     }
 
     Ok(())
@@ -239,7 +239,7 @@ pub mod value
         }
 
         try!(write!(fmt, " = "));
-        self::value(value.subvalue(), printer, fmt)
+        self::value(value.subvalue().expression(), printer, fmt)
     }
 
     pub fn global_ref(value: &value::GlobalRef,

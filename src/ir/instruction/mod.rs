@@ -16,7 +16,7 @@ pub use self::br::Break;
 pub mod instruction
 {
     use std::fmt;
-    use ir::{self,instruction,Expression,Type};
+    use ir::{self,instruction,Value,Expression,Type};
 
     pub trait InstructionTrait : fmt::Debug +
                                  Into<Expression> +
@@ -113,10 +113,10 @@ pub mod instruction
                     if i.ty().is_void() {
                         i.into()
                     } else { // instruction does not give void
-                        let new_reg = ir::value::Register::unnamed(i.into());
+                        let new_reg = ir::value::Register::unnamed(Value::new(i.into()));
                         let reg_ref = Expression::register_ref(&new_reg);
 
-                        block.append_value(new_reg);
+                        block.append_value(Value::new(new_reg.into()));
                         reg_ref
                     }
 
@@ -140,18 +140,20 @@ pub mod instruction
 
     impl Instruction
     {
-        pub fn subvalues(&self) -> Vec<&Expression> {
-             match *self {
-                Instruction::Add(ref instr) => instr.subvalues(),
-                Instruction::Sub(ref instr) => instr.subvalues(),
-                Instruction::Mul(ref instr) => instr.subvalues(),
-                Instruction::Div(ref instr) => instr.subvalues(),
-                Instruction::Shl(ref instr) => instr.subvalues(),
-                Instruction::Shr(ref instr) => instr.subvalues(),
-                Instruction::Call(ref instr) => instr.subvalues(),
-                Instruction::Break(ref instr) => instr.subvalues(),
-                Instruction::Return(ref instr) => instr.subvalues(),
-             }
+        pub fn subvalues(&self) -> Vec<&Value> {
+            unimplemented!()
+            // TODO_NEW: don;t throw away data
+            // match *self {
+            //    Instruction::Add(ref instr) => instr.subvalues(),
+            //    Instruction::Sub(ref instr) => instr.subvalues(),
+            //    Instruction::Mul(ref instr) => instr.subvalues(),
+            //    Instruction::Div(ref instr) => instr.subvalues(),
+            //    Instruction::Shl(ref instr) => instr.subvalues(),
+            //    Instruction::Shr(ref instr) => instr.subvalues(),
+            //    Instruction::Call(ref instr) => instr.subvalues(),
+            //    Instruction::Break(ref instr) => instr.subvalues(),
+            //    Instruction::Return(ref instr) => instr.subvalues(),
+            // }
         }
         
         pub fn map_subvalues<F>(self, f: F) -> Self

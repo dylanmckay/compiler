@@ -44,17 +44,17 @@ fn main() {
 
 fn create_module() -> ir::Module {
 
-    let lhs = ir::Expression::i32(23);
-    let rhs = ir::Expression::i32(2);
+    let lhs = ir::Value::new(ir::Expression::i32(23));
+    let rhs = ir::Value::new(ir::Expression::i32(2));
 
     let global = ir::Global::new("MyGlobal".into(), lhs.clone());
 
     let func2 = {
         let bb2 = {
 
-            let inst_add1 = ir::Instruction::add(lhs.clone(), rhs.clone());
-            let inst_mul = ir::Instruction::mul(inst_add1, rhs.clone());
-            let inst_ret = ir::Instruction::ret(Some(inst_mul.clone().into()));
+            let inst_add1 = ir::Value::new(ir::Instruction::add(lhs.clone(), rhs.clone()).into());
+            let inst_mul = ir::Value::new(ir::Instruction::mul(inst_add1, rhs.clone()).into());
+            let inst_ret = ir::Value::new(ir::Instruction::ret(Some(inst_mul.clone().into())).into());
 
             let mut block = ir::Block::empty("other");
             block.append_value(inst_ret);
@@ -62,7 +62,8 @@ fn create_module() -> ir::Module {
         };
 
         let bb1 = {
-            let inst_br = ir::Instruction::br(ir::Expression::block_ref(&bb2));
+            let inst_br =
+                ir::Value::new(ir::Instruction::br(ir::Expression::block_ref(&bb2)).into());
 
             let mut block = ir::Block::empty("entry");
             block.append_value(inst_br);
@@ -79,8 +80,8 @@ fn create_module() -> ir::Module {
 
     let func1 = {
         let bb = {
-            let inst_call = ir::Instruction::call(ir::Expression::function_ref(&func2));
-            let inst_ret = ir::Instruction::ret(Some(inst_call.into()));
+            let inst_call = ir::Value::new(ir::Instruction::call(ir::Expression::function_ref(&func2)).into());
+            let inst_ret = ir::Value::new(ir::Instruction::ret(Some(inst_call.into())).into());
 
             let mut block = ir::Block::empty("main");
             block.append_value(inst_ret);
@@ -99,7 +100,7 @@ fn create_module() -> ir::Module {
                        .global(global)
 }
 
-fn create_ir_pass_manager() -> pass::Manager<ir::Expression> {
+fn create_ir_pass_manager() -> pass::Manager<ir::Value> {
     pass::Manager::empty()
         //.add_pass(pass::transforms::ConstantFolding)
         .add_pass(pass::transforms::StrengthReduction)

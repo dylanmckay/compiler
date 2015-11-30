@@ -13,31 +13,31 @@ impl pass::Metadata for StrengthReduction
     fn name(&self) -> &'static str { "strength reduction" }
 }
 
-impl pass::Transform<ir::Expression> for StrengthReduction
+impl pass::Transform<ir::Value> for StrengthReduction
 {
-    fn run_value(&mut self, value: ir::Expression) -> ir::Expression {
+    fn run_value(&mut self, value: ir::Value) -> ir::Value {
 
         // check if the value is an instruction
-        let inst = match value {
+        let inst = match value.into_expression() {
             ir::Expression::Instruction(i) => i,
-            _ => return value,
+            e => return ir::Value::new(e),
         };
 
-        self::reduce::reduce(inst).into()
+        ir::Value::new(self::reduce::reduce(inst).into())
     }
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Expression>> for Box<StrengthReduction>
+impl Into<pass::Info<ir::Value>> for Box<StrengthReduction>
 {
-    fn into(self) -> pass::Info<ir::Expression> {
+    fn into(self) -> pass::Info<ir::Value> {
         pass::Info::Transform(self)
     }
 }
 
 pub mod reduce
 {
-    use ir::{self,instruction,Instruction};
+    use ir::{self,instruction,Instruction,Value};
 
     pub fn reduce(inst: Instruction) -> ir::Instruction {
 
@@ -61,7 +61,7 @@ pub mod reduce
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
-        match maybe_shift_values(lhs.clone(),rhs.clone()) {
+        match maybe_shift_expressions(lhs.clone(),rhs.clone()) {
             Some((value,amount)) => Instruction::shl(value,amount).into(),
             None => inst.clone().into(),
         }
@@ -72,7 +72,7 @@ pub mod reduce
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
-        match maybe_shift_values(lhs.clone(),rhs.clone()) {
+        match maybe_shift_expressions(lhs.clone(),rhs.clone()) {
             Some((value,amount)) => Instruction::shr(value,amount).into(),
             None => inst.clone().into(),
         }
@@ -80,7 +80,9 @@ pub mod reduce
 
     /// Tries to convert the operands of a mul or div instruction into the operands
     /// of a shift instruction.
-    pub fn maybe_shift_values(lhs: ir::Expression, rhs: ir::Expression) -> Option<(ir::Expression,ir::Expression)> {
+    pub fn maybe_shift_expressions(lhs: ir::Expression, rhs: ir::Expression)
+        -> Option<(ir::Expression,ir::Expression)> {
+
         let lhs_if_shift = lhs.as_literal().and_then(|a| util::get_shift_amount(a));
         let rhs_if_shift = rhs.as_literal().and_then(|a| util::get_shift_amount(a));
 
@@ -99,7 +101,7 @@ pub mod reduce
     }
 
     pub mod util {
-        use ir::{value,Expression};
+        use ir::{value,Expression,Value};
 
         /// Checks if a value is an integer and a power of two.
         pub fn is_power_of_two(value: &value::Literal) -> bool {
@@ -117,20 +119,20 @@ pub mod reduce
                  })
         }
 
-        /// If `value` is a power of two, this gets the
+        /// If `expr` is a power of two, this gets the
         /// number of bits that would make an equivalent shift.
         /// 
-        /// Returns `None` if the value is not a power of two.
-        pub fn get_shift_amount(value: &value::Literal) -> Option<Expression> {
+        /// Returns `None` if the expr is not a power of two.
+        pub fn get_shift_amount(expr: &value::Literal) -> Option<Expression> {
             use ::num::traits::ToPrimitive;
 
-            if !is_power_of_two(&value) {
+            if !is_power_of_two(&expr) {
                 return None;
             }
 
-            // FIXME: this will panic if value >64bits
-            let const_val = value.as_integer()
-                                 .expect("value must be an integer");
+            // FIXME: this will panic if expr >64bits
+            let const_val = expr.as_integer()
+                                 .expect("expr must be an integer");
 
             let ty = const_val.integer_ty();
             let val = const_val.value().to_f64().unwrap();
