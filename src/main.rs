@@ -2,7 +2,7 @@
 #![feature(iter_arith,plugin)]
 #![feature(associated_consts)]
 
-#![plugin(clippy)]
+// #![plugin(clippy)]
 
 extern crate num;
 extern crate bit_vec;

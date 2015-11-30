@@ -8,4 +8,4 @@ authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 [dependencies]
 num = "*"
 bit-vec = "*"
-clippy = "*"
+# clippy = "*"
