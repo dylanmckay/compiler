@@ -37,7 +37,7 @@ impl Into<pass::Info<ir::Value>> for Box<StrengthReduction>
 
 pub mod reduce
 {
-    use ir::{self,instruction,Instruction,Value};
+    use ir::{self,instruction,Instruction};
 
     pub fn reduce(inst: Instruction) -> ir::Instruction {
 
@@ -101,7 +101,7 @@ pub mod reduce
     }
 
     pub mod util {
-        use ir::{value,Expression,Value};
+        use ir::{value,Expression};
 
         /// Checks if a value is an integer and a power of two.
         pub fn is_power_of_two(value: &value::Literal) -> bool {

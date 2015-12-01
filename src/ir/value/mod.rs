@@ -74,7 +74,7 @@ impl ::lang::Value for Value
         }
     }
 
-    fn map_subvalues<F>(mut self, f: F) -> Self
+    fn map_subvalues<F>(self, _f: F) -> Self
         where F: FnMut(Self) -> Self {
         // TODO: fix this
         unimplemented!();
@@ -132,7 +132,6 @@ pub mod value
     use ir::{self,types,value,Type};
     use bit_vec::BitVec;
     use std::fmt;
-    use lang;
     use util;
     use super::Value;
 
