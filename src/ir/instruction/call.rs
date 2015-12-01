@@ -1,28 +1,28 @@
 
-use ir::{self,Instruction,Expression};
+use ir::{self,Instruction,Value,Expression};
 
 // TODO: allow passing values as arguments.
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Call
 {
-    target: Box<ir::Expression>,
+    target: Box<ir::Value>,
 }
 
 impl Call
 {
-    pub fn new(target: ir::Expression) -> Self {
+    pub fn new(target: ir::Value) -> Self {
         Call {
             target: Box::new(target),
         }
     }
 
-    pub fn target(&self) -> &ir::Expression {
+    pub fn target(&self) -> &ir::Value {
         &self.target
     }
 
     pub fn target_id(&self) -> ::util::Id {
-        if let ir::Expression::FunctionRef(ref r) = *self.target() {
+        if let ir::Expression::FunctionRef(ref r) = *self.target().expression() {
             r.function_id()
         } else {
             panic!("a call instruction must have a function reference as its target");

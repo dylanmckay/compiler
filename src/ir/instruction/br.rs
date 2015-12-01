@@ -5,14 +5,14 @@ use ir::{self,Instruction,Expression};
 pub struct Break
 {
     cond: ir::Condition,
-    target: Box<ir::Expression>,
+    target: Box<ir::Value>,
 }
 
 impl Break
 {
     /// Creates a conditional branch.
     pub fn conditional(cond: ir::Condition,
-                       target: ir::Expression) -> Self {
+                       target: ir::Value) -> Self {
         Break {
             cond: cond,
             target: Box::new(target),
@@ -20,7 +20,7 @@ impl Break
     }
 
     /// Creates an unconditional branch.
-    pub fn unconditional(target: ir::Expression) -> Self {
+    pub fn unconditional(target: ir::Value) -> Self {
         Break::conditional(ir::Condition::True, target)
     }
 
@@ -28,7 +28,7 @@ impl Break
         &self.cond
     }
 
-    pub fn target(&self) -> &ir::Expression {
+    pub fn target(&self) -> &ir::Value {
         &self.target
     }
 

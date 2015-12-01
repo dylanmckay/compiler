@@ -45,6 +45,60 @@ impl Value
     pub fn into_expression(self) -> Expression {
         self.expression
     }
+
+    pub fn ty(&self) -> ir::Type {
+        self.expression.ty()
+    }
+
+    pub fn global_ref(global: &ir::Global) -> Self {
+        unimplemented!();
+    }
+
+    pub fn function_ref(func: &ir::Function) -> Self {
+        //Value::new(Expression::function_ref(func))
+        unimplemented!();
+    }
+
+    pub fn block_ref(block: &ir::Block) -> Self {
+        unimplemented!();
+    }
+
+    pub fn register_ref(register: &ir::value::Register) -> Self {
+        unimplemented!();
+    }
+
+    pub fn add(lhs: ir::Value, rhs: ir::Value) -> Self {
+        unimplemented!();
+    }
+
+    pub fn sub(lhs: ir::Value, rhs: ir::Value) -> Self {
+        unimplemented!();
+    }
+
+    pub fn mul(lhs: ir::Value, rhs: ir::Value) -> Self {
+        unimplemented!();
+    }
+
+    pub fn div(lhs: ir::Value, rhs: ir::Value) -> Self {
+        unimplemented!();
+    }
+
+    pub fn call(target: ir::Value) -> Self {
+        //Value::new(Expression::call(target))
+        unimplemented!();
+    }
+
+    pub fn br(target: ir::Value) -> Self {
+        unimplemented!();
+    }
+
+    pub fn ret(value: Option<::ir::Value>) -> Self {
+        unimplemented!();
+    }
+
+    pub fn ret_void() -> Self {
+        Value::ret(None)
+    }
 }
 
 impl Into<Expression> for Value

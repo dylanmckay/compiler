@@ -61,7 +61,7 @@ pub mod reduce
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
-        match maybe_shift_expressions(lhs.clone(),rhs.clone()) {
+        match maybe_shift_expressions(lhs.expression().clone(),rhs.expression().clone()) {
             Some((value,amount)) => Instruction::shl(value,amount).into(),
             None => inst.clone().into(),
         }
@@ -72,7 +72,7 @@ pub mod reduce
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
-        match maybe_shift_expressions(lhs.clone(),rhs.clone()) {
+        match maybe_shift_expressions(lhs.expression().clone(),rhs.expression().clone()) {
             Some((value,amount)) => Instruction::shr(value,amount).into(),
             None => inst.clone().into(),
         }

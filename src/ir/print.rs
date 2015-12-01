@@ -304,15 +304,15 @@ pub mod value
             let (lhs,rhs) = inst.operands();
 
             try!(write!(fmt, "{} ", mnemonic));
-            try!(super::value(lhs, printer, fmt));
+            try!(super::value(lhs.expression(), printer, fmt));
             try!(write!(fmt, ", "));
-            try!(super::value(rhs, printer, fmt));
+            try!(super::value(rhs.expression(), printer, fmt));
             Ok(())
         }
 
         pub fn call(inst: &instruction::Call,
                     fmt: &mut fmt::Formatter) -> fmt::Result {
-            let func = if let Expression::FunctionRef(ref f) = *inst.target() {
+            let func = if let Expression::FunctionRef(ref f) = *inst.target().expression()  {
                 f
             } else {
                 unreachable!(); // target must be function
@@ -329,7 +329,7 @@ pub mod value
             try!(write!(fmt, "break "));
             try!(super::super::condition(inst.condition(), printer, fmt));
             try!(write!(fmt, " "));
-            super::value(inst.target(), printer, fmt)
+            super::value(inst.target().expression(), printer, fmt)
         }
 
         pub fn ret(inst: &instruction::Return,
@@ -338,7 +338,7 @@ pub mod value
             try!(write!(fmt, "ret "));
 
             match inst.subvalue() {
-                Some(i) => super::value(i, printer, fmt),
+                Some(i) => super::value(i.expression(), printer, fmt),
                 None => write!(fmt, "void"),
             }
         }

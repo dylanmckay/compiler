@@ -52,9 +52,9 @@ fn create_module() -> ir::Module {
     let func2 = {
         let bb2 = {
 
-            let inst_add1 = ir::Value::new(ir::Instruction::add(lhs.clone(), rhs.clone()).into());
-            let inst_mul = ir::Value::new(ir::Instruction::mul(inst_add1, rhs.clone()).into());
-            let inst_ret = ir::Value::new(ir::Instruction::ret(Some(inst_mul.clone().into())).into());
+            let inst_add1 = ir::Value::add(lhs.clone(), rhs.clone());
+            let inst_mul = ir::Value::mul(inst_add1, rhs.clone());
+            let inst_ret = ir::Value::ret(Some(inst_mul));
 
             let mut block = ir::Block::empty("other");
             block.append_value(inst_ret);
@@ -62,8 +62,7 @@ fn create_module() -> ir::Module {
         };
 
         let bb1 = {
-            let inst_br =
-                ir::Value::new(ir::Instruction::br(ir::Expression::block_ref(&bb2)).into());
+            let inst_br = ir::Value::br(ir::Value::block_ref(&bb2));
 
             let mut block = ir::Block::empty("entry");
             block.append_value(inst_br);
@@ -80,7 +79,7 @@ fn create_module() -> ir::Module {
 
     let func1 = {
         let bb = {
-            let inst_call = ir::Value::new(ir::Instruction::call(ir::Expression::function_ref(&func2)).into());
+            let inst_call = ir::Value::call(ir::Value::function_ref(&func2));
             let inst_ret = ir::Value::new(ir::Instruction::ret(Some(inst_call.into())).into());
 
             let mut block = ir::Block::empty("main");

@@ -111,7 +111,7 @@ mod values
         pub fn call(_module: &Module,
                     inst: &instruction::Call) -> Result {
 
-            condition!(inst.target().is_function_ref(),
+            condition!(inst.target().expression().is_function_ref(),
                        "call instructions must refer to functions");
 
 
@@ -123,7 +123,7 @@ mod values
         pub fn br(_module: &Module,
                   inst: &instruction::Break) -> Result {
 
-            condition!(inst.target().is_block_ref(),
+            condition!(inst.target().expression().is_block_ref(),
                        "break instructions must refer to basic blocks");
 
             Ok(())

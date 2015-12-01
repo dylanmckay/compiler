@@ -59,7 +59,7 @@ pub mod fold
         use ir::instruction::Binary;
 
         // make sure the values are constants
-        let (lhs,rhs) = match inst.operands() {
+        let (lhs,rhs) = match inst.operand_expressions() {
             (&Expression::Literal(ref a),&Expression::Literal(ref b)) => (a.clone(),b.clone()),
             _ => return inst.clone().into(), // we can only fold constants
         };
