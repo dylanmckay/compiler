@@ -64,13 +64,13 @@ pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
         module: module,
         register_accumulator: 0,
     };
-    
+
     for global in module.globals() {
         try!(self::global(global, &mut printer, fmt));
     }
 
     try!(write!(fmt, "\n"));
-   
+
     for func in module.functions() {
          try!(self::function(func, &mut printer, fmt));
          try!(write!(fmt, "\n"));
@@ -83,7 +83,7 @@ pub fn global(global: &ir::Global,
               printer: &mut Printer,
               fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "%{} = ", global.name()));
-    try!(self::value::plain(global.value().expression(), printer, fmt));
+    try!(plain_value(global.value(), printer, fmt));
     write!(fmt, "\n")
 }
 
@@ -113,7 +113,7 @@ pub fn block(block: &ir::Block,
     try!(write!(fmt, "{}:\n", block.name()));
 
     for value in block.values() {
-        try!(self::root_value(value.expression(), printer, fmt));
+        try!(self::root_value(value, printer, fmt));
     }
 
     Ok(())
@@ -134,24 +134,42 @@ pub fn condition(cond: &ir::Condition,
         ir::Condition::GreaterThanOrEq(ref lhs, ref rhs) |
         ir::Condition::LessThan(ref lhs, ref rhs) |
         ir::Condition::LessThanOrEq(ref lhs, ref rhs) => {
-            try!(value::value(lhs, printer, fmt));
+            try!(value(lhs, printer, fmt));
             try!(write!(fmt, " {} ", cond.abbreviation()));
-            try!(value::value(rhs, printer, fmt));
+            try!(value(rhs, printer, fmt));
 
             Ok(())
         },
     }
 }
 
-pub fn root_value(value: &ir::Expression,
+pub fn root_value(value: &ir::Value,
                   printer: &mut Printer,
                   fmt: &mut fmt::Formatter) -> fmt::Result {
+    root_expression(value.expression(), printer, fmt)
+}
+
+pub fn root_expression(expression: &ir::Expression,
+                       printer: &mut Printer,
+                       fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "\t"));
-    try!(self::value::plain(value, printer, fmt));
+    try!(self::expression::plain(expression, printer, fmt));
     write!(fmt, "\n")
 }
 
-pub mod value
+pub fn value(value: &ir::Value,
+             printer: &mut Printer,
+             fmt: &mut fmt::Formatter) -> fmt::Result {
+    expression::expression(value.expression(), printer, fmt)
+}
+
+pub fn plain_value(value: &ir::Value,
+                   printer: &mut Printer,
+                   fmt: &mut fmt::Formatter) -> fmt::Result {
+    expression::plain(value.expression(), printer, fmt)
+}
+
+pub mod expression
 {
     use ir::{Expression,value};
     use std::fmt;
@@ -159,30 +177,30 @@ pub mod value
     use util::Identifiable;
     use super::Printer;
 
-    pub fn value(value: &Expression,
-                 printer: &mut Printer,
-                 fmt: &mut fmt::Formatter) -> fmt::Result {
+    pub fn expression(expr: &Expression,
+                      printer: &mut Printer,
+                      fmt: &mut fmt::Formatter) -> fmt::Result {
         use lang::Value;
 
         // simple values are not parenthesised.
-        if !value.is_simple() {
+        if !expr.is_simple() {
             try!(write!(fmt, "("));
         }
 
-        try!(self::plain(value, printer, fmt));
+        try!(self::plain(expr, printer, fmt));
 
-        if !value.is_simple() {
+        if !expr.is_simple() {
             try!(write!(fmt, ")"));
         }
 
         Ok(())
     }
 
-    pub fn plain(value: &Expression,
+    pub fn plain(expr: &Expression,
                  printer: &mut Printer,
                  fmt: &mut fmt::Formatter) -> fmt::Result {
 
-        match *value {
+        match *expr {
             Expression::Literal(ref val) => self::literal(val, fmt),
             Expression::Pointer(ref val) => self::pointer(val, printer, fmt),
             Expression::Register(ref val) => self::register(val, printer, fmt),
@@ -194,79 +212,79 @@ pub mod value
         }
     }
 
-    pub fn literal(value: &value::Literal,
+    pub fn literal(literal: &value::Literal,
                    fmt: &mut fmt::Formatter) -> fmt::Result {
-        match *value {
+        match *literal {
             value::Literal::Integer(ref val) => self::literal_integer(val, fmt),
             _ => unimplemented!(),
         }
     }
 
-    pub fn literal_integer(value: &value::literal::Integer,
+    pub fn literal_integer(literal: &value::literal::Integer,
                            fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "{} {}", value.ty(), value.value())
+        write!(fmt, "{} {}", literal.ty(), literal.value())
     }
 
-    pub fn literal_struct(_value: &value::literal::Struct,
+    pub fn literal_struct(_literal: &value::literal::Struct,
                           _printer: &mut Printer,
                           _fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
         //write!(fmt, "{{ {} }}", util::comma_separated_values(value.fields()))
     }
 
-    pub fn pointer(value: &value::Pointer,
+    pub fn pointer(ptr: &value::Pointer,
                    printer: &mut Printer,
                    fmt: &mut fmt::Formatter) -> fmt::Result {
-        try!(self::value(value.underlying(), printer, fmt));
+        try!(super::value(ptr.underlying(), printer, fmt));
         write!(fmt, "*")
     }
 
-    pub fn register(value: &value::Register,
+    pub fn register(reg: &value::Register,
                     printer: &mut Printer,
                     fmt: &mut fmt::Formatter) -> fmt::Result {
 
         try!(write!(fmt, "%"));
 
-        match *value.name() {
+        match *reg.name() {
             lang::Name::Unnamed => {
-                let number = printer.assign_register(value);
+                let number = printer.assign_register(reg);
                 try!(write!(fmt, "{}", number));
             },
             // the register has an explicit name
-            lang::Name::Named(ref name) => { 
+            lang::Name::Named(ref name) => {
                 try!(write!(fmt, "{}", name));
             }
         }
 
         try!(write!(fmt, " = "));
-        self::value(value.subvalue().expression(), printer, fmt)
+        super::value(reg.subvalue(), printer, fmt)
     }
 
-    pub fn global_ref(value: &value::GlobalRef,
+    pub fn global_ref(global_ref: &value::GlobalRef,
                       printer: &mut Printer,
                       fmt: &mut fmt::Formatter) -> fmt::Result {
 
-        let global = printer.module.get_global(value.global_id());
+        let global = printer.module.get_global(global_ref.global_id());
         write!(fmt, "%{}", global.name())
     }
 
-    pub fn block_ref(value: &value::BlockRef,
+    pub fn block_ref(block_ref: &value::BlockRef,
                      printer: &mut Printer,
                      fmt: &mut fmt::Formatter) -> fmt::Result {
-        let block = printer.module.get_block(value.block_id());
+        let block = printer.module.get_block(block_ref.block_id());
         write!(fmt, "{}", block.name())
     }
 
-    pub fn function_ref(_value: &value::FunctionRef,
+    pub fn function_ref(_func_ref: &value::FunctionRef,
                         _printer: &mut Printer,
                         _fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
     }
 
-    pub fn register_ref(value: &value::RegisterRef,
+    pub fn register_ref(reg_ref: &value::RegisterRef,
                         printer: &mut Printer,
                         fmt: &mut fmt::Formatter) -> fmt::Result {
-        let number = printer.register_number(value.get_id());
+        let number = printer.register_number(reg_ref.get_id());
         write!(fmt, "%{}", number)
     }
 
@@ -276,6 +294,7 @@ pub mod value
         use ir::instruction::{self,Binary};
         use std::fmt;
         use util;
+        use super::super::value;
         use super::super::Printer;
 
         pub fn instruction(inst: &Instruction,
@@ -304,9 +323,9 @@ pub mod value
             let (lhs,rhs) = inst.operands();
 
             try!(write!(fmt, "{} ", mnemonic));
-            try!(super::value(lhs.expression(), printer, fmt));
+            try!(value(lhs, printer, fmt));
             try!(write!(fmt, ", "));
-            try!(super::value(rhs.expression(), printer, fmt));
+            try!(value(rhs, printer, fmt));
             Ok(())
         }
 
@@ -329,7 +348,7 @@ pub mod value
             try!(write!(fmt, "break "));
             try!(super::super::condition(inst.condition(), printer, fmt));
             try!(write!(fmt, " "));
-            super::value(inst.target().expression(), printer, fmt)
+            value(inst.target(), printer, fmt)
         }
 
         pub fn ret(inst: &instruction::Return,
@@ -338,7 +357,7 @@ pub mod value
             try!(write!(fmt, "ret "));
 
             match inst.subvalue() {
-                Some(i) => super::value(i.expression(), printer, fmt),
+                Some(i) => value(i, printer, fmt),
                 None => write!(fmt, "void"),
             }
         }

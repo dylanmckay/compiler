@@ -331,7 +331,7 @@ pub mod value
         pub fn is_simple(&self) -> bool {
              match *self{
                  Expression::Literal(..) => true,
-                 Expression::Pointer(ref val) => val.underlying().is_simple(),
+                 Expression::Pointer(ref val) => val.underlying().expression().is_simple(),
                  Expression::Register(..) => true,
                  Expression::Instruction(..) => false,
                  Expression::GlobalRef(..) => true,
