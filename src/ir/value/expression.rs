@@ -233,9 +233,12 @@ impl Expression
         }
     }
 
-    pub fn map_subvalues<F>(self, _f: F) -> Self
+    pub fn map_subvalues<F>(self, f: F) -> Self
         where F: FnMut(Value) -> Value {
-        unimplemented!();
+        match self {
+            Expression::Instruction(i) => i.map_subvalues(f).into(),
+            _ => self,
+        }
     }
 
     pub fn flatten(self, block: &mut ir::Block) -> Self {
