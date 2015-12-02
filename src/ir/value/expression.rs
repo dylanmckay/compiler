@@ -12,7 +12,6 @@ pub trait ExpressionTrait : Clone + fmt::Debug + Into<Expression>
 pub enum Expression
 {
     Literal(value::Literal),
-    Pointer(value::Pointer),
     Register(value::Register),
     Instruction(ir::Instruction),
 
@@ -119,7 +118,6 @@ impl Expression
     pub fn ty(&self) -> ir::Type {
          match *self {
             Expression::Literal(ref val) => val.ty(),
-            Expression::Pointer(ref val) => val.ty(),
             Expression::Register(ref val) => val.ty(),
             Expression::Instruction(ref val) => val.ty(),
             Expression::GlobalRef(ref val) => val.ty(),
@@ -132,7 +130,6 @@ impl Expression
     pub fn is_simple(&self) -> bool {
          match *self{
              Expression::Literal(..) => true,
-             Expression::Pointer(ref val) => val.underlying().expression().is_simple(),
              Expression::Register(..) => true,
              Expression::Instruction(..) => false,
              Expression::GlobalRef(..) => true,

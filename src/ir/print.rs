@@ -202,7 +202,6 @@ pub mod expression
 
         match *expr {
             Expression::Literal(ref val) => self::literal(val, fmt),
-            Expression::Pointer(ref val) => self::pointer(val, printer, fmt),
             Expression::Register(ref val) => self::register(val, printer, fmt),
             Expression::Instruction(ref val) => self::instruction::instruction(val, printer, fmt),
             Expression::GlobalRef(ref val) => self::global_ref(val, printer, fmt),
@@ -230,13 +229,6 @@ pub mod expression
                           _fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
         //write!(fmt, "{{ {} }}", util::comma_separated_values(value.fields()))
-    }
-
-    pub fn pointer(ptr: &value::Pointer,
-                   printer: &mut Printer,
-                   fmt: &mut fmt::Formatter) -> fmt::Result {
-        try!(super::value(ptr.underlying(), printer, fmt));
-        write!(fmt, "*")
     }
 
     pub fn register(reg: &value::Register,

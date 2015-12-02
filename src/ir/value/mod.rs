@@ -1,7 +1,6 @@
 
 pub use self::expression::{Expression,ExpressionTrait};
 
-pub use self::pointer::Pointer;
 pub use self::register::Register;
 pub use self::literal::{Literal,LiteralTrait};
 pub use self::globalref::GlobalRef;
@@ -10,7 +9,6 @@ pub use self::functionref::FunctionRef;
 pub use self::registerref::RegisterRef;
 
 pub mod expression;
-pub mod pointer;
 pub mod register;
 pub mod literal;
 pub mod globalref;
