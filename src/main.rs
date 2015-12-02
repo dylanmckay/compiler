@@ -12,8 +12,6 @@ extern crate bit_vec;
 pub mod util;
 /// The immediate representation (IR).
 pub mod ir;
-/// The domain specific language.
-pub mod dsl;
 /// Language-agnostic traits.
 pub mod lang;
 /// The pass infrastructure.
