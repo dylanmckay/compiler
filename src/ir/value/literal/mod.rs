@@ -88,6 +88,13 @@ impl Into<Expression> for Literal
     }
 }
 
+impl Into<Value> for Literal
+{
+    fn into(self) -> Value {
+        Value::new(self.into())
+    }
+}
+
 /// Tests that `Integer` can count its bits correctly.
 #[test]
 fn test_integer_literal_bitcount() {

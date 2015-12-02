@@ -18,7 +18,12 @@ pub mod functionref;
 pub mod registerref;
 
 use ir;
+use ir::types;
 use ir::Type;
+use util;
+
+use num::bigint::ToBigInt;
+use bit_vec::BitVec;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Value
@@ -67,19 +72,33 @@ impl Value
         unimplemented!();
     }
 
-    pub fn add(lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn add<V>(lhs: V, rhs: V) -> Self
+        where V: Into<Value> {
         unimplemented!();
     }
 
-    pub fn sub(lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn sub<V>(lhs: V, rhs: V) -> Self
+        where V: Into<Value> {
         unimplemented!();
     }
 
-    pub fn mul(lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn mul<V>(lhs: V, rhs: V) -> Self
+        where V: Into<Value> {
         unimplemented!();
     }
 
-    pub fn div(lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn div<V>(lhs: V, rhs: V) -> Self
+        where V: Into<Value> {
+        unimplemented!();
+    }
+
+    pub fn shl<V>(value: V, amount: V) -> Self
+        where V: Into<Value> {
+        unimplemented!();
+    }
+
+    pub fn shr<V>(value: V, amount: V) -> Self
+        where V: Into<Value> {
         unimplemented!();
     }
 
@@ -99,6 +118,47 @@ impl Value
     pub fn ret_void() -> Self {
         Value::ret(None)
     }
+
+    /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
+    pub fn integer<T: ToBigInt>(ty: types::Integer, val: T)
+        -> Option<Self> {
+        ir::value::Literal::integer(ty,val).map(|i| {
+            Value::new(i.into())
+        })
+    }
+
+    pub fn decimal(ty: types::Decimal, bits: BitVec) -> Self {
+        Value::new(ir::value::Literal::decimal(ty,bits).into())
+    }
+
+    pub fn strukt(fields: Vec<Value>) -> Self {
+        Value::new(ir::value::Literal::strukt(fields).into())
+    }
+
+    pub fn unit_struct() -> Self {
+        Value::new(ir::value::Literal::unit_struct().into())
+    }
+
+    /// Creates a signed integer value.
+    pub fn i<T: ToBigInt>(bit_width: u16, value: T) -> Self {
+        let ty = types::Integer::new(util::IntegerKind::Signed, bit_width);
+        Self::integer(ty, value).unwrap()
+    }
+
+    /// Creates an unsigned integer value.
+    pub fn u<T: ToBigInt>(bit_width: u16, value: T) -> Self {
+       let ty = types::Integer::new(util::IntegerKind::Unsigned, bit_width);
+       Self::integer(ty, value).unwrap()
+    }
+
+    pub fn u8(value: u8)   -> Self { Self::u(8, value) }
+    pub fn u16(value: u16) -> Self { Self::u(16, value) }
+    pub fn u32(value: u32) -> Self { Self::u(32, value) }
+    pub fn u64(value: u64) -> Self { Self::u(64, value) }
+    pub fn i8(value: i8)   -> Self { Self::i(8, value) }
+    pub fn i16(value: i16) -> Self { Self::i(16, value) }
+    pub fn i32(value: i32) -> Self { Self::i(32, value) }
+    pub fn i64(value: i64) -> Self { Self::i(64, value) }
 }
 
 impl Into<Expression> for Value
@@ -184,11 +244,9 @@ impl ::lang::Value for Value
 pub mod value
 {
     use ir::{self,types,value,Type};
-    use bit_vec::BitVec;
     use std::fmt;
     use util;
     use super::Value;
-
     use num::bigint::ToBigInt;
 
     pub trait ExpressionTrait : Clone + fmt::Debug + Into<Expression>
@@ -211,6 +269,11 @@ pub mod value
 
     impl Expression
     {
+        /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
+        pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Self> {
+            ir::value::Literal::integer(ty,val).map(|i| i.into())
+        }
+
         /// Creates a signed integer value.
         pub fn i<T: ToBigInt>(bit_width: u16, value: T) -> Self {
             let ty = types::Integer::new(util::IntegerKind::Signed, bit_width);
@@ -231,23 +294,6 @@ pub mod value
         pub fn i16(value: i16) -> Self { Self::i(16, value) }
         pub fn i32(value: i32) -> Self { Self::i(32, value) }
         pub fn i64(value: i64) -> Self { Self::i(64, value) }
-
-        /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
-        pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Expression> {
-            value::Literal::integer(ty,val).map(|i| i.into())
-        }
-
-        pub fn decimal(ty: types::Decimal, bits: BitVec) -> Expression {
-            value::Literal::decimal(ty,bits).into()
-        }
-
-        pub fn strukt(fields: Vec<Value>) -> Expression {
-            value::Literal::strukt(fields).into()
-        }
-
-        pub fn unit_struct() -> Expression {
-            value::Literal::unit_struct().into()
-        }
 
         pub fn global_ref(global: &ir::Global) -> Expression {
             value::GlobalRef::reference(global).into()
@@ -354,6 +400,13 @@ pub mod value
                 {
                     fn into(self) -> Expression {
                         Expression::$ty(self)
+                    }
+                }
+
+                impl Into<Value> for $ty
+                {
+                    fn into(self) -> Value {
+                        Value::new(self.into())
                     }
                 }
             )*
