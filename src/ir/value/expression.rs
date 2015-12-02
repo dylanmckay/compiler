@@ -3,6 +3,7 @@ use std::fmt;
 use util;
 use super::Value;
 use num::bigint::ToBigInt;
+use bit_vec::BitVec;
 
 pub trait ExpressionTrait : Clone + fmt::Debug + Into<Expression>
 {
@@ -23,6 +24,18 @@ pub enum Expression
 
 impl Expression
 {
+    pub fn decimal(_ty: types::Decimal, _bits: BitVec) -> Self {
+        unimplemented!();
+    }
+
+    pub fn strukt(_fields: Vec<Value>) -> Self {
+        unimplemented!();
+    }
+
+    pub fn unit_struct() -> Self {
+        unimplemented!();
+    }
+
     /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
     pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Self> {
         ir::value::Literal::integer(ty,val).map(|i| i.into())
@@ -78,6 +91,80 @@ impl Expression
         let name = ir::Name::named(name);
         value::Register::new(name, value.into()).into()
     }
+
+    pub fn instruction<I>(inst: I) -> Self
+        where I: Into<ir::Instruction> {
+        Expression::Instruction(inst.into())
+    }
+
+    pub fn add<V>(lhs: V, rhs: V) -> Self
+        where V: Into<Value> {
+        Expression::instruction(
+            ir::Instruction::add(lhs, rhs)
+        )
+    }
+
+    pub fn sub<V>(lhs: V, rhs: V) -> Self
+        where V: Into<Value> {
+        Expression::instruction(
+            ir::Instruction::sub(lhs, rhs)
+        )
+    }
+
+    pub fn mul<V>(lhs: V, rhs: V) -> Self
+        where V: Into<Value> {
+        Expression::instruction(
+            ir::Instruction::mul(lhs, rhs)
+        )
+    }
+
+    pub fn div<V>(lhs: V, rhs: V) -> Self
+        where V: Into<Value> {
+        Expression::instruction(
+            ir::Instruction::div(lhs, rhs)
+        )
+    }
+
+    pub fn shl<V>(value: V, amount: V) -> Self
+        where V: Into<Value> {
+        Expression::instruction(
+            ir::Instruction::shl(value, amount)
+        )
+    }
+
+    pub fn shr<V>(value: V, amount: V) -> Self
+        where V: Into<Value> {
+        Expression::instruction(
+            ir::Instruction::shr(value, amount)
+        )
+    }
+
+    pub fn call<V>(target: V) -> Self
+        where V: Into<Value> {
+        Expression::instruction(
+            ir::Instruction::call(target)
+        )
+    }
+
+    pub fn br<V>(target: V) -> Self
+        where V: Into<Value> {
+        Expression::instruction(
+            ir::Instruction::br(target)
+        )
+    }
+
+    pub fn ret(value: ir::Value) -> Self {
+        Expression::instruction(
+            ir::Instruction::ret(value)
+        )
+    }
+
+    pub fn ret_void() -> Self {
+        Expression::instruction(
+            ir::Instruction::ret_void()
+        )
+    }
+
 
     pub fn as_literal(&self) -> Option<&value::Literal> {
         match *self {

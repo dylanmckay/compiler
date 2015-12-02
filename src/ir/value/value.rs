@@ -38,83 +38,81 @@ impl Value
     }
 
     pub fn global_ref(global: &ir::Global) -> Self {
-        unimplemented!();
+        Value::new(Expression::global_ref(global))
     }
 
     pub fn function_ref(func: &ir::Function) -> Self {
-        //Value::new(Expression::function_ref(func))
-        unimplemented!();
+        Value::new(Expression::function_ref(func))
     }
 
     pub fn block_ref(block: &ir::Block) -> Self {
-        unimplemented!();
+        Value::new(Expression::block_ref(block))
     }
 
     pub fn register_ref(register: &ir::value::Register) -> Self {
-        unimplemented!();
+        Value::new(Expression::register_ref(register))
     }
 
     pub fn add<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
-        unimplemented!();
+        Value::new(Expression::add(lhs, rhs))
     }
 
     pub fn sub<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
-        unimplemented!();
+        Value::new(Expression::sub(lhs, rhs))
     }
 
     pub fn mul<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
-        unimplemented!();
+        Value::new(Expression::mul(lhs, rhs))
     }
 
     pub fn div<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
-        unimplemented!();
+        Value::new(Expression::div(lhs, rhs))
     }
 
     pub fn shl<V>(value: V, amount: V) -> Self
         where V: Into<Value> {
-        unimplemented!();
+        Value::new(Expression::shl(value, amount))
     }
 
     pub fn shr<V>(value: V, amount: V) -> Self
         where V: Into<Value> {
-        unimplemented!();
+        Value::new(Expression::shr(value, amount))
     }
 
     pub fn call(target: ir::Value) -> Self {
-        //Value::new(Expression::call(target))
-        unimplemented!();
+        Value::new(Expression::call(target))
     }
 
     pub fn br(target: ir::Value) -> Self {
-        unimplemented!();
+        Value::new(Expression::br(target))
     }
 
-    pub fn ret(value: Option<::ir::Value>) -> Self {
-        unimplemented!();
+    pub fn ret(value: ir::Value) -> Self {
+        Value::new(Expression::ret(value))
     }
 
     pub fn ret_void() -> Self {
-        Value::ret(None)
+        Value::new(Expression::ret_void())
     }
 
     /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
     pub fn integer<T: ToBigInt>(ty: types::Integer, val: T)
         -> Option<Self> {
-        ir::value::Literal::integer(ty,val).map(|i| {
+        Expression::integer(ty, val).map(|i| {
             Value::new(i.into())
         })
     }
 
     pub fn decimal(ty: types::Decimal, bits: BitVec) -> Self {
-        Value::new(ir::value::Literal::decimal(ty,bits).into())
+        Value::new(Expression::decimal(ty, bits))
     }
 
     pub fn strukt(fields: Vec<Value>) -> Self {
-        Value::new(ir::value::Literal::strukt(fields).into())
+        Value::new(Expression::strukt(fields))
     }
 
     pub fn unit_struct() -> Self {

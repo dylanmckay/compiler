@@ -92,20 +92,23 @@ pub mod instruction
             instruction::Shr::new(val.into(), amount.into()).into()
         }
 
-        pub fn ret(value: Option<ir::Value>) -> Instruction {
-            instruction::Return::new(value).into()
+        pub fn ret<V>(value: V) -> Instruction
+            where V: Into<Value> {
+            instruction::Return::new(Some(value.into())).into()
         }
 
         pub fn ret_void() -> Instruction {
-            Self::ret(None)
+            instruction::Return::new(None).into()
         }
 
-        pub fn br(target: ir::Value) -> Self {
-            instruction::Break::unconditional(target).into()
+        pub fn br<V>(target: V) -> Self
+            where V: Into<Value> {
+            instruction::Break::unconditional(target.into()).into()
         }
 
-        pub fn call(target: ir::Value) -> Self {
-            instruction::Call::new(target).into()
+        pub fn call<V>(target: V) -> Self
+            where V: Into<Value> {
+            instruction::Call::new(target.into()).into()
         }
 
         /// Flattens the instruction.
