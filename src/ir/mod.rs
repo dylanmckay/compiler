@@ -16,6 +16,8 @@ pub mod instruction;
 pub mod verifier;
 /// Routines for printing modules.
 pub mod print;
+/// IR reading routines.
+pub mod read;
 /// Expression user information.
 pub mod users;
 
