@@ -15,12 +15,8 @@ impl pass::Transform<ir::Value> for Inliner
 {
     fn run_function(&mut self, 
                     func: ir::Function,
-                    module: &ir::Module)
+                    _module: &ir::Module)
         -> ir::Function {
-
-        use ::util::Identifiable;
-
-        let _function = module.get_function(func.get_id());
         func
     }
 }
