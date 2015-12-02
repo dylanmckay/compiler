@@ -75,11 +75,11 @@ pub mod fold
 
 
 value_mapping_test!(test_binops : fold::value {
-    Value::add(1 as i8, 8 as i8) => ir::Value::i8(9),
-    Value::sub(1 as i8, 8 as i8) => ir::Value::i8(-7),
-    Value::mul(1 as i8, 8 as i8) => ir::Value::i8(8),
-    Value::div(10 as i8,2 as i8) => ir::Value::i8(5),
-    Value::shl(1 as u8,1 as u8) => ir::Value::u8(2),
-    Value::shr(32 as u8,1 as u8) => ir::Value::u8(16)
+    Value::add(1 as i8, 8 as i8) => Value::i8(9),
+    Value::sub(1 as i8, 8 as i8) => Value::i8(-7),
+    Value::mul(1 as i8, 8 as i8) => Value::i8(8),
+    Value::div(10 as i8,2 as i8) => Value::i8(5),
+    Value::shl(1 as u8,1 as u8) => Value::u8(2),
+    Value::shr(32 as u8,1 as u8) => Value::u8(16)
 });
 

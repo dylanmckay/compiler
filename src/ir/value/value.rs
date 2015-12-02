@@ -159,47 +159,23 @@ impl ::lang::Value for Value
 {
     type Type = Type;
 
-    // FIXME: subvalue support is patchy
-
     fn subvalues(&self) -> Vec<&Self> {
-        match self.expression {
-            Expression::Instruction(ref i) => i.subvalues(),
-            _ => Vec::new(),
-        }
+        self.expression.subvalues()
     }
 
-    fn map_subvalues<F>(self, _f: F) -> Self
+    fn map_subvalues<F>(mut self, f: F) -> Self
         where F: FnMut(Self) -> Self {
-        // TODO: fix this
-        unimplemented!();
-        //
-        // let expr = match self.expression {
-        //     Expression::Instruction(i) => i.map_subvalues(f).into(),
-        //     e => e,
-        // };
-        //
-        // self.expression = expr;
-        // self
+        self.expression = self.expression.map_subvalues(f);
+        self
     }
 
     fn flatten(mut self, block: &mut ir::Block) -> Self {
-        // only instructions need flattening
-        let expr = if let Expression::Instruction(i) = self.expression {
-            i.flatten(block).into()
-        } else {
-            self.expression
-        };
-
-        self.expression = expr;
+        self.expression = self.expression.flatten(block);
         self
     }
 
     fn is_single_critical(&self) -> bool {
-        match self.expression {
-            ir::Expression::Literal(..) => false,
-            ir::Expression::Instruction(ref i) => i.is_single_critical(),
-            _ => true,
-        }
+        self.expression.is_single_critical()
     }
 
     fn is_simple(&self) -> bool {
@@ -211,12 +187,7 @@ impl ::lang::Value for Value
     }
 
     fn is_terminator(&self) -> bool {
-        // only instructions can be terminators
-        if let ir::Expression::Instruction(ref inst) = self.expression {
-            inst.is_terminator()
-        } else {
-            false
-        }
+        self.expression.is_terminator()
     }
 }
 

@@ -225,6 +225,44 @@ impl Expression
              Expression::RegisterRef(..) => true,
          }
     }
+
+    pub fn subvalues(&self) -> Vec<&Value> {
+        match *self {
+            Expression::Instruction(ref i) => i.subvalues(),
+            _ => Vec::new(),
+        }
+    }
+
+    pub fn map_subvalues<F>(self, _f: F) -> Self
+        where F: FnMut(Value) -> Value {
+        unimplemented!();
+    }
+
+    pub fn flatten(self, block: &mut ir::Block) -> Self {
+        // only instructions need flattening
+        if let Expression::Instruction(i) = self {
+            i.flatten(block).into()
+        } else {
+            self
+        }
+    }
+
+    pub fn is_single_critical(&self) -> bool {
+        match *self {
+            Expression::Literal(..) => false,
+            Expression::Instruction(ref i) => i.is_single_critical(),
+            _ => true,
+        }
+    }
+
+    pub fn is_terminator(&self) -> bool {
+        // only instructions can be terminators
+        if let ir::Expression::Instruction(ref inst) = *self {
+            inst.is_terminator()
+        } else {
+            false
+        }
+    }
 }
 
 impl ExpressionTrait for Expression { }
