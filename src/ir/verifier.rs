@@ -56,7 +56,7 @@ pub fn verify_block(module: &ir::Module,
     for value in block.values() {
         // TODO: only the last instruction in a block can be a terminator.
 
-        try!(self::verify_value(module, value.expression()));
+        try!(self::verify_value(module, value));
 
         condition!(value.ty().is_void(),
                    "all top-level values must be of type void");
@@ -74,8 +74,14 @@ pub fn verify_block(module: &ir::Module,
 
 /// Verifies that a value is well-formed.
 pub fn verify_value(module: &ir::Module,
-                    value: &ir::Expression) -> Result {
-    match *value {
+                    value: &ir::Value) -> Result {
+    verify_expression(module, value.expression())
+}
+
+/// Verifies that an expression is well-formed.
+pub fn verify_expression(module: &ir::Module,
+                         expr: &ir::Expression) -> Result {
+    match *expr {
         ir::Expression::Instruction(ref val) => values::instruction(module, val),
         _ => Ok(()),
     }
