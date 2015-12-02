@@ -3,15 +3,15 @@ use ir;
 
 
 /// Stores the users of a value.
-pub struct UserInformation<'a>
+pub struct Users<'a>
 {
     users: Vec<&'a ir::Expression>,
 }
 
-impl<'a> UserInformation<'a>
+impl<'a> Users<'a>
 {
     pub fn empty() -> Self {
-        UserInformation {
+        Users {
             users: Vec::new(),
         }
     }
