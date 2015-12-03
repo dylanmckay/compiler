@@ -1,4 +1,3 @@
-
 use util;
 use std;
 use std::error::Error;
@@ -212,6 +211,8 @@ pub struct Tokenizer<I: Iterator<Item=char>>
 
     finished: bool,
     preserve_comments: bool,
+
+    peek_buf: Option<Token>,
 }
 
 impl<I> Tokenizer<I>
@@ -222,6 +223,7 @@ impl<I> Tokenizer<I>
             chars: Characters::new(chars),
             finished: false,
             preserve_comments: false,
+            peek_buf: None,
         }
     }
 
@@ -229,6 +231,19 @@ impl<I> Tokenizer<I>
     pub fn preserve_comments(mut self) -> Self {
         self.preserve_comments = true;
         self
+    }
+
+    pub fn peek(&mut self) -> Option<Result<Token>> {
+        let token = match self.next() {
+            Some(Ok(token)) => token,
+            Some(Err(token)) => return Some(Err(token)),
+            None => return None,
+        };
+
+        assert!(self.peek_buf.is_none());
+
+        self.peek_buf = Some(token.clone());
+        Some(Ok(token))
     }
 
     fn eat_whitespace(&mut self) {
@@ -314,6 +329,12 @@ impl<I> Iterator for Tokenizer<I>
     type Item = Result<Token>;
 
     fn next(&mut self) -> Option<Result<Token>> {
+        if self.peek_buf.is_some() {
+            let token = self.peek_buf.clone().unwrap();
+            self.peek_buf = None;
+            return Some(Ok(token));
+        }
+
         self.eat_whitespace();
 
         let first_char = match self.chars.peek() {
@@ -374,6 +395,7 @@ mod internal
     }
 }
 
+#[cfg(test)]
 mod test
 {
     use super::{Token,Tokenizer};
@@ -539,5 +561,31 @@ mod test
                                                    Token::new_line(),
                                                    Token::new_line(),
                                                    Token::eof());
+    }
+
+    #[test]
+    fn test_peek() {
+        let mut tokenizer = Tokenizer::new("a b c".chars());
+
+        assert_eq!(tokenizer.peek().unwrap().unwrap(),
+                   Token::word("a"));
+
+        assert_eq!(tokenizer.peek().unwrap().unwrap(),
+                   Token::word("a"));
+
+        assert_eq!(tokenizer.next().unwrap().unwrap(),
+                   Token::word("a"));
+
+        assert_eq!(tokenizer.peek().unwrap().unwrap(),
+                   Token::word("b"));
+
+        assert_eq!(tokenizer.next().unwrap().unwrap(),
+                   Token::word("b"));
+
+        assert_eq!(tokenizer.next().unwrap().unwrap(),
+                   Token::word("c"));
+
+        assert_eq!(tokenizer.next().unwrap().unwrap(),
+                   Token::new_line());
     }
 }
