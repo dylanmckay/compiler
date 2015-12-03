@@ -37,6 +37,16 @@ impl<V> Module<V>
         self
     }
 
+    /// Adds a function to the module.
+    pub fn add_function(&mut self, func: Function<V>) {
+        self.functions.add(func);
+    }
+
+    /// Adda a global to the module.
+    pub fn add_global(&mut self, global: Global<V>) {
+        self.globals.add(global);
+    }
+
     /// Adds a global to the module.
     pub fn global(mut self, global: Global<V>) -> Self {
         self.globals.add(global);
