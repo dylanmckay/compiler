@@ -99,6 +99,34 @@ impl Token
     pub fn eof() -> Self {
         Token::EOF
     }
+
+    pub fn is_word(&self) -> bool {
+        if let Token::Word(..) = *self { true } else { false }
+    }
+
+    pub fn is_string(&self) -> bool {
+        if let Token::String(..) = *self { true } else { false }
+    }
+
+    pub fn is_integer(&self) -> bool {
+        if let Token::String(..) = *self { true } else { false }
+    }
+
+    pub fn is_symbol(&self) -> bool {
+        if let Token::Symbol(..) = *self { true } else { false }
+    }
+
+    pub fn is_comment(&self) -> bool {
+        if let Token::Comment { .. } = *self { true } else { false }
+    }
+
+    pub fn is_new_line(&self) -> bool {
+        if let Token::NewLine = *self { true } else { false }
+    }
+
+    pub fn is_eof(&self) -> bool {
+        if let Token::EOF = *self { true } else { false }
+    }
 }
 
 impl std::fmt::Display for Token
@@ -245,6 +273,27 @@ impl<I> Tokenizer<I>
 
         self.peek_buf = Some(token.clone());
         Some(Ok(token))
+    }
+
+    pub fn eat(&mut self) {
+        self.next();
+    }
+
+    pub fn eat_while<P>(&mut self, mut predicate: P) -> Result<()>
+        where P: FnMut(Token) -> bool {
+        loop {
+            match self.peek() {
+                Some(Ok(tok)) => {
+                    if !predicate(tok) {
+                        break;
+                    }
+                },
+                Some(Err(e)) => return Err(e),
+                None => break,
+            }
+        }
+
+        Ok(())
     }
 
     fn eat_whitespace(&mut self) {
