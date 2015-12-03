@@ -6,7 +6,7 @@ pub type Result<T> = std::result::Result<T,String>;
 
 /// A list of symbols to be tokenized.
 pub const SYMBOL_LIST: &'static [char] = &[
-    ',', ':', '(', ')', '@', '%', '{', '}',
+    ',', ':', '(', ')', '@', '%', '{', '}', '=',
 ];
 
 /// A token.
@@ -54,6 +54,7 @@ impl Token
     pub fn percent_sign() -> Self { Token::symbol("%") }
     pub fn left_curly_brace() -> Self { Token::symbol("{") }
     pub fn right_curly_brace() -> Self { Token::symbol("}") }
+    pub fn equal_sign() -> Self { Token::symbol("=") }
 
     pub fn word<S>(word: S) -> Self
         where S: Into<String> {
@@ -395,7 +396,7 @@ mod internal
     }
 }
 
-#[cfg(test)]
+#[allow(unused_imports)]
 mod test
 {
     use super::{Token,Tokenizer};
@@ -523,6 +524,7 @@ mod test
         expect_mapping!(":" => Token::symbol(":"));
         expect_mapping!("," => Token::symbol(","));
         expect_mapping!("@%" => Token::symbol("@"), Token::symbol("%"));
+        expect_mapping!(":=" => Token::symbol(":"), Token::symbol("="));
     }
 
     #[test]
