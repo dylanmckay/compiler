@@ -5,6 +5,11 @@ use std::error::Error;
 
 pub type Result<T> = std::result::Result<T,String>;
 
+/// A list of symbols to be tokenized.
+pub const SYMBOL_LIST: &'static [char] = &[
+    ',', ':', '(', ')', '@', '%', '{', '}',
+];
+
 /// A token.
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub enum Token
@@ -248,7 +253,12 @@ impl<I> Tokenizer<I>
     }
 
     fn next_symbol(&mut self) -> Option<Result<Token>> {
-        unimplemented!();
+        match self.expect_one_of(SYMBOL_LIST) {
+            Ok(sym) => Some(Ok(Token::symbol(format!("{}", sym)))),
+            // TODO: this will give a shitty error message
+            // if the end of stream is reached.
+            Err(..) => Some(Err("unknown token".into())),
+        }
     }
 
     fn next_comment(&mut self) -> Option<Result<Token>> {
@@ -337,6 +347,8 @@ impl<I> Iterator for Tokenizer<I>
         } else if internal::can_word_start_with(first_char) {
             self.next_word()
         } else {
+            // Try to parse the token as a symbol.
+            // This is our final fallback.
             self.next_symbol()
         }
     }
@@ -470,6 +482,19 @@ mod test
     }
 
     #[test]
+    fn test_symbols() {
+        expect_mapping!("(" => Token::symbol("("),
+                               Token::new_line(),
+                               Token::eof());
+
+        expect_mapping!(")" => Token::symbol(")"));
+        expect_mapping!("{ }" => Token::symbol("{"), Token::symbol("}"));
+        expect_mapping!(":" => Token::symbol(":"));
+        expect_mapping!("," => Token::symbol(","));
+        expect_mapping!("@%" => Token::symbol("@"), Token::symbol("%"));
+    }
+
+    #[test]
     fn test_multiple() {
         expect_mapping!("12 bark \"earth\"" => Token::integer(12),
                                                Token::word("bark"),
@@ -483,6 +508,16 @@ mod test
                                                 Token::string("a"),
                                                 Token::new_line(),
                                                 Token::eof());
+
+        expect_mapping!("4:3{2\n}" => Token::integer(4),
+                                      Token::symbol(":"),
+                                      Token::integer(3),
+                                      Token::symbol("{"),
+                                      Token::integer(2),
+                                      Token::new_line(),
+                                      Token::symbol("}"),
+                                      Token::new_line(),
+                                      Token::eof());
     }
 
     #[test]
