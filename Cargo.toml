@@ -4,8 +4,15 @@ name = "compiler"
 version = "0.0.1"
 authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
-
 [dependencies]
 num = "*"
 bit-vec = "*"
 clippy = "*"
+
+[lib]
+name = "compiler"
+path = "src/lib.rs"
+
+[[bin]]
+name = "asm"
+path = "tools/asm.rs"
