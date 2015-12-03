@@ -174,17 +174,33 @@ pub mod keywords
 mod test
 {
     use super::Parser;
+    use ir::Value;
 
     #[cfg(test)]
     fn parse(text: &str) -> ::ir::Module {
         Parser::new(text.chars()).parse().expect("parsing failed")
     }
 
+    macro_rules! expect_global {
+        ($input:expr => $name:expr, $value:expr) => {
+            {
+                let module = parse($input);
+
+                let global = module.globals().next().unwrap();
+                assert_eq!(global.name(), $name);
+                assert_eq!(global.value(), &$value);
+            }
+        }
+    }
+
     #[test]
     fn globals() {
-        let module = parse("global ABCD = i32 4");
+        expect_global!("global ABCD = i32 5" => "ABCD", Value::i32(5));
 
-        assert_eq!(module.globals().next().unwrap().name(), "ABCD");
+        expect_global!("global hello_world = u127 38"
+                       => "hello_world", Value::u(127, 38));
 
+        expect_global!("global ewf = i16 52" => "ewf", Value::i(16, 52));
     }
 }
+
