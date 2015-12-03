@@ -11,9 +11,9 @@ pub enum Token
 {
     Word(String),
 
-    StringLiteral(String),
+    String(String),
     // TODO: use BigNum
-    IntegerLiteral(i64),
+    Integer(i64),
 
     Symbol(String),
 
@@ -30,12 +30,12 @@ impl Token
 
     pub fn string<S>(string: S) -> Self
         where S: Into<String> {
-        Token::StringLiteral(string.into())
+        Token::String(string.into())
     }
 
     pub fn integer<I>(integer: I) -> Self
         where I: Into<i64> {
-        Token::IntegerLiteral(integer.into())
+        Token::Integer(integer.into())
     }
 
     pub fn symbol<S>(symbol: S) -> Self
@@ -161,7 +161,7 @@ impl<I> Tokenizer<I>
         let string = self.chars.consume_while(|c| c != '\"');
         self.assert('"');
 
-        Some(Ok(Token::StringLiteral(string.collect())))
+        Some(Ok(Token::String(string.collect())))
     }
 
     fn next_integer(&mut self) -> Option<Result<Token>> {
@@ -173,7 +173,7 @@ impl<I> Tokenizer<I>
                                               e.description()))),
         };
 
-        Some(Ok(Token::IntegerLiteral(int)))
+        Some(Ok(Token::Integer(int)))
     }
 
     fn next_word(&mut self) -> Option<Result<Token>> {
@@ -274,24 +274,24 @@ mod test
 
     #[test]
     fn test_string() {
-        expect_tokenize_into!("\"hello\"" =>  Token::StringLiteral("hello".into()));
-        expect_tokenize_into!("\"hello abc\"" => Token::StringLiteral("hello abc".into()));
+        expect_tokenize_into!("\"hello\"" =>  Token::string("hello"));
+        expect_tokenize_into!("\"hello abc\"" => Token::string("hello abc"));
 
         expect_tokenize_into!("\"hello world\"  \"it is me\"" =>
-                              Token::StringLiteral("hello world".into()),
-                              Token::StringLiteral("it is me".into()));
+                              Token::string("hello world"),
+                              Token::string("it is me"));
     }
 
     #[test]
     fn test_integer() {
-        expect_tokenize_into!("123" => Token::IntegerLiteral(123));
-        expect_tokenize_into!("0982" => Token::IntegerLiteral(982));
-        expect_tokenize_into!("333 662" => Token::IntegerLiteral(333),
-                                           Token::IntegerLiteral(662));
-        expect_tokenize_into!("1 2 3 4" => Token::IntegerLiteral(1),
-                                           Token::IntegerLiteral(2),
-                                           Token::IntegerLiteral(3),
-                                           Token::IntegerLiteral(4));
+        expect_tokenize_into!("123" => Token::integer(123));
+        expect_tokenize_into!("0982" => Token::integer(982));
+        expect_tokenize_into!("333 662" => Token::integer(333),
+                                           Token::integer(662));
+        expect_tokenize_into!("1 2 3 4" => Token::integer(1),
+                                           Token::integer(2),
+                                           Token::integer(3),
+                                           Token::integer(4));
     }
 
     #[test]
