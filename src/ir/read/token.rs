@@ -47,6 +47,15 @@ pub enum Token
 
 impl Token
 {
+    pub fn comma() -> Self { Token::symbol(",") }
+    pub fn colon() -> Self { Token::symbol(":") }
+    pub fn left_parenthesis() -> Self { Token::symbol("(") }
+    pub fn right_parenthesis() -> Self { Token::symbol(")") }
+    pub fn at_sign() -> Self { Token::symbol("@") }
+    pub fn percent_sign() -> Self { Token::symbol("%") }
+    pub fn left_curly_brace() -> Self { Token::symbol("{") }
+    pub fn right_curly_brace() -> Self { Token::symbol("}") }
+
     pub fn word<S>(word: S) -> Self
         where S: Into<String> {
         Token::Word(word.into())
