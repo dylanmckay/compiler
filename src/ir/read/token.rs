@@ -52,6 +52,20 @@ impl Token
     }
 }
 
+impl std::fmt::Display for Token
+{
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            &Token::Word(ref w) => write!(fmt, "{}", w),
+            &Token::String(ref s) => write!(fmt, "\"{}\"", s),
+            &Token::Integer(ref i) => write!(fmt, "{}", i),
+            &Token::Symbol(ref s) => write!(fmt, "{}", s),
+            &Token::NewLine => write!(fmt, "new line"),
+            &Token::EOF => write!(fmt, "EOF"),
+        }
+    }
+}
+
 /// An iterator over a set of characters.
 ///
 /// This type abstracts over another iterator of characters,
@@ -83,6 +97,10 @@ impl<I> Characters<I>
         }
 
         self.peek_buf
+    }
+
+    pub fn eat(&mut self) {
+        self.next();
     }
 
     pub fn eat_while<P>(&mut self, predicate: P)
@@ -141,6 +159,7 @@ impl<I> Iterator for Characters<I>
 pub struct Tokenizer<I: Iterator<Item=char>>
 {
     chars: Characters<I>,
+    finished: bool,
 }
 
 impl<I> Tokenizer<I>
@@ -149,6 +168,7 @@ impl<I> Tokenizer<I>
     pub fn new(chars: I) -> Self {
         Tokenizer {
             chars: Characters::new(chars),
+            finished: false,
         }
     }
 
@@ -228,11 +248,24 @@ impl<I> Iterator for Tokenizer<I>
 
         let first_char = match self.chars.peek() {
             Some(c) => c,
-            None => return None,
+
+            // If there are no tokens left, return EOF if
+            // we haven't already, or None otherwise.
+            None => {
+                if self.finished {
+                    return None;
+                } else {
+                    self.finished = true;
+                    return Some(Ok(Token::eof()));
+                }
+            },
         };
 
         if first_char == '"' {
             self.next_string()
+        } else if first_char == '\n' {
+            self.chars.eat();
+            Some(Ok(Token::new_line()))
         } else if first_char.is_numeric() {
             self.next_integer()
         } else if internal::can_word_start_with(first_char) {
@@ -266,7 +299,10 @@ mod test
                 let mut tokenizer = Tokenizer::new($input.chars());
 
                 $(
-                    assert_eq!(tokenizer.next().unwrap().unwrap(), $output);
+                    let token = tokenizer.next().unwrap().unwrap();
+                    assert!($output == token,
+                            format!("expected {} but got {}",
+                                    $output, token));
                 )*
             }
         }
@@ -274,34 +310,86 @@ mod test
 
     #[test]
     fn test_string() {
-        expect_tokenize_into!("\"hello\"" =>  Token::string("hello"));
-        expect_tokenize_into!("\"hello abc\"" => Token::string("hello abc"));
+        expect_tokenize_into!("\"hello\"" =>  Token::string("hello"),
+                                              Token::new_line(),
+                                              Token::eof());
+
+        expect_tokenize_into!("\"hello abc\"" => Token::string("hello abc"),
+                                                 Token::new_line(),
+                                                 Token::eof());
 
         expect_tokenize_into!("\"hello world\"  \"it is me\"" =>
                               Token::string("hello world"),
-                              Token::string("it is me"));
+                              Token::string("it is me"),
+                              Token::new_line(),
+                              Token::eof());
     }
 
     #[test]
     fn test_integer() {
-        expect_tokenize_into!("123" => Token::integer(123));
-        expect_tokenize_into!("0982" => Token::integer(982));
+        expect_tokenize_into!("123" => Token::integer(123),
+                                       Token::new_line(),
+                                       Token::eof());
+
+        expect_tokenize_into!("0982" => Token::integer(982),
+                                        Token::new_line(),
+                                        Token::eof());
+
         expect_tokenize_into!("333 662" => Token::integer(333),
-                                           Token::integer(662));
+                                           Token::integer(662),
+                                           Token::new_line(),
+                                           Token::eof());
+
         expect_tokenize_into!("1 2 3 4" => Token::integer(1),
                                            Token::integer(2),
                                            Token::integer(3),
-                                           Token::integer(4));
+                                           Token::integer(4),
+                                           Token::new_line(),
+                                           Token::eof());
     }
 
     #[test]
     fn test_word() {
         expect_tokenize_into!("hello" => Token::word("hello"));
+
         expect_tokenize_into!("ab cd" => Token::word("ab"),
-                                         Token::word("cd"));
+                                         Token::word("cd"),
+                                         Token::new_line(),
+                                         Token::eof());
+
         expect_tokenize_into!("a b c d" => Token::word("a"),
                                            Token::word("b"),
                                            Token::word("c"),
-                                           Token::word("d"));
+                                           Token::word("d"),
+                                           Token::new_line(),
+                                           Token::eof());
+    }
+
+    #[test]
+    fn test_multiple() {
+        expect_tokenize_into!("12 bark \"earth\"" => Token::integer(12),
+                                                     Token::word("bark"),
+                                                     Token::string("earth"),
+                                                     Token::new_line(),
+                                                     Token::eof());
+
+        expect_tokenize_into!("a      23 gg \"a\"" => Token::word("a"),
+                                                      Token::integer(23),
+                                                      Token::word("gg"),
+                                                      Token::string("a"),
+                                                      Token::new_line(),
+                                                      Token::eof());
+    }
+
+    #[test]
+    fn test_whitespace() {
+        expect_tokenize_into!("a\tb\t123\n\"qwer\"\n" => Token::word("a"),
+                                                         Token::word("b"),
+                                                         Token::integer(123),
+                                                         Token::new_line(),
+                                                         Token::string("qwer"),
+                                                         Token::new_line(),
+                                                         Token::new_line(),
+                                                         Token::eof());
     }
 }
