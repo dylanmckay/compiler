@@ -1,0 +1,5 @@
+
+; RUN: frontend %s
+
+global ABCD = i63 2
+
