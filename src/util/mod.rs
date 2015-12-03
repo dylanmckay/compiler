@@ -19,9 +19,9 @@ pub struct SeparatedValues<T,S>
     separator: S,
 }
 
-/// Formats a list of separated values 
+/// Formats a list of separated values
 pub fn separated_values<T,S,I>(it: I,
-                                   separator: S)
+                               separator: S)
     -> SeparatedValues<T,S>
     where T: fmt::Display, S: fmt::Display, I: Iterator<Item=T> {
 
@@ -58,7 +58,7 @@ impl<T,S> fmt::Display for SeparatedValues<T,S>
 pub fn comma_separated_values<T,I>(it: I)
     -> SeparatedValues<T,char>
     where T: fmt::Display, I: Iterator<Item=T> {
-    
+
     separated_values(it, ',')
 }
 
