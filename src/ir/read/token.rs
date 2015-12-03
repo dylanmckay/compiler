@@ -9,15 +9,34 @@ pub type Result<T> = std::result::Result<T,String>;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub enum Token
 {
+    /// A word.
     Word(String),
-
+    /// A string literal.
     String(String),
+    /// An integer literal.
     // TODO: use BigNum
     Integer(i64),
-
+    /// A comment.
+    ///
+    /// If the comment is inline, it existed on the same line
+    /// as the previous statement.
+    ///
+    /// For example
+    ///
+    /// ```
+    /// add 2, 4 ; inline comment goes here
+    /// ```
+    Comment {
+        inline: bool,
+        text: String,
+    },
+    /// A symbol.
     Symbol(String),
-
+    /// A new line.
     NewLine,
+    /// End of file.
+    /// Will always be yielded as the last
+    /// token.
     EOF,
 }
 
@@ -36,6 +55,22 @@ impl Token
     pub fn integer<I>(integer: I) -> Self
         where I: Into<i64> {
         Token::Integer(integer.into())
+    }
+
+    pub fn comment<S>(text: S) -> Self
+        where S: Into<String> {
+        Token::Comment {
+            inline: false,
+            text: text.into(),
+        }
+    }
+
+    pub fn inline_comment<S>(text: S) -> Self
+        where S: Into<String> {
+        Token::Comment {
+            inline: true,
+            text: text.into(),
+        }
     }
 
     pub fn symbol<S>(symbol: S) -> Self
@@ -60,6 +95,7 @@ impl std::fmt::Display for Token
             &Token::String(ref s) => write!(fmt, "\"{}\"", s),
             &Token::Integer(ref i) => write!(fmt, "{}", i),
             &Token::Symbol(ref s) => write!(fmt, "{}", s),
+            &Token::Comment { ref text, .. } => write!(fmt, " {}", text),
             &Token::NewLine => write!(fmt, "new line"),
             &Token::EOF => write!(fmt, "EOF"),
         }
@@ -159,7 +195,9 @@ impl<I> Iterator for Characters<I>
 pub struct Tokenizer<I: Iterator<Item=char>>
 {
     chars: Characters<I>,
+
     finished: bool,
+    preserve_comments: bool,
 }
 
 impl<I> Tokenizer<I>
@@ -169,7 +207,14 @@ impl<I> Tokenizer<I>
         Tokenizer {
             chars: Characters::new(chars),
             finished: false,
+            preserve_comments: false,
         }
+    }
+
+    /// Allows the tokenizer to preserve comments it tokenizes.
+    pub fn preserve_comments(mut self) -> Self {
+        self.preserve_comments = true;
+        self
     }
 
     fn eat_whitespace(&mut self) {
@@ -206,6 +251,17 @@ impl<I> Tokenizer<I>
         unimplemented!();
     }
 
+    fn next_comment(&mut self) -> Option<Result<Token>> {
+        self.assert(';');
+        let text: String = self.chars.consume_while(|c| c != '\n').collect();
+
+        Some(Ok(Token::comment(text)))
+    }
+
+    fn eat_next_comment(&mut self) -> Option<Result<()>> {
+        self.next_comment().map(|result| result.map(|_| ()))
+    }
+
     fn assert(&mut self, expected: char) -> char {
         self.expect(expected).expect("unexpected character")
     }
@@ -213,11 +269,6 @@ impl<I> Tokenizer<I>
     fn expect(&mut self, expected: char) -> Result<char> {
         // TODO: more specific error message
         self.expect_one_of(&[expected])
-    }
-
-    fn assert_one_of(&mut self, expected: &[char]) -> char {
-        self.expect_one_of(expected)
-            .expect("unexpected character")
     }
 
     fn expect_one_of(&mut self, expected: &[char]) -> Result<char> {
@@ -266,6 +317,21 @@ impl<I> Iterator for Tokenizer<I>
         } else if first_char == '\n' {
             self.chars.eat();
             Some(Ok(Token::new_line()))
+        } else if first_char == ';' {
+            if self.preserve_comments {
+                self.next_comment()
+            } else {
+
+                // TODO: This could be nicer
+                match self.eat_next_comment() {
+                    Some(Ok(..)) => (),
+                    Some(Err(e)) => return Some(Err(e)),
+                    None => panic!("expected a comment to be parsed"),
+                }
+
+                // TODO: fix needless recursion
+                self.next()
+            }
         } else if first_char.is_numeric() {
             self.next_integer()
         } else if internal::can_word_start_with(first_char) {
@@ -291,12 +357,23 @@ mod test
 {
     use super::{Token,Tokenizer};
 
-    macro_rules! expect_tokenize_into {
+    /// Expects a mapping from a string of tokens into
+    /// a list of tokens with the default tokenizer.
+    macro_rules! expect_mapping {
+        ($input:expr => $( $output:expr ),* ) => {
+            expect_mapping_with!(Tokenizer::new($input.chars()) =>
+                                 $( $output ),*);
+        }
+    }
+
+    /// Expects a mapping from a string of tokens into
+    /// a list of tokens, given a specific tokenizer.
+    macro_rules! expect_mapping_with {
         // TODO: make the macro take several arguments
         // for several outputs
-        ($input:expr => $( $output:expr ),* ) => {
+        ($tokenizer:expr => $( $output:expr ),* ) => {
             {
-                let mut tokenizer = Tokenizer::new($input.chars());
+                let mut tokenizer = $tokenizer;
 
                 $(
                     let token = tokenizer.next().unwrap().unwrap();
@@ -310,86 +387,113 @@ mod test
 
     #[test]
     fn test_string() {
-        expect_tokenize_into!("\"hello\"" =>  Token::string("hello"),
-                                              Token::new_line(),
-                                              Token::eof());
+        expect_mapping!("\"hello\"" =>  Token::string("hello"),
+                                        Token::new_line(),
+                                        Token::eof());
 
-        expect_tokenize_into!("\"hello abc\"" => Token::string("hello abc"),
-                                                 Token::new_line(),
-                                                 Token::eof());
+        expect_mapping!("\"hello abc\"" => Token::string("hello abc"),
+                                           Token::new_line(),
+                                           Token::eof());
 
-        expect_tokenize_into!("\"hello world\"  \"it is me\"" =>
-                              Token::string("hello world"),
-                              Token::string("it is me"),
-                              Token::new_line(),
-                              Token::eof());
+        expect_mapping!("\"hello world\"  \"it is me\"" =>
+                        Token::string("hello world"),
+                        Token::string("it is me"),
+                        Token::new_line(),
+                        Token::eof());
     }
 
     #[test]
     fn test_integer() {
-        expect_tokenize_into!("123" => Token::integer(123),
-                                       Token::new_line(),
-                                       Token::eof());
+        expect_mapping!("123" => Token::integer(123),
+                                 Token::new_line(),
+                                 Token::eof());
 
-        expect_tokenize_into!("0982" => Token::integer(982),
-                                        Token::new_line(),
-                                        Token::eof());
+        expect_mapping!("0982" => Token::integer(982),
+                                  Token::new_line(),
+                                  Token::eof());
 
-        expect_tokenize_into!("333 662" => Token::integer(333),
-                                           Token::integer(662),
-                                           Token::new_line(),
-                                           Token::eof());
+        expect_mapping!("333 662" => Token::integer(333),
+                                     Token::integer(662),
+                                     Token::new_line(),
+                                     Token::eof());
 
-        expect_tokenize_into!("1 2 3 4" => Token::integer(1),
-                                           Token::integer(2),
-                                           Token::integer(3),
-                                           Token::integer(4),
-                                           Token::new_line(),
-                                           Token::eof());
+        expect_mapping!("1 2 3 4" => Token::integer(1),
+                                     Token::integer(2),
+                                     Token::integer(3),
+                                     Token::integer(4),
+                                     Token::new_line(),
+                                     Token::eof());
     }
 
     #[test]
     fn test_word() {
-        expect_tokenize_into!("hello" => Token::word("hello"));
+        expect_mapping!("hello" => Token::word("hello"));
 
-        expect_tokenize_into!("ab cd" => Token::word("ab"),
-                                         Token::word("cd"),
-                                         Token::new_line(),
-                                         Token::eof());
+        expect_mapping!("ab cd" => Token::word("ab"),
+                                   Token::word("cd"),
+                                   Token::new_line(),
+                                   Token::eof());
 
-        expect_tokenize_into!("a b c d" => Token::word("a"),
-                                           Token::word("b"),
-                                           Token::word("c"),
-                                           Token::word("d"),
+        expect_mapping!("a b c d" => Token::word("a"),
+                                     Token::word("b"),
+                                     Token::word("c"),
+                                     Token::word("d"),
+                                     Token::new_line(),
+                                     Token::eof());
+    }
+
+    #[test]
+    fn test_comments_not_preserved_by_default() {
+        expect_mapping!("hello ; there" => Token::word("hello"),
                                            Token::new_line(),
                                            Token::eof());
+
+        expect_mapping!(";why hello" => Token::new_line(),
+                                        Token::eof());
+    }
+
+    #[test]
+    fn test_comments() {
+        expect_mapping_with!(Tokenizer::new("hello world ; this is me".chars())
+                             .preserve_comments()
+                             => Token::word("hello"),
+                                Token::word("world"),
+                                Token::comment(" this is me"),
+                                Token::new_line(),
+                                Token::eof());
+
+        expect_mapping_with!(Tokenizer::new(";this is a test".chars())
+                             .preserve_comments()
+                             => Token::comment("this is a test"),
+                                Token::new_line(),
+                                Token::eof());
     }
 
     #[test]
     fn test_multiple() {
-        expect_tokenize_into!("12 bark \"earth\"" => Token::integer(12),
-                                                     Token::word("bark"),
-                                                     Token::string("earth"),
-                                                     Token::new_line(),
-                                                     Token::eof());
+        expect_mapping!("12 bark \"earth\"" => Token::integer(12),
+                                               Token::word("bark"),
+                                               Token::string("earth"),
+                                               Token::new_line(),
+                                               Token::eof());
 
-        expect_tokenize_into!("a      23 gg \"a\"" => Token::word("a"),
-                                                      Token::integer(23),
-                                                      Token::word("gg"),
-                                                      Token::string("a"),
-                                                      Token::new_line(),
-                                                      Token::eof());
+        expect_mapping!("a      23 gg \"a\"" => Token::word("a"),
+                                                Token::integer(23),
+                                                Token::word("gg"),
+                                                Token::string("a"),
+                                                Token::new_line(),
+                                                Token::eof());
     }
 
     #[test]
     fn test_whitespace() {
-        expect_tokenize_into!("a\tb\t123\n\"qwer\"\n" => Token::word("a"),
-                                                         Token::word("b"),
-                                                         Token::integer(123),
-                                                         Token::new_line(),
-                                                         Token::string("qwer"),
-                                                         Token::new_line(),
-                                                         Token::new_line(),
-                                                         Token::eof());
+        expect_mapping!("a\tb\t123\n\"qwer\"\n" => Token::word("a"),
+                                                   Token::word("b"),
+                                                   Token::integer(123),
+                                                   Token::new_line(),
+                                                   Token::string("qwer"),
+                                                   Token::new_line(),
+                                                   Token::new_line(),
+                                                   Token::eof());
     }
 }
