@@ -1,6 +1,7 @@
 
 use util;
 use std;
+use std::error::Error;
 
 pub type Result<T> = std::result::Result<T,String>;
 
@@ -18,6 +19,37 @@ pub enum Token
 
     NewLine,
     EOF,
+}
+
+impl Token
+{
+    pub fn word<S>(word: S) -> Self
+        where S: Into<String> {
+        Token::Word(word.into())
+    }
+
+    pub fn string<S>(string: S) -> Self
+        where S: Into<String> {
+        Token::StringLiteral(string.into())
+    }
+
+    pub fn integer<I>(integer: I) -> Self
+        where I: Into<i64> {
+        Token::IntegerLiteral(integer.into())
+    }
+
+    pub fn symbol<S>(symbol: S) -> Self
+        where S: Into<String> {
+        Token::Symbol(symbol.into())
+    }
+
+    pub fn new_line() -> Self {
+        Token::NewLine
+    }
+
+    pub fn eof() -> Self {
+        Token::EOF
+    }
 }
 
 /// An iterator over a set of characters.
@@ -132,6 +164,24 @@ impl<I> Tokenizer<I>
         Some(Ok(Token::StringLiteral(string.collect())))
     }
 
+    fn next_integer(&mut self) -> Option<Result<Token>> {
+        let string: String = self.chars.consume_while(|c| c.is_numeric()).collect();
+
+        let int = match i64::from_str_radix(&string, 10) {
+            Ok(int) => int,
+            Err(e) => return Some(Err(format!("Could not parse integer: {}",
+                                              e.description()))),
+        };
+
+        Some(Ok(Token::IntegerLiteral(int)))
+    }
+
+    fn next_word(&mut self) -> Option<Result<Token>> {
+        let word: String = self.chars.consume_while(internal::can_word_contain).collect();
+
+        Some(Ok(Token::Word(word)))
+    }
+
     fn next_symbol(&mut self) -> Option<Result<Token>> {
         unimplemented!();
     }
@@ -183,9 +233,24 @@ impl<I> Iterator for Tokenizer<I>
 
         if first_char == '"' {
             self.next_string()
+        } else if first_char.is_numeric() {
+            self.next_integer()
+        } else if internal::can_word_start_with(first_char) {
+            self.next_word()
         } else {
             self.next_symbol()
         }
+    }
+}
+
+mod internal
+{
+    pub fn can_word_start_with(c: char) -> bool {
+        c.is_alphabetic() || c == '_'
+    }
+
+    pub fn can_word_contain(c: char) -> bool {
+        can_word_start_with(c) || c.is_numeric()
     }
 }
 
@@ -215,5 +280,28 @@ mod test
         expect_tokenize_into!("\"hello world\"  \"it is me\"" =>
                               Token::StringLiteral("hello world".into()),
                               Token::StringLiteral("it is me".into()));
+    }
+
+    #[test]
+    fn test_integer() {
+        expect_tokenize_into!("123" => Token::IntegerLiteral(123));
+        expect_tokenize_into!("0982" => Token::IntegerLiteral(982));
+        expect_tokenize_into!("333 662" => Token::IntegerLiteral(333),
+                                           Token::IntegerLiteral(662));
+        expect_tokenize_into!("1 2 3 4" => Token::IntegerLiteral(1),
+                                           Token::IntegerLiteral(2),
+                                           Token::IntegerLiteral(3),
+                                           Token::IntegerLiteral(4));
+    }
+
+    #[test]
+    fn test_word() {
+        expect_tokenize_into!("hello" => Token::word("hello"));
+        expect_tokenize_into!("ab cd" => Token::word("ab"),
+                                         Token::word("cd"));
+        expect_tokenize_into!("a b c d" => Token::word("a"),
+                                           Token::word("b"),
+                                           Token::word("c"),
+                                           Token::word("d"));
     }
 }
