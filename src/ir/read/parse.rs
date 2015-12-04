@@ -2,6 +2,9 @@ use super::{Tokenizer,Token};
 
 use ir;
 use ir::{Module,Value,Expression};
+use std;
+
+pub type Result<T> = std::result::Result<T,String>;
 
 /// An IR parser.
 pub struct Parser<I: Iterator<Item=char>>
@@ -28,7 +31,7 @@ impl<I> Parser<I>
     }
 
     /// Eats tokens while a predicate is true.
-    pub fn parse(mut self) -> Result<Module,String> {
+    pub fn parse(mut self) -> Result<Module> {
         while !self.tokenizer.is_finished() {
             try!(self.parse_next());
         }
@@ -36,7 +39,7 @@ impl<I> Parser<I>
         Ok(self.module)
     }
 
-    fn parse_next(&mut self) -> Result<(),String> {
+    fn parse_next(&mut self) -> Result<()> {
         try!(self.eat_new_lines());
 
         let first_token = match self.tokenizer.peek() {
@@ -55,11 +58,11 @@ impl<I> Parser<I>
         }
     }
 
-    fn eat_new_lines(&mut self) -> Result<(),String> {
+    fn eat_new_lines(&mut self) -> Result<()> {
         self.tokenizer.eat_while(|token| token.is_new_line())
     }
 
-    fn parse_global(&mut self) -> Result<(),String> {
+    fn parse_global(&mut self) -> Result<()> {
         self.assert(keywords::global());
 
         let name = try!(self.expect_word());
@@ -72,18 +75,18 @@ impl<I> Parser<I>
         Ok(())
     }
 
-    fn parse_function(&mut self) -> Result<(),String> {
+    fn parse_function(&mut self) -> Result<()> {
         self.assert(keywords::function());
 
         let name = try!(self.expect_word());
         unimplemented!();
     }
 
-    fn parse_value(&mut self) -> Result<Value,String> {
+    fn parse_value(&mut self) -> Result<Value> {
         self.parse_expression().map(|expr| Value::new(expr))
     }
 
-    fn parse_expression(&mut self) -> Result<Expression,String> {
+    fn parse_expression(&mut self) -> Result<Expression> {
         let first_token = try!(self.expect_something());
 
         match first_token {
@@ -93,7 +96,7 @@ impl<I> Parser<I>
     }
 
     fn parse_word_expression(&mut self, first_word: String)
-        -> Result<Expression,String> {
+        -> Result<Expression> {
         if first_word.starts_with('i') || first_word.starts_with('u') {
             self.parse_integer_expression(first_word)
         } else {
@@ -102,7 +105,7 @@ impl<I> Parser<I>
     }
 
     fn parse_integer_expression(&mut self, type_word: String)
-        -> Result<Expression,String> {
+        -> Result<Expression> {
         debug_assert!(type_word.starts_with('i') || type_word.starts_with('u'));
 
         let ty = try!(self.parse_integer_type(type_word));
@@ -112,7 +115,7 @@ impl<I> Parser<I>
     }
 
     fn parse_integer_type(&mut self, type_str: String)
-        -> Result<ir::types::Integer,String> {
+        -> Result<ir::types::Integer> {
         let kind = match type_str.chars().next().unwrap() {
             'i' => ::util::IntegerKind::Signed,
             'u' => ::util::IntegerKind::Unsigned,
@@ -129,16 +132,16 @@ impl<I> Parser<I>
         self.expect(expected).unwrap();
     }
 
-    fn expect_something(&mut self) -> Result<Token,String> {
+    fn expect_something(&mut self) -> Result<Token> {
         util::expect(self.tokenizer.next())
     }
 
-    fn expect(&mut self, expected: Token) -> Result<Token,String> {
+    fn expect(&mut self, expected: Token) -> Result<Token> {
         // TODO: this could be a more descriptive error message
         self.expect_one_of(&[expected])
     }
 
-    fn expect_one_of(&mut self, expected: &[Token]) -> Result<Token,String> {
+    fn expect_one_of(&mut self, expected: &[Token]) -> Result<Token> {
         let token = try!(util::expect(self.tokenizer.next()));
 
         if expected.iter().any(|e| e==&token) {
@@ -150,7 +153,7 @@ impl<I> Parser<I>
         }
     }
 
-    fn expect_word(&mut self) -> Result<String,String> {
+    fn expect_word(&mut self) -> Result<String> {
         match self.expect_something() {
             Ok(ref token) => match *token {
                 Token::Word(ref w) => Ok(w.clone()),
@@ -160,7 +163,7 @@ impl<I> Parser<I>
         }
     }
 
-    fn expect_integer(&mut self) -> Result<i64,String> {
+    fn expect_integer(&mut self) -> Result<i64> {
         match self.expect_something() {
             Ok(ref token) => match *token {
                 Token::Integer(i) => Ok(i),
