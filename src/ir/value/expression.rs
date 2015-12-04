@@ -20,6 +20,7 @@ pub enum Expression
     BlockRef(value::BlockRef),
     FunctionRef(value::FunctionRef),
     RegisterRef(value::RegisterRef),
+    ArgumentRef(value::ArgumentRef),
 }
 
 impl Expression
@@ -76,6 +77,10 @@ impl Expression
 
     pub fn register_ref(reg: &ir::value::Register) -> Expression {
         value::RegisterRef::reference(reg).into()
+    }
+
+    pub fn argument_ref(param: &ir::Parameter) -> Expression {
+        value::ArgumentRef::reference(param).into()
     }
 
     /// Creates an unnamed register.
@@ -202,6 +207,14 @@ impl Expression
         }
     }
 
+    pub fn is_register_ref(&self) -> bool {
+        if let Expression::RegisterRef(..) = *self { true } else { false }
+    }
+
+    pub fn is_argument_ref(&self) -> bool {
+        if let Expression::ArgumentRef(..) = *self { true } else { false }
+    }
+
     pub fn ty(&self) -> ir::Type {
          match *self {
             Expression::Literal(ref val) => val.ty(),
@@ -211,6 +224,7 @@ impl Expression
             Expression::BlockRef(ref val) => val.ty(),
             Expression::FunctionRef(ref val) => val.ty(),
             Expression::RegisterRef(ref val) => val.ty(),
+            Expression::ArgumentRef(ref val) => val.ty(),
         }
     }
 
@@ -223,6 +237,7 @@ impl Expression
              Expression::BlockRef(..) => true,
              Expression::FunctionRef(..) => true,
              Expression::RegisterRef(..) => true,
+             Expression::ArgumentRef(..) => true,
          }
     }
 

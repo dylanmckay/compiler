@@ -8,6 +8,7 @@ pub use self::globalref::GlobalRef;
 pub use self::blockref::BlockRef;
 pub use self::functionref::FunctionRef;
 pub use self::registerref::RegisterRef;
+pub use self::argument_ref::ArgumentRef;
 
 pub mod value;
 pub mod expression;
@@ -18,4 +19,4 @@ pub mod globalref;
 pub mod blockref;
 pub mod functionref;
 pub mod registerref;
-
+pub mod argument_ref;

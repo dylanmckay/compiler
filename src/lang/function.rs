@@ -26,6 +26,14 @@ impl<V> Parameter<V>
             ty: ty,
         }
     }
+
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn ty(&self) -> &V::Type {
+        &self.ty
+    }
 }
 
 impl<V: lang::Value> util::Identifiable for Parameter<V>
@@ -60,7 +68,7 @@ impl<V: lang::Value> std::cmp::Eq for Parameter<V>
 #[derive(Clone,Debug)]
 pub struct Signature<V: lang::Value>
 {
-    param_types: Vec<Parameter<V>>,
+    params: util::List<Parameter<V>>,
     return_types: Vec<V::Type>,
 }
 
@@ -70,7 +78,7 @@ impl<V> Signature<V>
     /// Creates a signature with no return types and no parameter types.
     pub fn empty() -> Self {
         Signature {
-            param_types: Vec::new(),
+            params: util::List::empty(),
             return_types: Vec::new(),
         }
     }
@@ -85,7 +93,7 @@ impl<V> Signature<V>
     pub fn param(mut self,
                  name: String,
                  ty: V::Type) -> Self {
-        self.param_types.push(Parameter::new(name, ty));
+        self.params.add(Parameter::new(name, ty));
         self
     }
 
@@ -96,7 +104,12 @@ impl<V> Signature<V>
 
     /// Gets the parameter types.
     pub fn parameters(&self) -> std::slice::Iter<Parameter<V>> {
-        self.param_types.iter()
+        self.params.iter()
+    }
+
+    /// Looks up a parameter given its name.
+    pub fn find_parameter(&self, name:&str) -> Option<&Parameter<V>> {
+        self.params.iter().find(|param| param.name() == name)
     }
 }
 

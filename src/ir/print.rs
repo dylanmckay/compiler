@@ -208,6 +208,7 @@ pub mod expression
             Expression::BlockRef(ref val) => self::block_ref(val, printer, fmt),
             Expression::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
             Expression::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
+            Expression::ArgumentRef(ref val) => self::argument_ref(val, printer, fmt),
         }
     }
 
@@ -278,6 +279,12 @@ pub mod expression
                         fmt: &mut fmt::Formatter) -> fmt::Result {
         let number = printer.register_number(reg_ref.get_id());
         write!(fmt, "%{}", number)
+    }
+
+    pub fn argument_ref(arg_ref: &value::ArgumentRef,
+                        printer: &mut Printer,
+                        fmt: &mut fmt::Formatter) -> fmt::Result {
+        unimplemented!();
     }
 
     pub mod instruction

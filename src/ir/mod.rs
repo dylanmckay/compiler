@@ -28,3 +28,5 @@ pub type Global = ::lang::Global<Value>;
 pub type Function = ::lang::Function<Value>;
 pub type Block = ::lang::Block<Value>;
 pub type Signature = ::lang::Signature<Value>;
+pub type Parameter = ::lang::Parameter<Value>;
+

@@ -2,7 +2,7 @@
 pub use self::name::Name;
 pub use self::module::Module;
 pub use self::global::Global;
-pub use self::function::{Function,Signature};
+pub use self::function::{Function,Signature,Parameter};
 pub use self::block::Block;
 pub use self::value::Value;
 pub use self::ty::Type;

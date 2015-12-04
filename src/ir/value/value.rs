@@ -53,6 +53,10 @@ impl Value
         Value::new(Expression::register_ref(register))
     }
 
+    pub fn argument_ref(param: &ir::Parameter) -> Self {
+        Value::new(Expression::argument_ref(param))
+    }
+
     pub fn add<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
         Value::new(Expression::add(lhs, rhs))
