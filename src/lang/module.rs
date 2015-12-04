@@ -10,8 +10,8 @@ use std;
 #[derive(Clone,Debug)]
 pub struct Module<V: Value>
 {
-    functions: util::Set<Function<V>>,
-    globals: util::Set<Global<V>>,
+    functions: util::List<Function<V>>,
+    globals: util::List<Global<V>>,
 }
 
 impl<V> Module<V>
@@ -20,8 +20,8 @@ impl<V> Module<V>
     /// Creates an empty module.
     pub fn empty() -> Self {
         Module {
-            functions: util::Set::empty(),
-            globals: util::Set::empty(),
+            functions: util::List::empty(),
+            globals: util::List::empty(),
         }
     }
 

@@ -43,17 +43,17 @@ impl<T> Into<Option<T>> for Slot<T>
 /// A set.
 // TODO: find a better name.
 #[derive(Clone)]
-pub struct Set<T: util::Identifiable>
+pub struct List<T: util::Identifiable>
 {
     elements: Vec<T>,
     locked_indices: Vec<usize>,
 }
 
-impl<T: util::Identifiable> Set<T>
+impl<T: util::Identifiable> List<T>
 {
     /// Creates an empty set.
     pub fn empty() -> Self {
-        Set {
+        List {
             elements: Vec::new(),
             locked_indices: Vec::new(),
         }
@@ -122,7 +122,7 @@ impl<T: util::Identifiable> Set<T>
     }
 }
 
-impl<T: util::Identifiable> IntoIterator for Set<T>
+impl<T: util::Identifiable> IntoIterator for List<T>
 {
     type Item = T;
     type IntoIter = std::vec::IntoIter<T>;
@@ -132,18 +132,18 @@ impl<T: util::Identifiable> IntoIterator for Set<T>
     }
 }
 
-impl<T: util::Identifiable> std::iter::FromIterator<T> for Set<T>
+impl<T: util::Identifiable> std::iter::FromIterator<T> for List<T>
 {
     fn from_iter<I>(it: I) -> Self
         where I: IntoIterator<Item=T> {
-        Set {
+        List {
             elements: Vec::from_iter(it),
             locked_indices: Vec::new(),
         }
     }
 }
 
-impl<T: util::Identifiable + std::fmt::Debug> std::fmt::Debug for Set<T>
+impl<T: util::Identifiable + std::fmt::Debug> std::fmt::Debug for List<T>
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         let elements: Vec<_> = self.iter().collect();

@@ -2,12 +2,12 @@
 pub use self::enums::{ByteOrder,IntegerKind,Sign};
 pub use self::architecture::Architecture;
 pub use self::id::{Id,Identifiable};
-pub use self::set::{Set,Slot};
+pub use self::list::{List,Slot};
 
 pub mod enums;
 pub mod architecture;
 pub mod id;
-pub mod set;
+pub mod list;
 
 pub mod os;
 

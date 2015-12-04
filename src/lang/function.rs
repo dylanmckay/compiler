@@ -5,13 +5,62 @@ use std;
 
 use lang::Block;
 
+/// A parameter.
+#[derive(Clone,Debug)]
+pub struct Parameter<V: lang::Value>
+{
+    id: util::Id,
+
+    ty: V::Type,
+    name: String,
+}
+
+impl<V> Parameter<V>
+    where V: lang::Value
+{
+    pub fn new(name: String, ty: V::Type) -> Self {
+        Parameter {
+            id: util::Id::next(),
+
+            name: name,
+            ty: ty,
+        }
+    }
+}
+
+impl<V: lang::Value> util::Identifiable for Parameter<V>
+{
+    fn get_id(&self) -> util::Id { self.id }
+}
+
+impl<V> std::fmt::Display for Parameter<V>
+    where V: lang::Value
+{
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(fmt, "{}: {}", self.name, self.ty)
+    }
+}
+
+impl<V: lang::Value> std::cmp::PartialEq for Parameter<V>
+    where V::Type: std::cmp::PartialEq
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.ty == other.ty &&
+            self.name == other.name
+    }
+}
+
+impl<V: lang::Value> std::cmp::Eq for Parameter<V>
+    where V::Type: std::cmp::Eq {
+}
+
 /// A function signature.
 /// 
 /// Holds the return and parameter types.
 #[derive(Clone,Debug)]
 pub struct Signature<V: lang::Value>
 {
-    param_types: Vec<V::Type>,
+    param_types: Vec<Parameter<V>>,
     return_types: Vec<V::Type>,
 }
 
@@ -33,8 +82,10 @@ impl<V> Signature<V>
     }
 
     /// Appends a parameter type.
-    pub fn param(mut self, ty: V::Type) -> Self {
-        self.param_types.push(ty);
+    pub fn param(mut self,
+                 name: String,
+                 ty: V::Type) -> Self {
+        self.param_types.push(Parameter::new(name, ty));
         self
     }
 
@@ -44,7 +95,7 @@ impl<V> Signature<V>
     }
 
     /// Gets the parameter types.
-    pub fn parameters(&self) -> std::slice::Iter<V::Type> {
+    pub fn parameters(&self) -> std::slice::Iter<Parameter<V>> {
         self.param_types.iter()
     }
 }
@@ -53,7 +104,7 @@ impl<V: lang::Value> std::cmp::PartialEq for Signature<V>
     where V::Type: std::cmp::PartialEq
 {
     fn eq(&self, other: &Self) -> bool {
-        self.param_types == other.param_types &&
+        self.parameters().zip(other.parameters()).all(|(a,b)| a==b) &&
         self.return_types == other.return_types
     }
 }
