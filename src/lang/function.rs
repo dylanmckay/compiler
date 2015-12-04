@@ -75,6 +75,15 @@ pub struct Signature<V: lang::Value>
 impl<V> Signature<V>
     where V: lang::Value
 {
+    pub fn new<P,R>(params: P, returns: R) -> Self
+        where P: IntoIterator<Item=Parameter<V>>,
+              R: IntoIterator<Item=V::Type> {
+        Signature {
+            params: params.into_iter().collect(),
+            return_types: returns.into_iter().collect(),
+        }
+    }
+
     /// Creates a signature with no return types and no parameter types.
     pub fn empty() -> Self {
         Signature {

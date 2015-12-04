@@ -1,7 +1,7 @@
 use super::{Tokenizer,Token};
 
 use ir;
-use ir::{Module,Value,Expression};
+use ir::{Module,Value,Expression,Type,Block,Signature,Function};
 use std;
 
 pub type Result<T> = std::result::Result<T,String>;
@@ -79,11 +79,62 @@ impl<I> Parser<I>
         self.assert(keywords::function());
 
         let name = try!(self.expect_word());
+        let params = try!(self.parse_parameter_list());
+        let returns: Vec<Type> = unimplemented!();
+        let body = try!(self.parse_body());
+
+        let signature = Signature::new(params, returns);
+        let function = Function::new(name, signature, body);
+
+        self.module.add_function(function);
+        Ok(())
+    }
+
+    /// Parses a curly-brace contained list of blocks.
+    fn parse_body(&mut self) -> Result<Vec<Block>> {
+        try!(self.expect(Token::left_curly_brace()));
+
+        let mut blocks = Vec::new();
+
+        while try!(self.peek_something()) != Token::right_curly_brace() {
+            let block = try!(self.parse_block());
+            blocks.push(block);
+        }
+
+        try!(self.expect(Token::right_curly_brace()));
+
+        Ok(blocks)
+    }
+
+    fn parse_block(&mut self) -> Result<Block> {
         unimplemented!();
+    }
+
+    fn parse_parameter_list(&mut self) -> Result<Vec<ir::Parameter>> {
+        try!(self.expect(Token::left_parenthesis()));
+
+        let mut params = Vec::new();
+
+        while try!(self.peek_something()) != Token::right_parenthesis() {
+            let ty = try!(self.parse_type());
+            let name = try!(self.expect_word());
+
+            params.push(ir::Parameter::new(name, ty));
+
+            self.maybe_eat(Token::comma());
+        }
+
+        self.assert(Token::right_parenthesis());
+
+        Ok(params)
     }
 
     fn parse_value(&mut self) -> Result<Value> {
         self.parse_expression().map(|expr| Value::new(expr))
+    }
+
+    fn parse_type(&mut self) -> Result<Type> {
+        unimplemented!();
     }
 
     fn parse_expression(&mut self) -> Result<Expression> {
@@ -134,6 +185,24 @@ impl<I> Parser<I>
 
     fn expect_something(&mut self) -> Result<Token> {
         util::expect(self.tokenizer.next())
+    }
+
+    fn peek_something(&mut self) -> Result<Token> {
+        util::expect(self.tokenizer.peek())
+    }
+
+    fn maybe_eat(&mut self, token: Token) -> Result<()> {
+        match self.tokenizer.peek() {
+            Some(Ok(token)) => {
+                if token == token {
+                    self.tokenizer.eat();
+                }
+
+                Ok(())
+            },
+            Some(Err(e)) => Err(e),
+            None => Ok(()),
+        }
     }
 
     fn expect(&mut self, expected: Token) -> Result<Token> {
