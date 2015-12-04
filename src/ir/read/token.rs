@@ -284,7 +284,9 @@ impl<I> Tokenizer<I>
         loop {
             match self.peek() {
                 Some(Ok(tok)) => {
-                    if !predicate(tok) {
+                    if predicate(tok) {
+                        self.eat()
+                    } else {
                         break;
                     }
                 },
@@ -294,6 +296,10 @@ impl<I> Tokenizer<I>
         }
 
         Ok(())
+    }
+
+    pub fn is_finished(&self) -> bool {
+        self.finished
     }
 
     fn eat_whitespace(&mut self) {

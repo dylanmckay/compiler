@@ -1,5 +1,2 @@
-
-; RUN: frontend %s
-
-global ABCD = i63 2
-
+global asd = i32 3
+global bdf = i63 77
