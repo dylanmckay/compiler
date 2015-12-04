@@ -46,6 +46,8 @@ impl<I> Parser<I>
 
         if first_token == keywords::global() {
             self.parse_global()
+        } else if first_token == keywords::function() {
+            self.parse_function()
         } else if first_token.is_eof() {
             Ok(())
         } else {
@@ -68,6 +70,13 @@ impl<I> Parser<I>
 
         self.module.add_global(ir::Global::new(name, value));
         Ok(())
+    }
+
+    fn parse_function(&mut self) -> Result<(),String> {
+        self.assert(keywords::function());
+
+        let name = try!(self.expect_word());
+        unimplemented!();
     }
 
     fn parse_value(&mut self) -> Result<Value,String> {
@@ -187,6 +196,10 @@ pub mod keywords
 
     pub fn global() -> Token {
         Token::word("global")
+    }
+
+    pub fn function() -> Token {
+        Token::word("fn")
     }
 }
 

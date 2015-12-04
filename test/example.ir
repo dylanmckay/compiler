@@ -1,2 +1,6 @@
 global asd = i32 3
 global bdf = i63 77
+
+fn abc(a: i32, b: u64) -> u64 {
+
+}
