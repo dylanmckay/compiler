@@ -78,7 +78,7 @@ impl<I> Parser<I>
 
         let name = try!(self.expect_word());
         let params = try!(self.parse_parameter_list());
-        let returns: Vec<Type> = unimplemented!();
+        let returns = try!(self.parse_return_list());
         let body = try!(self.parse_body());
 
         let signature = Signature::new(params, returns);
@@ -114,8 +114,9 @@ impl<I> Parser<I>
         let mut params = Vec::new();
 
         while try!(self.peek_something()) != Token::right_parenthesis() {
-            let ty = try!(self.parse_type());
             let name = try!(self.expect_word());
+            try!(self.expect(Token::colon()));
+            let ty = try!(self.parse_type());
 
             params.push(ir::Parameter::new(name, ty));
 
@@ -127,12 +128,33 @@ impl<I> Parser<I>
         Ok(params)
     }
 
+    fn parse_return_list(&mut self) -> Result<Vec<Type>> {
+        // let first_token = try!(self.expect_something());
+        // FIXME: implement
+        Ok(Vec::new())
+    }
+
     fn parse_value(&mut self) -> Result<Value> {
         self.parse_expression().map(|expr| Value::new(expr))
     }
 
     fn parse_type(&mut self) -> Result<Type> {
-        unimplemented!();
+        let first_token =  try!(self.expect_something());
+
+        match first_token {
+            Token::Word(first_word) => self.parse_word_type(first_word),
+            _ => Err(format!("unknown token for type: {}",
+                             first_token)),
+        }
+    }
+
+    fn parse_word_type(&mut self, first_word: String)
+        -> Result<Type> {
+        if util::is_integer_type(&first_word) {
+            self.parse_integer_type(&first_word).map(|t| t.into())
+        } else {
+            Err(format!("unknown type: {}", first_word))
+        }
     }
 
     fn parse_expression(&mut self) -> Result<Expression> {
@@ -147,13 +169,13 @@ impl<I> Parser<I>
     fn parse_word_expression(&mut self, first_word: String)
         -> Result<Expression> {
         if util::is_integer_type(&first_word) {
-            self.parse_integer_expression(first_word)
+            self.parse_integer_expression(&first_word)
         } else {
             Err("unknown token for expression".into())
         }
     }
 
-    fn parse_integer_expression(&mut self, type_word: String)
+    fn parse_integer_expression(&mut self, type_word: &str)
         -> Result<Expression> {
         debug_assert!(type_word.starts_with('i') || type_word.starts_with('u'));
 
@@ -163,7 +185,7 @@ impl<I> Parser<I>
         Ok(Expression::integer(ty, value).unwrap())
     }
 
-    fn parse_integer_type(&mut self, type_str: String)
+    fn parse_integer_type(&mut self, type_str: &str)
         -> Result<ir::types::Integer> {
         let kind = match type_str.chars().next().unwrap() {
             'i' => ::util::IntegerKind::Signed,
@@ -291,7 +313,7 @@ pub mod keywords
 mod test
 {
     use super::Parser;
-    use ir::Value;
+    use ir::{Value,Function,Signature};
 
     #[cfg(test)]
     fn parse(text: &str) -> ::ir::Module {
@@ -303,7 +325,10 @@ mod test
             {
                 let module = parse($input);
 
-                let global = module.globals().next().unwrap();
+                let global = module.globals()
+                                   .next()
+                                   .expect("no globals were parsed");
+
                 assert_eq!(global.name(), $name);
                 assert_eq!(global.value(), &$value);
             }
