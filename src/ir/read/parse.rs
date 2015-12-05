@@ -32,7 +32,7 @@ impl<I> Parser<I>
 
     /// Eats tokens while a predicate is true.
     pub fn parse(mut self) -> Result<Module> {
-        while !self.tokenizer.is_finished() {
+        while self.tokenizer.peek().is_some() {
             try!(self.parse_next());
         }
 
@@ -51,8 +51,6 @@ impl<I> Parser<I>
             self.parse_global()
         } else if first_token == keywords::function() {
             self.parse_function()
-        } else if first_token.is_eof() {
-            Ok(())
         } else {
             Err(format!("unexpected token: {}", first_token))
         }

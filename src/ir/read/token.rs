@@ -27,7 +27,7 @@ pub enum Token
     ///
     /// For example
     ///
-    /// ```
+    /// ``` ir
     /// add 2, 4 ; inline comment goes here
     /// ```
     Comment {
@@ -38,10 +38,6 @@ pub enum Token
     Symbol(String),
     /// A new line.
     NewLine,
-    /// End of file.
-    /// Will always be yielded as the last
-    /// token.
-    EOF,
 }
 
 impl Token
@@ -96,10 +92,6 @@ impl Token
         Token::NewLine
     }
 
-    pub fn eof() -> Self {
-        Token::EOF
-    }
-
     pub fn is_word(&self) -> bool {
         if let Token::Word(..) = *self { true } else { false }
     }
@@ -123,10 +115,6 @@ impl Token
     pub fn is_new_line(&self) -> bool {
         if let Token::NewLine = *self { true } else { false }
     }
-
-    pub fn is_eof(&self) -> bool {
-        if let Token::EOF = *self { true } else { false }
-    }
 }
 
 impl std::fmt::Display for Token
@@ -139,7 +127,6 @@ impl std::fmt::Display for Token
             &Token::Symbol(ref s) => write!(fmt, "{}", s),
             &Token::Comment { ref text, .. } => write!(fmt, " {}", text),
             &Token::NewLine => write!(fmt, "new line"),
-            &Token::EOF => write!(fmt, "EOF"),
         }
     }
 }
@@ -238,7 +225,6 @@ pub struct Tokenizer<I: Iterator<Item=char>>
 {
     chars: Characters<I>,
 
-    finished: bool,
     preserve_comments: bool,
 
     peek_buf: Option<Token>,
@@ -250,7 +236,6 @@ impl<I> Tokenizer<I>
     pub fn new(chars: I) -> Self {
         Tokenizer {
             chars: Characters::new(chars),
-            finished: false,
             preserve_comments: false,
             peek_buf: None,
         }
@@ -296,10 +281,6 @@ impl<I> Tokenizer<I>
         }
 
         Ok(())
-    }
-
-    pub fn is_finished(&self) -> bool {
-        self.finished
     }
 
     fn eat_whitespace(&mut self) {
@@ -395,17 +376,7 @@ impl<I> Iterator for Tokenizer<I>
 
         let first_char = match self.chars.peek() {
             Some(c) => c,
-
-            // If there are no tokens left, return EOF if
-            // we haven't already, or None otherwise.
-            None => {
-                if self.finished {
-                    return None;
-                } else {
-                    self.finished = true;
-                    return Some(Ok(Token::eof()));
-                }
-            },
+            None => return None,
         };
 
         if first_char == '"' {
@@ -487,41 +458,34 @@ mod test
     #[test]
     fn test_string() {
         expect_mapping!("\"hello\"" =>  Token::string("hello"),
-                                        Token::new_line(),
-                                        Token::eof());
+                                        Token::new_line());
 
         expect_mapping!("\"hello abc\"" => Token::string("hello abc"),
-                                           Token::new_line(),
-                                           Token::eof());
+                                           Token::new_line());
 
         expect_mapping!("\"hello world\"  \"it is me\"" =>
                         Token::string("hello world"),
                         Token::string("it is me"),
-                        Token::new_line(),
-                        Token::eof());
+                        Token::new_line());
     }
 
     #[test]
     fn test_integer() {
         expect_mapping!("123" => Token::integer(123),
-                                 Token::new_line(),
-                                 Token::eof());
+                                 Token::new_line());
 
         expect_mapping!("0982" => Token::integer(982),
-                                  Token::new_line(),
-                                  Token::eof());
+                                  Token::new_line());
 
         expect_mapping!("333 662" => Token::integer(333),
                                      Token::integer(662),
-                                     Token::new_line(),
-                                     Token::eof());
+                                     Token::new_line());
 
         expect_mapping!("1 2 3 4" => Token::integer(1),
                                      Token::integer(2),
                                      Token::integer(3),
                                      Token::integer(4),
-                                     Token::new_line(),
-                                     Token::eof());
+                                     Token::new_line());
     }
 
     #[test]
@@ -530,25 +494,21 @@ mod test
 
         expect_mapping!("ab cd" => Token::word("ab"),
                                    Token::word("cd"),
-                                   Token::new_line(),
-                                   Token::eof());
+                                   Token::new_line());
 
         expect_mapping!("a b c d" => Token::word("a"),
                                      Token::word("b"),
                                      Token::word("c"),
                                      Token::word("d"),
-                                     Token::new_line(),
-                                     Token::eof());
+                                     Token::new_line());
     }
 
     #[test]
     fn test_comments_not_preserved_by_default() {
         expect_mapping!("hello ; there" => Token::word("hello"),
-                                           Token::new_line(),
-                                           Token::eof());
+                                           Token::new_line());
 
-        expect_mapping!(";why hello" => Token::new_line(),
-                                        Token::eof());
+        expect_mapping!(";why hello" => Token::new_line());
     }
 
     #[test]
@@ -558,21 +518,18 @@ mod test
                              => Token::word("hello"),
                                 Token::word("world"),
                                 Token::comment(" this is me"),
-                                Token::new_line(),
-                                Token::eof());
+                                Token::new_line());
 
         expect_mapping_with!(Tokenizer::new(";this is a test".chars())
                              .preserve_comments()
                              => Token::comment("this is a test"),
-                                Token::new_line(),
-                                Token::eof());
+                                Token::new_line());
     }
 
     #[test]
     fn test_symbols() {
         expect_mapping!("(" => Token::symbol("("),
-                               Token::new_line(),
-                               Token::eof());
+                               Token::new_line());
 
         expect_mapping!(")" => Token::symbol(")"));
         expect_mapping!("{ }" => Token::symbol("{"), Token::symbol("}"));
@@ -587,15 +544,13 @@ mod test
         expect_mapping!("12 bark \"earth\"" => Token::integer(12),
                                                Token::word("bark"),
                                                Token::string("earth"),
-                                               Token::new_line(),
-                                               Token::eof());
+                                               Token::new_line());
 
         expect_mapping!("a      23 gg \"a\"" => Token::word("a"),
                                                 Token::integer(23),
                                                 Token::word("gg"),
                                                 Token::string("a"),
-                                                Token::new_line(),
-                                                Token::eof());
+                                                Token::new_line());
 
         expect_mapping!("4:3{2\n}" => Token::integer(4),
                                       Token::symbol(":"),
@@ -604,8 +559,7 @@ mod test
                                       Token::integer(2),
                                       Token::new_line(),
                                       Token::symbol("}"),
-                                      Token::new_line(),
-                                      Token::eof());
+                                      Token::new_line());
     }
 
     #[test]
@@ -616,8 +570,7 @@ mod test
                                                    Token::new_line(),
                                                    Token::string("qwer"),
                                                    Token::new_line(),
-                                                   Token::new_line(),
-                                                   Token::eof());
+                                                   Token::new_line());
     }
 
     #[test]
