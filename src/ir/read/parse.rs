@@ -90,7 +90,9 @@ impl<I> Parser<I>
 
     /// Parses a curly-brace contained list of blocks.
     fn parse_body(&mut self) -> Result<Vec<Block>> {
+        try!(self.eat_whitespace());
         try!(self.expect(Token::left_curly_brace()));
+        try!(self.eat_whitespace());
 
         let mut blocks = Vec::new();
 
@@ -109,11 +111,15 @@ impl<I> Parser<I>
     }
 
     fn parse_parameter_list(&mut self) -> Result<Vec<ir::Parameter>> {
+        try!(self.eat_whitespace());
         try!(self.expect(Token::left_parenthesis()));
+        try!(self.eat_whitespace());
 
         let mut params = Vec::new();
 
         while try!(self.peek_something()) != Token::right_parenthesis() {
+            try!(self.eat_whitespace());
+
             let name = try!(self.expect_word());
             try!(self.expect(Token::colon()));
             let ty = try!(self.parse_type());
@@ -121,6 +127,7 @@ impl<I> Parser<I>
             params.push(ir::Parameter::new(name, ty));
 
             self.maybe_eat(Token::comma());
+            try!(self.eat_whitespace());
         }
 
         self.assert(Token::right_parenthesis());
@@ -129,12 +136,14 @@ impl<I> Parser<I>
     }
 
     fn parse_return_list(&mut self) -> Result<Vec<Type>> {
+        try!(self.eat_whitespace());
         let first_token = try!(self.peek_something());
 
         let mut returns = Vec::new();
 
         if first_token == Token::function_arrow() {
             self.assert(Token::function_arrow());
+            try!(self.eat_whitespace());
 
             unimplemented!();
         } else if first_token != Token::left_curly_brace() {
@@ -270,6 +279,10 @@ impl<I> Parser<I>
             },
             Err(e) => Err(e),
         }
+    }
+
+    fn eat_whitespace(&mut self) -> Result<()> {
+        self.tokenizer.eat_while(|t| t.is_new_line())
     }
 }
 
