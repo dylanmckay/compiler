@@ -5,8 +5,14 @@ use std::error::Error;
 pub type Result<T> = std::result::Result<T,String>;
 
 /// A list of symbols to be tokenized.
-pub const SYMBOL_LIST: &'static [char] = &[
-    ',', ':', '(', ')', '@', '%', '{', '}', '=',
+///
+/// They are sorted from most specific to least.
+/// This means that `+=` will precede `+` etc.
+pub const SYMBOL_LIST: &'static [&'static str] = &[
+    // Symbols with two characters
+    "->",
+    // Symbols with a single character
+    ",", ":", "(", ")", "@", "%", "{", "}", "=",
 ];
 
 /// A token.
@@ -51,6 +57,7 @@ impl Token
     pub fn left_curly_brace() -> Self { Token::symbol("{") }
     pub fn right_curly_brace() -> Self { Token::symbol("}") }
     pub fn equal_sign() -> Self { Token::symbol("=") }
+    pub fn function_arrow() -> Self { Token::symbol("->") }
 
     pub fn word<S>(word: S) -> Self
         where S: Into<String> {
@@ -314,12 +321,37 @@ impl<I> Tokenizer<I>
     }
 
     fn next_symbol(&mut self) -> Option<Result<Token>> {
-        match self.expect_one_of(SYMBOL_LIST) {
-            Ok(sym) => Some(Ok(Token::symbol(format!("{}", sym)))),
-            // TODO: this will give a shitty error message
-            // if the end of stream is reached.
-            Err(..) => Some(Err("unknown token".into())),
+        use std::borrow::Borrow;
+
+        let first_char = match self.expect_something() {
+            Ok(c) => c,
+            Err(e) => return Some(Err(e)),
+        };
+
+        let second_char = self.chars.peek();
+
+        let mut sym_str = format!("{}", first_char);
+
+        if let Some(c) = second_char {
+            sym_str.push(c)
         }
+
+        while !sym_str.is_empty() {
+            if SYMBOL_LIST.contains(&sym_str.borrow()) {
+
+                // We only peek the second character, not consume it
+                // if we matched with two characters, then consume it.
+                if sym_str.len() == 2 {
+                    self.chars.eat();
+                }
+
+                return Some(Ok(Token::symbol(sym_str)));
+            } else {
+                sym_str.pop();
+            }
+        }
+
+        Some(Err(format!("unknown token: {}", first_char)))
     }
 
     fn next_comment(&mut self) -> Option<Result<Token>> {
@@ -340,6 +372,13 @@ impl<I> Tokenizer<I>
     fn expect(&mut self, expected: char) -> Result<char> {
         // TODO: more specific error message
         self.expect_one_of(&[expected])
+    }
+
+    fn expect_something(&mut self) -> Result<char> {
+        match self.chars.next() {
+            Some(c) => Ok(c),
+            None => Err(format!("expected a token but found nothing")),
+        }
     }
 
     fn expect_one_of(&mut self, expected: &[char]) -> Result<char> {
@@ -537,6 +576,9 @@ mod test
         expect_mapping!("," => Token::symbol(","));
         expect_mapping!("@%" => Token::symbol("@"), Token::symbol("%"));
         expect_mapping!(":=" => Token::symbol(":"), Token::symbol("="));
+        expect_mapping!("->" => Token::symbol("->"));
+        expect_mapping!("(->)" => Token::symbol("("), Token::symbol("->"),
+                                  Token::symbol(")"));
     }
 
     #[test]
