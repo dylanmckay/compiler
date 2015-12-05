@@ -232,8 +232,8 @@ impl<I> Parser<I>
 
     fn maybe_eat(&mut self, token: Token) -> Result<()> {
         match self.tokenizer.peek() {
-            Some(Ok(token)) => {
-                if token == token {
+            Some(Ok(peeked)) => {
+                if peeked == token {
                     self.tokenizer.eat();
                 }
 
