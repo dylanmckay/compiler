@@ -1,7 +1,7 @@
 
 extern crate compiler;
 
-use compiler::{ir,lang};
+use compiler::{ir,lang,pass};
 
 fn main() {
     let mut module = self::create_module();

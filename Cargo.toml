@@ -16,3 +16,7 @@ path = "src/lib.rs"
 [[bin]]
 name = "asm"
 path = "tools/asm.rs"
+
+[[bin]]
+name = "basic-example"
+path = "tools/basic-example.rs"
