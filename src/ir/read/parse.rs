@@ -129,9 +129,19 @@ impl<I> Parser<I>
     }
 
     fn parse_return_list(&mut self) -> Result<Vec<Type>> {
-        // let first_token = try!(self.expect_something());
-        // FIXME: implement
-        Ok(Vec::new())
+        let first_token = try!(self.peek_something());
+
+        let mut returns = Vec::new();
+
+        if first_token == Token::function_arrow() {
+            self.assert(Token::function_arrow());
+
+            unimplemented!();
+        } else if first_token != Token::left_curly_brace() {
+            return Err(format!("expected -> or {{ but got {}", first_token))
+        }
+
+        Ok(returns)
     }
 
     fn parse_value(&mut self) -> Result<Value> {
