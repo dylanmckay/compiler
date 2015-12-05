@@ -148,7 +148,7 @@ impl<I> Parser<I>
 
     fn parse_word_expression(&mut self, first_word: String)
         -> Result<Expression> {
-        if first_word.starts_with('i') || first_word.starts_with('u') {
+        if util::is_integer_type(&first_word) {
             self.parse_integer_expression(first_word)
         } else {
             Err("unknown token for expression".into())
@@ -252,6 +252,20 @@ pub mod util
             Some(result) => result,
             None => Err("expected a token".into()),
         }
+    }
+
+    pub fn is_integer_type(word: &str) -> bool {
+        if word.starts_with('i') || word.starts_with('u') {
+            let next_part: String = word.chars().skip(1).collect();
+
+            is_integer(&next_part, 10)
+        } else {
+            false
+        }
+    }
+
+    pub fn is_integer(string: &str, radix: u32) -> bool {
+        parse_integer(string, radix).is_ok()
     }
 
     pub fn parse_integer(string: &str, radix: u32) -> Result<i64,String> {
