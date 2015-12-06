@@ -6,6 +6,9 @@ rust:
 # - beta
   - nightly
 
+script:
+  - cargo run --bin test test
+
 matrix:
   allow_failures:
     - rust: nightly
