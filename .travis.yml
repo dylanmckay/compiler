@@ -7,6 +7,7 @@ rust:
   - nightly
 
 script:
+  - cargo build
   - cargo run --bin test test
 
 matrix:
