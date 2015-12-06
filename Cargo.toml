@@ -8,6 +8,8 @@ authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 num = "*"
 bit-vec = "*"
 clippy = "*"
+argparse = "*"
+walkdir = "0.1"
 
 [lib]
 name = "compiler"
@@ -16,6 +18,10 @@ path = "src/lib.rs"
 [[bin]]
 name = "asm"
 path = "tools/asm.rs"
+
+[[bin]]
+name = "test"
+path = "tools/test.rs"
 
 [[bin]]
 name = "basic-example"
