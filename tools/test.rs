@@ -281,6 +281,12 @@ fn find_tests_in_path(path: &str) -> Vec<String> {
 }
 
 fn find_tests_in_dir(path: &str) -> Vec<String> {
+    find_files_in_dir(path).into_iter()
+                           .filter(|f| f.ends_with(".ir"))
+                           .collect()
+}
+
+fn find_files_in_dir(path: &str) -> Vec<String> {
     let mut dir_tests = Vec::new();
 
     for entry in WalkDir::new(path) {
