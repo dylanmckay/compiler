@@ -181,6 +181,7 @@ impl<I> Parser<I>
 
         match first_token {
             Token::Word(word) => self.parse_word_expression(word),
+            Token::String(string) => self.parse_string_expression(string),
             _ => Err("unknown token for expression".into()),
         }
     }
@@ -202,6 +203,11 @@ impl<I> Parser<I>
         let value = try!(self.expect_integer());
 
         Ok(Expression::integer(ty, value).unwrap())
+    }
+
+    fn parse_string_expression(&mut self, string: String)
+        -> Result<Expression> {
+        unimplemented!();
     }
 
     fn parse_integer_type(&mut self, type_str: &str)
