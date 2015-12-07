@@ -1,23 +1,60 @@
 #![feature(io)]
 
 extern crate compiler;
+extern crate argparse;
 
 use compiler::ir;
 use std::error::Error;
 use std::io::Read;
 
+use argparse::ArgumentParser;
+
 fn main() {
-    let mut args = std::env::args().skip(1);
+    let mut files: Vec<String> = Vec::new();
+    let mut tokenize = false;
 
-    let filename = match args.next() {
-        Some(f) => f,
-        None => abort("expected a filename to assemble"),
-    };
+    {
+        let mut ap = ArgumentParser::new();
+        ap.set_description("Assembles files");
 
-    let module = parse_module(&filename);
+        ap.refer(&mut files)
+            .add_argument("files", argparse::List,
+                          r#"Files to process"#);
+        ap.refer(&mut tokenize)
+            .add_option(&["--tokenize"], argparse::StoreTrue,
+                        "Only tokenize the input");
+        ap.parse_args_or_exit();
+    }
+
+    if files.is_empty() {
+        abort("expected a filename to assemble");
+    }
+
+    for filename in files.iter() {
+        if tokenize {
+            tokenize_module(&filename)
+        } else {
+            assemble_module(&filename)
+        }
+    }
+}
+
+fn tokenize_module(file_name: &str) {
+    let chars = open_file(file_name).chars().map(|c| c.unwrap());
+
+    let tokenizer = ir::read::Tokenizer::new(chars).preserve_comments();
+
+    for token in tokenizer {
+        println!("{:?}", token);
+    }
+}
+
+fn assemble_module(file_name: &str) {
+    let module = parse_module(&file_name);
 
     print_module(&module);
 }
+
 
 fn open_file(path: &str) -> std::fs::File {
     match std::fs::File::open(path) {
