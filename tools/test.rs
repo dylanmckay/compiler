@@ -1,5 +1,6 @@
 #![feature(io)]
 
+
 extern crate compiler;
 extern crate argparse;
 extern crate walkdir;
@@ -152,7 +153,7 @@ pub struct Test
 pub enum TestResultKind
 {
     Pass,
-    Fail(String),
+    Fail(String, String),
 }
 
 pub struct TestResult
@@ -252,11 +253,15 @@ fn main() {
             TestResultKind::Pass => {
                 println!("PASS :: {}", result.path);
             },
-            TestResultKind::Fail(ref msg) => {
+            TestResultKind::Fail(ref msg, ref desc) => {
                 println!("");
 
                 println!("FAIL :: {}", result.path);
                 println!("\t{}", msg);
+                println!("");
+                println!("Program stderr:");
+                println!("");
+                println!("{}", desc);
 
                 println!("");
             },
@@ -320,10 +325,10 @@ fn run_test(test: &Test, context: &Context) -> TestResult {
 
         match kind {
             TestResultKind::Pass => continue,
-            TestResultKind::Fail(msg) => {
+            TestResultKind::Fail(msg, desc) => {
                 return TestResult {
                     path: test.path.clone(),
-                    kind: TestResultKind::Fail(msg),
+                    kind: TestResultKind::Fail(msg, desc),
                 }
             },
         }
@@ -353,12 +358,12 @@ fn run_directive(directive: &Directive, test: &Test, context: &Context)
                     std::io::ErrorKind::NotFound => {
                         return TestResultKind::Fail(
                             format!("executable not found: {}",
-                                    exe_path));
+                                    exe_path), "".to_owned());
                     },
                     _ => {
                         return TestResultKind::Fail(
                             format!("could not execute: '{}', {}",
-                                    exe_path, e));
+                                    exe_path, e), "".to_owned());
                     },
                 },
             };
@@ -366,9 +371,12 @@ fn run_directive(directive: &Directive, test: &Test, context: &Context)
             if output.status.success() {
                 TestResultKind::Pass
             } else {
+                let stderr = String::from_utf8(output.stderr).unwrap();
+
                 TestResultKind::Fail(format!(
                     "{} exited with code {}", exe_path,
-                    output.status.code().unwrap())
+                    output.status.code().unwrap()),
+                    stderr
                     )
             }
         },

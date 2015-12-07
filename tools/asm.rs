@@ -5,7 +5,7 @@ extern crate argparse;
 
 use compiler::ir;
 use std::error::Error;
-use std::io::Read;
+use std::io::{Read,Write};
 
 use argparse::ArgumentParser;
 
@@ -79,6 +79,6 @@ fn print_module(module: &ir::Module) {
 
 fn abort<S>(msg: S) -> !
     where S: Into<String> {
-    println!("failed: {}", msg.into());
+    std::io::stderr().write(msg.into().as_bytes()).unwrap();
     std::process::exit(1);
 }
