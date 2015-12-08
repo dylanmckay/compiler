@@ -4,6 +4,7 @@
 extern crate compiler;
 extern crate argparse;
 extern crate walkdir;
+extern crate term;
 
 use argparse::ArgumentParser;
 use walkdir::WalkDir;
@@ -251,39 +252,44 @@ fn main() {
 
     match util::tool_dir() {
         Some(dir) => context.add_search_dir(dir),
-        None => println!("could not find tool directory"),
+        None => print::warning("could not find tool directory"),
     }
 
     let results = run_tests(&context);
 
-    for result in results {
-        match result.kind {
-            TestResultKind::Pass => {
-                println!("PASS :: {}", result.path);
-            },
-            TestResultKind::Skip => {
-                println!("");
-                println!("SKIP :: {} (test does not contain any directives)",
-                         result.path);
-                println!("");
-            },
-            TestResultKind::Fail(ref msg, ref desc) => {
-                println!("");
+    for result in results.iter() {
+        print_result(result)
+    }
+}
 
-                println!("FAIL :: {}", result.path);
-                println!("\t{}", msg);
+fn print_result(result: &TestResult) {
+    match result.kind {
+        TestResultKind::Pass => {
+            print::success(format!("PASS :: {}", result.path));
+        },
+        TestResultKind::Skip => {
+            print::line();
+            print::warning(format!(
+                "SKIP :: {} (test does not contain any directives)",
+                     result.path));
+            print::line();
+        },
+        TestResultKind::Fail(ref msg, ref desc) => {
+            print::line();
 
-                // Only print stderr if there was output
-                if !desc.is_empty() {
-                    println!("");
-                    println!("Program stderr:");
-                    println!("");
-                    println!("{}", desc);
-                }
+            print::failure(format!("FAIL :: {}", result.path));
+            print::text(msg.clone());
 
-                println!("");
-            },
-        }
+            // Only print stderr if there was output
+            if !desc.is_empty() {
+                print::line();
+                print::text("stderr:");
+                print::line();
+                print::text(desc.clone());
+            }
+
+            print::line();
+        },
     }
 }
 
@@ -480,10 +486,59 @@ mod util
                                     path, e.description())),
         }
     }
-
     pub fn abort<S>(msg: S) -> !
         where S: Into<String> {
-        println!("failed: {}", msg.into());
+        super::print::failure(format!("error: {}", msg.into()));
+
         std::process::exit(1);
+    }
+}
+
+pub mod print
+{
+    use std;
+    use term;
+
+    pub fn line() {
+        with("\n",
+             term::stdout().unwrap(),
+             term::color::WHITE);
+    }
+
+    pub fn text<S>(msg: S)
+        where S: Into<String> {
+        with(format!("{}\n", msg.into()),
+             term::stdout().unwrap(),
+             term::color::WHITE);
+    }
+
+    pub fn success<S>(msg: S)
+        where S: Into<String> {
+        with(format!("{}\n", msg.into()),
+             term::stdout().unwrap(),
+             term::color::GREEN);
+    }
+
+    pub fn warning<S>(msg: S)
+        where S: Into<String> {
+        with(format!("{}\n", msg.into()),
+             term::stdout().unwrap(),
+             term::color::YELLOW);
+    }
+
+    pub fn failure<S>(msg: S)
+        where S: Into<String> {
+        with(format!("{}\n", msg.into()),
+             term::stderr().unwrap(),
+             term::color::RED);
+    }
+
+    pub fn with<S,W>(msg: S,
+                           mut term: Box<term::Terminal<Output=W>>,
+                           color: term::color::Color)
+        where S: Into<String>, W: std::io::Write {
+
+        term.fg(color).unwrap();
+        write!(term, "{}", msg.into()).unwrap();
     }
 }

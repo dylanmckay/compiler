@@ -10,6 +10,7 @@ bit-vec = "*"
 clippy = "*"
 argparse = "*"
 walkdir = "0.1"
+term = "*"
 
 [lib]
 name = "compiler"
