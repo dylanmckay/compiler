@@ -7,7 +7,7 @@ authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 [dependencies]
 num = "*"
 bit-vec = "*"
-clippy = "*"
+# clippy = "*"
 argparse = "*"
 walkdir = "0.1"
 term = "*"
