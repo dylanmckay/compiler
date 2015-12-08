@@ -74,7 +74,7 @@ fn parse_module(file_name: &str) -> ir::Module {
 }
 
 fn print_module(module: &ir::Module) {
-    println!("{}", module);
+    println!("{}", ir::printable(module));
 }
 
 fn abort<S>(msg: S) -> !

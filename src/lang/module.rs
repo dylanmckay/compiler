@@ -1,8 +1,5 @@
-
-use lang;
+use {Value,Function,Global,Block};
 use util;
-
-use lang::{Value,Function,Global};
 
 use std;
 
@@ -15,7 +12,7 @@ pub struct Module<V: Value>
 }
 
 impl<V> Module<V>
-    where V: lang::Value
+    where V: Value
 {
     /// Creates an empty module.
     pub fn empty() -> Self {
@@ -76,13 +73,13 @@ impl<V> Module<V>
     }
 
     /// Finds a block by its ID.
-    pub fn find_block(&self, id: util::Id) -> Option<&lang::Block<V>> {
+    pub fn find_block(&self, id: util::Id) -> Option<&Block<V>> {
         self.functions().flat_map(|f| f.blocks())
                         .find(|b| b.id() == id)
     }
 
     /// Gets a block from its ID, `panic`ing if it does not exist.
-    pub fn get_block(&self, id: util::Id) -> &lang::Block<V> {
+    pub fn get_block(&self, id: util::Id) -> &Block<V> {
         self.find_block(id).expect("no block with that ID exists")
     }
 

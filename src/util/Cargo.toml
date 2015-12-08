@@ -1,0 +1,9 @@
+[package]
+
+name = "compiler_util"
+version = "0.0.1"
+authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+
+[lib]
+name = "compiler_util"
+path = "lib.rs"

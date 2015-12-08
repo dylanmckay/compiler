@@ -1,12 +1,11 @@
-
-use lang;
+use {Type,Block};
 use std::fmt;
 
 /// A value.
 pub trait Value : Clone + Sized + fmt::Debug
 {
     /// The type that values can have.
-    type Type: lang::Type;
+    type Type: Type;
 
     /// Gets the set of values.
     /// TODO: make this an iterator once supported.
@@ -32,7 +31,7 @@ pub trait Value : Clone + Sized + fmt::Debug
     /// is then used.
     /// 
     /// This will convert an SSA value into a non-SSA value.
-    fn flatten(self, block: &mut lang::Block<Self>) -> Self;
+    fn flatten(self, block: &mut Block<Self>) -> Self;
 
     /// Checks if a single value is critical.
     ///

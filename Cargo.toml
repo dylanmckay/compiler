@@ -12,6 +12,12 @@ argparse = "*"
 walkdir = "0.1"
 term = "*"
 
+[dependencies.compiler_util]
+path = "src/util"
+
+[dependencies.compiler_lang]
+path = "src/lang"
+
 [lib]
 name = "compiler"
 path = "src/lib.rs"

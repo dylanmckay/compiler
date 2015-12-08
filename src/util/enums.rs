@@ -1,6 +1,3 @@
-
-use num;
-
 #[derive(Copy,Clone,Debug,Eq,PartialEq)]
 pub enum ByteOrder
 {
@@ -48,13 +45,6 @@ impl Sign
             Some('-')
         } else {
             None
-        }
-    }
-
-    pub fn to_bigint_sign(self) -> num::bigint::Sign {
-        match self {
-            Sign::Plus => num::bigint::Sign::Plus,
-            Sign::Minus => num::bigint::Sign::Minus,
         }
     }
 }

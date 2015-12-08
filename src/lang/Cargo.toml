@@ -1,0 +1,12 @@
+[package]
+
+name = "compiler_lang"
+version = "0.0.1"
+authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+
+[dependencies.compiler_util]
+path = "../util"
+
+[lib]
+name = "compiler_lang"
+path = "lib.rs"

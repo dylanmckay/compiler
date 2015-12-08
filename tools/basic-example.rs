@@ -7,12 +7,12 @@ fn main() {
     let mut module = self::create_module();
     let mut pm = self::create_ir_pass_manager();
 
-    println!("Previously:\n\n{}", module);
+    println!("Previously:\n\n{}", ir::printable(&module));
 
     module = pm.run(module);
 
     module = module.flatten();
-    println!("\n\nAfterwards:\n\n{}", module);
+    println!("\n\nAfterwards:\n\n{}", ir::printable(&module));
 
     print!("\nVerifying...");
     let result = ir::verifier::verify(&module);

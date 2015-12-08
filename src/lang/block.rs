@@ -1,5 +1,4 @@
-
-use lang;
+use Value;
 use util;
 
 /// A basic block is a list of instructions which
@@ -14,7 +13,7 @@ pub struct Block<V>
 }
 
 impl<V> Block<V>
-    where V: lang::Value
+    where V: Value
 {
     /// Creates a new basic block.
     pub fn new<N>(name: N,
@@ -108,16 +107,16 @@ impl<V> Block<V>
 pub mod values
 {
     use super::Block;
-    use lang;
+    use Value;
 
-    pub struct ValuesMut<'a, V: lang::Value+'a>
+    pub struct ValuesMut<'a, V: Value+'a>
     {
         block: &'a mut Block<V>,
         cur_idx: usize,
     }
 
     impl<'a,V> ValuesMut<'a,V>
-        where V: lang::Value
+        where V: Value
     {
         pub fn new(block: &'a mut Block<V>) -> Self {
             ValuesMut {
@@ -137,7 +136,7 @@ pub mod values
     }
 
     impl<'a,V> Iterator for ValuesMut<'a,V>
-        where V: lang::Value
+        where V: Value
     {
         type Item = &'a mut V;
 

@@ -1,5 +1,5 @@
 
-use util;
+use {Id,Identifiable};
 use std;
 
 /// When mapping over a set.
@@ -43,13 +43,13 @@ impl<T> Into<Option<T>> for Slot<T>
 /// A set.
 // TODO: find a better name.
 #[derive(Clone)]
-pub struct List<T: util::Identifiable>
+pub struct List<T: Identifiable>
 {
     elements: Vec<T>,
     locked_indices: Vec<usize>,
 }
 
-impl<T: util::Identifiable> List<T>
+impl<T: Identifiable> List<T>
 {
     /// Creates an empty set.
     pub fn empty() -> Self {
@@ -59,7 +59,7 @@ impl<T: util::Identifiable> List<T>
         }
     }
 
-    pub fn lookup(&self, id: util::Id) -> Slot<&T> {
+    pub fn lookup(&self, id: Id) -> Slot<&T> {
         self.elements.iter()
                      .enumerate()
                      .filter(|&(index, _)| !self.is_index_locked(index))
@@ -69,7 +69,7 @@ impl<T: util::Identifiable> List<T>
     }
 
     /// Gets an element from the set.
-    pub fn get(&self, id: util::Id) -> &T {
+    pub fn get(&self, id: Id) -> &T {
         self.lookup(id).expect("no element with that ID was found")
     }
 
@@ -122,7 +122,7 @@ impl<T: util::Identifiable> List<T>
     }
 }
 
-impl<T: util::Identifiable> IntoIterator for List<T>
+impl<T: Identifiable> IntoIterator for List<T>
 {
     type Item = T;
     type IntoIter = std::vec::IntoIter<T>;
@@ -132,7 +132,7 @@ impl<T: util::Identifiable> IntoIterator for List<T>
     }
 }
 
-impl<T: util::Identifiable> std::iter::FromIterator<T> for List<T>
+impl<T: Identifiable> std::iter::FromIterator<T> for List<T>
 {
     fn from_iter<I>(it: I) -> Self
         where I: IntoIterator<Item=T> {
@@ -143,7 +143,7 @@ impl<T: util::Identifiable> std::iter::FromIterator<T> for List<T>
     }
 }
 
-impl<T: util::Identifiable + std::fmt::Debug> std::fmt::Debug for List<T>
+impl<T: Identifiable + std::fmt::Debug> std::fmt::Debug for List<T>
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         let elements: Vec<_> = self.iter().collect();

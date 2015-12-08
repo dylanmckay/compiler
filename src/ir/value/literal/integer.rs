@@ -43,14 +43,15 @@ impl Integer
     /// Creates a constant integer from an array of bytes representing an integer.
     /// Returns `None` if the integer cannot fit into `ty`.
     pub fn from_bytes_le(ty: types::Integer, sign: util::Sign, bytes: &[u8]) -> Option<Self> {
-        Integer::from_bigint(ty, BigInt::from_bytes_le(sign.to_bigint_sign(), bytes))
+        let sign = helpers::bigint_sign(sign);
+        Integer::from_bigint(ty, BigInt::from_bytes_le(sign, bytes))
     }
 
     /// Counts the number of bits that the magnitude takes up.
     pub fn count_magnitude_bits(&self) -> u64 {
 
         let (_,bytes) = self.value.to_bytes_le();
-        
+
         // count all the bits in all but the most significant byte.
         let mut magnitude_size: u64 = (bytes.len() as u64 - 1)*8;
         magnitude_size += 8 - bytes.last().unwrap().leading_zeros() as u64;
@@ -164,3 +165,15 @@ impl Into<ir::value::Literal> for Integer {
     }
 }
 
+mod helpers
+{
+    use util;
+    use num;
+
+    pub fn bigint_sign(sign: util::Sign) -> num::bigint::Sign {
+        match sign {
+            util::Sign::Plus => num::bigint::Sign::Plus,
+            util::Sign::Minus => num::bigint::Sign::Minus,
+        }
+    }
+}

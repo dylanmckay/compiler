@@ -1,13 +1,13 @@
+use {Value,Block};
+use {InlineHint,ComplexityHint,CallingConvention};
 
-use lang;
 use util;
 use std;
 
-use lang::Block;
 
 /// A parameter.
 #[derive(Clone,Debug)]
-pub struct Parameter<V: lang::Value>
+pub struct Parameter<V: Value>
 {
     id: util::Id,
 
@@ -16,7 +16,7 @@ pub struct Parameter<V: lang::Value>
 }
 
 impl<V> Parameter<V>
-    where V: lang::Value
+    where V: Value
 {
     pub fn new(name: String, ty: V::Type) -> Self {
         Parameter {
@@ -36,20 +36,20 @@ impl<V> Parameter<V>
     }
 }
 
-impl<V: lang::Value> util::Identifiable for Parameter<V>
+impl<V: Value> util::Identifiable for Parameter<V>
 {
     fn get_id(&self) -> util::Id { self.id }
 }
 
 impl<V> std::fmt::Display for Parameter<V>
-    where V: lang::Value
+    where V: Value
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(fmt, "{}: {}", self.name, self.ty)
     }
 }
 
-impl<V: lang::Value> std::cmp::PartialEq for Parameter<V>
+impl<V: Value> std::cmp::PartialEq for Parameter<V>
     where V::Type: std::cmp::PartialEq
 {
     fn eq(&self, other: &Self) -> bool {
@@ -58,7 +58,7 @@ impl<V: lang::Value> std::cmp::PartialEq for Parameter<V>
     }
 }
 
-impl<V: lang::Value> std::cmp::Eq for Parameter<V>
+impl<V: Value> std::cmp::Eq for Parameter<V>
     where V::Type: std::cmp::Eq {
 }
 
@@ -66,14 +66,14 @@ impl<V: lang::Value> std::cmp::Eq for Parameter<V>
 /// 
 /// Holds the return and parameter types.
 #[derive(Clone,Debug)]
-pub struct Signature<V: lang::Value>
+pub struct Signature<V: Value>
 {
     params: util::List<Parameter<V>>,
     return_types: Vec<V::Type>,
 }
 
 impl<V> Signature<V>
-    where V: lang::Value
+    where V: Value
 {
     pub fn new<P,R>(params: P, returns: R) -> Self
         where P: IntoIterator<Item=Parameter<V>>,
@@ -122,7 +122,7 @@ impl<V> Signature<V>
     }
 }
 
-impl<V: lang::Value> std::cmp::PartialEq for Signature<V>
+impl<V: Value> std::cmp::PartialEq for Signature<V>
     where V::Type: std::cmp::PartialEq
 {
     fn eq(&self, other: &Self) -> bool {
@@ -131,14 +131,14 @@ impl<V: lang::Value> std::cmp::PartialEq for Signature<V>
     }
 }
 
-impl<V: lang::Value> std::cmp::Eq for Signature<V>
+impl<V: Value> std::cmp::Eq for Signature<V>
     where V::Type: std::cmp::Eq
 {
 }
 
 /// A function.
 #[derive(Clone,Debug)]
-pub struct Function<V: lang::Value>
+pub struct Function<V: Value>
 {
     id: util::Id,
 
@@ -146,14 +146,14 @@ pub struct Function<V: lang::Value>
     signature: Signature<V>,
     blocks: Vec<Block<V>>,
 
-    cc: lang::CallingConvention,
+    cc: CallingConvention,
 
-    inline_hint: lang::InlineHint,
-    complexity_hint: lang::ComplexityHint,
+    inline_hint: InlineHint,
+    complexity_hint: ComplexityHint,
 }
 
 impl<V> Function<V>
-    where V: lang::Value
+    where V: Value
 {
     /// Creates a new function.
     pub fn new<N>(name: N,
@@ -168,9 +168,9 @@ impl<V> Function<V>
             signature: signature,
             blocks: blocks,
 
-            cc: lang::CallingConvention::default(),
-            inline_hint: lang::InlineHint::default(),
-            complexity_hint: lang::ComplexityHint::default(),
+            cc: CallingConvention::default(),
+            inline_hint: InlineHint::default(),
+            complexity_hint: ComplexityHint::default(),
         }
     }
 
@@ -237,27 +237,27 @@ impl<V> Function<V>
     }
 
     /// Gets the calling convention.
-    pub fn calling_convention(&self) -> lang::CallingConvention {
+    pub fn calling_convention(&self) -> CallingConvention {
         self.cc
     }
 
     /// Gets the inline hint.
-    pub fn inline_hint(&self) -> lang::InlineHint {
+    pub fn inline_hint(&self) -> InlineHint {
         self.inline_hint
     }
 
     /// Gets the complexity hint.
-    pub fn complexity_hint(&self) -> lang::ComplexityHint {
+    pub fn complexity_hint(&self) -> ComplexityHint {
         self.complexity_hint
     }
 }
 
-impl<V: lang::Value> util::Identifiable for Function<V>
+impl<V: Value> util::Identifiable for Function<V>
 {
     fn get_id(&self) -> util::Id { self.id }
 }
 
-impl<V: PartialEq + lang::Value> std::cmp::PartialEq for Function<V>
+impl<V: PartialEq + Value> std::cmp::PartialEq for Function<V>
 {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name &&
@@ -265,4 +265,4 @@ impl<V: PartialEq + lang::Value> std::cmp::PartialEq for Function<V>
     }
 }
 
-impl<V: Eq + lang::Value> std::cmp::Eq for Function<V> { }
+impl<V: Eq + Value> std::cmp::Eq for Function<V> { }

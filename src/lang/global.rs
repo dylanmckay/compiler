@@ -1,12 +1,11 @@
-
-use lang;
+use Value;
 use util;
 
 use std;
 
 /// A global variable.
 #[derive(Clone,Debug)]
-pub struct Global<V: lang::Value>
+pub struct Global<V: Value>
 {
     id: util::Id,
     /// The name of the global.
@@ -16,7 +15,7 @@ pub struct Global<V: lang::Value>
 }
 
 impl<V> Global<V>
-    where V: lang::Value
+    where V: Value
 {
     /// Creates a new global variable.
     pub fn new(name: String, value: V) -> Self {
@@ -38,12 +37,12 @@ impl<V> Global<V>
     pub fn id(&self) -> util::Id { self.id }
 }
 
-impl<V: lang::Value> util::Identifiable for Global<V>
+impl<V: Value> util::Identifiable for Global<V>
 {
     fn get_id(&self) -> util::Id { self.id }
 }
 
-impl<V: lang::Value> std::fmt::Display for Global<V>
+impl<V: Value> std::fmt::Display for Global<V>
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.name.fmt(fmt)

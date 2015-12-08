@@ -6,12 +6,21 @@ use util::Identifiable;
 use std::fmt;
 use std::collections::HashMap;
 
+/// A hack to be able to implement `Display` on a module.
+///
+/// This is to work around Rust's orphan rules.
+pub struct Printable<'a>(&'a ir::Module);
 
-impl fmt::Display for ir::Module
+impl<'a> fmt::Display for Printable<'a>
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
-        self::module(self, fmt)
+        self::module(self.0, fmt)
     }
+}
+
+/// Creates a printable module.
+pub fn printable(module: &ir::Module) -> Printable {
+    Printable(module)
 }
 
 /// Holds IR printing state.

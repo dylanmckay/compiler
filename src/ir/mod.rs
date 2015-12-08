@@ -3,6 +3,7 @@ pub use self::types::{Type,TypeTrait};
 pub use self::value::{Value,Expression,ExpressionTrait};
 pub use lang::Name;
 pub use ir::instruction::{Instruction,InstructionTrait};
+pub use self::print::printable;
 pub use self::users::Users;
 pub use self::cond::Condition;
 

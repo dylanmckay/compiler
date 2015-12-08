@@ -1,4 +1,3 @@
-
 use std;
 
 /// Represents a name.

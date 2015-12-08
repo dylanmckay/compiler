@@ -1,4 +1,4 @@
-use util;
+use List;
 
-pub type Set<T> = util::List<T>;
+pub type Set<T> = List<T>;
 
