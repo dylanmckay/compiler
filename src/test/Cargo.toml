@@ -1,0 +1,18 @@
+[package]
+
+name = "compiler_test"
+version = "0.0.1"
+authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+
+[dependencies]
+argparse = "*"
+walkdir = "0.1"
+term = "*"
+
+[dependencies.compiler]
+path = "../../"
+
+[lib]
+name = "compiler_test"
+path = "lib.rs"
+
