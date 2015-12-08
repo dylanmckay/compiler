@@ -150,10 +150,18 @@ pub struct Test
     pub directives: Vec<Directive>,
 }
 
+impl Test
+{
+    pub fn is_empty(&self) -> bool {
+        self.directives.is_empty()
+    }
+}
+
 pub enum TestResultKind
 {
     Pass,
     Fail(String, String),
+    Skip,
 }
 
 pub struct TestResult
@@ -253,6 +261,12 @@ fn main() {
             TestResultKind::Pass => {
                 println!("PASS :: {}", result.path);
             },
+            TestResultKind::Skip => {
+                println!("");
+                println!("SKIP :: {} (test does not contain any directives)",
+                         result.path);
+                println!("");
+            },
             TestResultKind::Fail(ref msg, ref desc) => {
                 println!("");
 
@@ -330,11 +344,20 @@ fn run_tests(context: &Context) -> Vec<TestResult> {
 }
 
 fn run_test(test: &Test, context: &Context) -> TestResult {
+    if test.is_empty() {
+        println!("SKIP :: {} (it includes no test directives", test.path);
+        return TestResult {
+            path: test.path.clone(),
+            kind: TestResultKind::Skip,
+        }
+    }
+
     for directive in test.directives.iter() {
         let kind = run_directive(directive, test, context);
 
         match kind {
             TestResultKind::Pass => continue,
+            TestResultKind::Skip => continue,
             TestResultKind::Fail(msg, desc) => {
                 return TestResult {
                     path: test.path.clone(),
