@@ -78,7 +78,7 @@ impl<I> Parser<I>
 
         let name = try!(self.expect_word());
         let params = try!(self.parse_parameter_list());
-        let returns = try!(self.parse_return_list());
+        let returns = try!(self.parse_function_returns());
         let body = try!(self.parse_body());
 
         let signature = Signature::new(params, returns);
@@ -107,6 +107,7 @@ impl<I> Parser<I>
     }
 
     fn parse_block(&mut self) -> Result<Block> {
+        self.expect(Token::right_curly_brace());
         unimplemented!();
     }
 
@@ -135,22 +136,38 @@ impl<I> Parser<I>
         Ok(params)
     }
 
-    fn parse_return_list(&mut self) -> Result<Vec<Type>> {
+    fn parse_type_list(&mut self) -> Result<Vec<Type>> {
+        try!(self.eat_whitespace());
+
+        let mut types = Vec::new();
+
+        while try!(self.peek_something()) != Token::left_curly_brace() {
+            try!(self.eat_whitespace());
+
+            let ty = try!(self.parse_type());
+            types.push(ty);
+
+            self.maybe_eat(Token::comma());
+            try!(self.eat_whitespace());
+        }
+
+        Ok(types)
+    }
+
+    fn parse_function_returns(&mut self) -> Result<Vec<Type>> {
         try!(self.eat_whitespace());
         let first_token = try!(self.peek_something());
-
-        let mut returns = Vec::new();
 
         if first_token == Token::function_arrow() {
             self.assert(Token::function_arrow());
             try!(self.eat_whitespace());
 
-            unimplemented!();
-        } else if first_token != Token::left_curly_brace() {
-            return Err(format!("expected -> or {{ but got {}", first_token))
+            self.parse_type_list()
+        } else if first_token == Token::left_curly_brace() {
+            Ok(Vec::new())
+        } else {
+            Err(format!("expected -> or {{ but got {}", first_token))
         }
-
-        Ok(returns)
     }
 
     fn parse_value(&mut self) -> Result<Value> {

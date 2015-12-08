@@ -1,0 +1,5 @@
+; RUN: asm @file
+
+fn foo(a: i32, b: u11) {
+
+}
