@@ -7,18 +7,17 @@
 extern crate num;
 extern crate bit_vec;
 
-pub use self::compiler_util as util;
-pub use self::compiler_lang as lang;
-
 /// Various utilities.
+pub use self::compiler_util as util;
+/// Language-agnostic types.
+pub use self::compiler_lang as lang;
+/// The target information module.
+pub use self::compiler_target as target;
+
+pub mod pass;
+pub mod ir;
+
 #[macro_use]
 extern crate compiler_util;
-/// The immediate representation (IR).
-pub mod ir;
-/// Language-agnostic traits.
 extern crate compiler_lang;
-/// The pass infrastructure.
-pub mod pass;
-/// The target information module.
-pub mod target;
-
+extern crate compiler_target;

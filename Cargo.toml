@@ -14,9 +14,10 @@ term = "*"
 
 [dependencies.compiler_util]
 path = "src/util"
-
 [dependencies.compiler_lang]
 path = "src/lang"
+[dependencies.compiler_target]
+path = "src/target"
 
 [lib]
 name = "compiler"
