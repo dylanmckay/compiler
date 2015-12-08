@@ -13,6 +13,8 @@ use std::borrow::Borrow;
 
 mod tool
 {
+    use super::test::Test;
+
     /// A constant.
     #[derive(Copy,Clone,Debug,PartialEq,Eq)]
     pub enum Constant
@@ -62,7 +64,7 @@ mod tool
             }
         }
 
-        pub fn resolve(&self, test: &super::Test) -> String {
+        pub fn resolve(&self, test: &Test) -> String {
             match *self {
                 Argument::Normal(ref s) => s.clone(),
                 Argument::Substitute(constant) => match constant {
@@ -111,116 +113,125 @@ mod tool
     }
 }
 
-#[derive(Clone,Debug,PartialEq,Eq)]
-pub enum Directive
+
+pub mod test
 {
-    Run(tool::Invocation),
-}
+    use super::tool;
+    use std;
 
-impl Directive
-{
-    pub fn maybe_parse(string: String) -> Option<Result<Self,String>> {
-        let directive_str = string.split_whitespace().next().unwrap();
-        let inner_words = string.split_whitespace().skip(1);
-
-        match directive_str {
-            // FIXME: better message if we have 'RUN :'
-            "RUN:" => {
-                let invocation = match tool::Invocation::parse(inner_words) {
-                    Ok(i) => i,
-                    Err(e) => return Some(Err(e)),
-                };
-
-                Some(Ok(Directive::Run(invocation)))
-            },
-            _ => {
-                if directive_str.ends_with(':') {
-                    Some(Err(format!("directive '{}' not known", directive_str)))
-                } else {
-                    None
-                }
-            },
-        }
-    }
-}
-
-#[derive(Clone,Debug,PartialEq,Eq)]
-pub struct Test
-{
-    pub path: String,
-    pub directives: Vec<Directive>,
-}
-
-impl Test
-{
-    pub fn is_empty(&self) -> bool {
-        self.directives.is_empty()
-    }
-}
-
-pub enum TestResultKind
-{
-    Pass,
-    Fail(String, String),
-    Skip,
-}
-
-pub struct TestResult
-{
-    pub path: String,
-    pub kind: TestResultKind,
-}
-
-#[derive(Clone,Debug,PartialEq,Eq)]
-pub struct Context
-{
-    pub exec_search_dirs: Vec<String>,
-    pub tests: Vec<Test>,
-}
-
-impl Context
-{
-    pub fn new() -> Self {
-        Context {
-            exec_search_dirs: Vec::new(),
-            tests: Vec::new(),
-        }
+    #[derive(Clone,Debug,PartialEq,Eq)]
+    pub enum Directive
+    {
+        Run(tool::Invocation),
     }
 
-    pub fn test(mut self, test: Test) -> Self {
-        self.tests.push(test);
-        self
-    }
+    impl Directive
+    {
+        pub fn maybe_parse(string: String) -> Option<Result<Self,String>> {
+            let directive_str = string.split_whitespace().next().unwrap();
+            let inner_words = string.split_whitespace().skip(1);
 
-    pub fn add_search_dir(&mut self, dir: String) {
-        self.exec_search_dirs.push(dir);
-    }
+            match directive_str {
+                // FIXME: better message if we have 'RUN :'
+                "RUN:" => {
+                    let invocation = match tool::Invocation::parse(inner_words) {
+                        Ok(i) => i,
+                        Err(e) => return Some(Err(e)),
+                    };
 
-    pub fn find_in_search_dir(&self, path: &str)
-        -> Option<String> {
-        for dir in self.exec_search_dirs.iter() {
-            for entry in std::fs::read_dir(dir).unwrap() {
-                let entry = entry.unwrap();
-                let cur_path = entry.path();
-
-                if std::fs::metadata(&cur_path).unwrap().is_file() {
-                    if cur_path.file_name().unwrap() == path {
-                        return Some(cur_path.to_str().unwrap().to_owned());
+                    Some(Ok(Directive::Run(invocation)))
+                },
+                _ => {
+                    if directive_str.ends_with(':') {
+                        Some(Err(format!("directive '{}' not known", directive_str)))
+                    } else {
+                        None
                     }
-                }
-
+                },
             }
         }
-        None
     }
 
-    pub fn executable_path(&self, path: &str) -> String {
-        match self.find_in_search_dir(path) {
-            Some(p) => p,
-            None => path.to_owned(),
+    #[derive(Clone,Debug,PartialEq,Eq)]
+    pub struct Test
+    {
+        pub path: String,
+        pub directives: Vec<Directive>,
+    }
+
+    impl Test
+    {
+        pub fn is_empty(&self) -> bool {
+            self.directives.is_empty()
+        }
+    }
+
+    pub enum TestResultKind
+    {
+        Pass,
+        Fail(String, String),
+        Skip,
+    }
+
+    pub struct TestResult
+    {
+        pub path: String,
+        pub kind: TestResultKind,
+    }
+
+    #[derive(Clone,Debug,PartialEq,Eq)]
+    pub struct Context
+    {
+        pub exec_search_dirs: Vec<String>,
+        pub tests: Vec<Test>,
+    }
+
+    impl Context
+    {
+        pub fn new() -> Self {
+            Context {
+                exec_search_dirs: Vec::new(),
+                tests: Vec::new(),
+            }
+        }
+
+        pub fn test(mut self, test: Test) -> Self {
+            self.tests.push(test);
+            self
+        }
+
+        pub fn add_search_dir(&mut self, dir: String) {
+            self.exec_search_dirs.push(dir);
+        }
+
+        pub fn find_in_search_dir(&self, path: &str)
+            -> Option<String> {
+            for dir in self.exec_search_dirs.iter() {
+                for entry in std::fs::read_dir(dir).unwrap() {
+                    let entry = entry.unwrap();
+                    let cur_path = entry.path();
+
+                    if std::fs::metadata(&cur_path).unwrap().is_file() {
+                        if cur_path.file_name().unwrap() == path {
+                            return Some(cur_path.to_str().unwrap().to_owned());
+                        }
+                    }
+
+                }
+            }
+            None
+        }
+
+        pub fn executable_path(&self, path: &str) -> String {
+            match self.find_in_search_dir(path) {
+                Some(p) => p,
+                None => path.to_owned(),
+            }
         }
     }
 }
+
+use test::{Test,Directive,TestResult,TestResultKind,Context};
 
 fn main() {
     let mut files: Vec<String> = Vec::new();
@@ -424,7 +435,7 @@ fn run_directive(directive: &Directive, test: &Test, context: &Context)
 
 mod util
 {
-    use super::{Test,Directive};
+    use super::test::{Test,Directive};
 
     use std::error::Error;
     use std::io::Read;
