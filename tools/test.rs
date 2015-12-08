@@ -258,10 +258,14 @@ fn main() {
 
                 println!("FAIL :: {}", result.path);
                 println!("\t{}", msg);
-                println!("");
-                println!("Program stderr:");
-                println!("");
-                println!("{}", desc);
+
+                // Only print stderr if there was output
+                if !desc.is_empty() {
+                    println!("");
+                    println!("Program stderr:");
+                    println!("");
+                    println!("{}", desc);
+                }
 
                 println!("");
             },
@@ -278,7 +282,13 @@ fn find_tests(paths: &[&str]) -> Vec<String> {
 }
 
 fn find_tests_in_path(path: &str) -> Vec<String> {
-    if std::fs::metadata(path).unwrap().is_dir() {
+    let metadata = match std::fs::metadata(path) {
+        Ok(meta) => meta,
+        Err(e) => util::abort(format!("failed to open '{}': {}",
+                                      path, e)),
+    };
+
+    if metadata.is_dir() {
         find_tests_in_dir(path)
     } else {
         vec![path.to_owned()]
@@ -395,7 +405,8 @@ mod util
     pub fn tool_dir() -> Option<String> {
         let current_exec = match std::env::current_exe() {
             Ok(e) => e,
-            Err(e) => panic!("failed to get current executable path: {}", e),
+            Err(e) => abort(
+                format!("failed to get current executable path: {}", e)),
         };
 
         current_exec.parent().map(|p| p.to_str().unwrap().to_owned())
