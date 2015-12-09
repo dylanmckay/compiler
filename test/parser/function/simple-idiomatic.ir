@@ -1,5 +1,5 @@
 ; RUN: asm @file
 
-fn foo(a: i32, b: u11) {
+fn @foo(%a: i32, %b: u11) {
 
 }

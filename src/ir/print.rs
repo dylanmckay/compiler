@@ -99,12 +99,9 @@ pub fn function(func: &Function,
                 fmt: &mut fmt::Formatter) -> fmt::Result {
     // Initialise register accounting
     printer.clear_registers();
-    let signature = func.signature();
 
-    try!(write!(fmt, "fn @{}({})",
-                     func.name(),
-                     util::comma_separated_values(signature.parameters())));
-
+    try!(write!(fmt, "fn @{}", func.name()));
+    try!(function_parameters(&func, fmt));
     try!(function_tail(func, fmt));
 
     try!(write!(fmt, " {{\n"));
@@ -114,6 +111,15 @@ pub fn function(func: &Function,
     }
 
     write!(fmt, "}}\n")
+}
+
+pub fn function_parameters(func: &Function,
+                           fmt: &mut fmt::Formatter) -> fmt::Result {
+    let params = func.signature().parameters().map(|p|
+        format!("%{}", p)
+    );
+
+    write!(fmt, "({})", util::comma_separated_values(params))
 }
 
 pub fn function_tail(func: &Function,

@@ -1,5 +1,5 @@
 ; RUN: asm @file
 
-fn foo () {
+fn @foo () {
 
 }

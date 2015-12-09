@@ -1,5 +1,5 @@
 ; RUN: asm @file
 
-fn foo (a: i32) { }
+fn @foo (%a: i32) { }
 
-fn bar(qwer: u18) { }
+fn @bar(%qwer: u18) { }

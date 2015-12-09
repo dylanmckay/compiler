@@ -1,7 +1,7 @@
 ; RUN: asm @file
-fn foo(
-  a: i63,
-  b: i1,
-  c: i100) {
+fn @foo(
+  %a: i63,
+  %b: i1,
+  %c: i100) {
 
 }

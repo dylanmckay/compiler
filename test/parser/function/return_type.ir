@@ -1,12 +1,12 @@
 ; RUN: asm @file
 
-fn abcd() -> u32 {
+fn @abcd() -> u32 {
 
 }
 
-fn abcd() -> u32,u33,u34 {
+fn @abcd() -> u32,u33,u34 {
 
 }
 
-fn foo()
+fn @foo()
     -> i1, i2, i3, i4 { }

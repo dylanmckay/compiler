@@ -65,7 +65,7 @@ impl<I> Parser<I>
     fn parse_global(&mut self) -> Result<()> {
         self.assert(keywords::global());
 
-        let name = try!(self.expect_word());
+        let name = try!(self.parse_global_identifier());
         try!(self.expect(Token::equal_sign()));
         let value = try!(self.parse_value());
 
@@ -78,7 +78,7 @@ impl<I> Parser<I>
     fn parse_function(&mut self) -> Result<()> {
         self.assert(keywords::function());
 
-        let name = try!(self.expect_word());
+        let name = try!(self.parse_global_identifier());
         let params = try!(self.parse_parameter_list());
         let returns = try!(self.parse_function_returns());
         let body = try!(self.parse_body());
@@ -123,7 +123,7 @@ impl<I> Parser<I>
         while try!(self.peek_something()) != Token::right_parenthesis() {
             try!(self.eat_whitespace());
 
-            let name = try!(self.expect_word());
+            let name = try!(self.parse_local_identifier());
             try!(self.expect(Token::colon()));
             let ty = try!(self.parse_type());
 
@@ -243,6 +243,16 @@ impl<I> Parser<I>
         Ok(types::Integer::new(kind, width as u16))
     }
 
+    fn parse_global_identifier(&mut self) -> Result<String> {
+        try!(self.expect(Token::at_sign()));
+        self.expect_word()
+    }
+
+    fn parse_local_identifier(&mut self) -> Result<String> {
+        try!(self.expect(Token::percent_sign()));
+        self.expect_word()
+    }
+
     fn assert(&mut self, expected: Token) {
         self.expect(expected).unwrap();
     }
@@ -275,14 +285,20 @@ impl<I> Parser<I>
     }
 
     fn expect_one_of(&mut self, expected: &[Token]) -> Result<Token> {
+        assert!(!expected.is_empty());
         let token = try!(util::expect(self.tokenizer.next()));
 
         if expected.iter().any(|e| e==&token) {
             Ok(token)
         } else {
-            Err(format!("expected one of {} but got {}",
-                        ::util::comma_separated_values(expected.iter()),
-                        token))
+            if expected.len() == 1 {
+                Err(format!("expected {} but got {}",
+                            expected[0], token))
+            } else { // multiple expected tokens
+                Err(format!("expected one of {} but got {}",
+                            ::util::comma_separated_values(expected.iter()),
+                            token))
+            }
         }
     }
 

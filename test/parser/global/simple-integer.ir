@@ -1,7 +1,7 @@
 ; RUN: asm @file
 
-global ABCD = i32 123
+global @ABCD = i32 123
 
-global ABCD = i1 0
+global @ABCD = i1 0
 
-global qwerty = i100 100
+global @qwerty = i100 100

@@ -79,6 +79,7 @@ fn print_module(module: &ir::Module) {
 
 fn abort<S>(msg: S) -> !
     where S: Into<String> {
-    std::io::stderr().write(msg.into().as_bytes()).unwrap();
+    write!(std::io::stderr(),
+           "{}\n", msg.into()).unwrap();
     std::process::exit(1);
 }
