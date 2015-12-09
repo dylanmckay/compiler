@@ -256,6 +256,11 @@ fn main() {
 
     let test_paths = find_tests(&paths);
 
+    if test_paths.is_empty() {
+        print::warning("could not find any tests");
+        return;
+    }
+
     let mut context = test_paths.into_iter().fold(Context::new(), |c,file| {
         let test = read_test(&file).unwrap();
         c.test(test)
