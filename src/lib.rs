@@ -14,6 +14,8 @@ pub use self::compiler_ir as ir;
 pub use self::compiler_target as target;
 /// The pass infrastructure.
 pub use self::compiler_pass as pass;
+/// The integrated tester.
+pub use self::compiler_test as test;
 
 #[macro_use]
 extern crate compiler_util;
@@ -21,3 +23,4 @@ extern crate compiler_lang;
 extern crate compiler_ir;
 extern crate compiler_target;
 extern crate compiler_pass;
+extern crate compiler_test;
