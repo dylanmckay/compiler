@@ -33,6 +33,52 @@ impl Directive
             },
         }
     }
+
+    pub fn run(&self,
+               test: &Test,
+               context: &Context)
+        -> TestResultKind {
+        match *self {
+            Directive::Run(ref invocation) => {
+                use std::process::Command;
+                let exe_path = context.executable_path(&invocation.executable);
+                let mut cmd = Command::new(&exe_path);
+
+                for arg in invocation.arguments.iter() {
+                    let arg_str = arg.resolve(test);
+                    cmd.arg(arg_str);
+                }
+
+                let output = match cmd.output() {
+                    Ok(o) => o,
+                    Err(e) => match e.kind() {
+                        std::io::ErrorKind::NotFound => {
+                            return TestResultKind::Fail(
+                                format!("executable not found: {}",
+                                        exe_path), "".to_owned());
+                        },
+                        _ => {
+                            return TestResultKind::Fail(
+                                format!("could not execute: '{}', {}",
+                                        exe_path, e), "".to_owned());
+                        },
+                    },
+                };
+
+                if output.status.success() {
+                    TestResultKind::Pass
+                } else {
+                    let stderr = String::from_utf8(output.stderr).unwrap();
+
+                    TestResultKind::Fail(format!(
+                        "{} exited with code {}", exe_path,
+                        output.status.code().unwrap()),
+                        stderr
+                    )
+                }
+            },
+        }
+    }
 }
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -76,11 +122,46 @@ impl Test
         })
     }
 
+    pub fn run(&self, context: &Context) -> TestResult {
+        if self.is_empty() {
+            return TestResult {
+                path: self.path.clone(),
+                kind: TestResultKind::Skip,
+            }
+        }
+
+        for directive in self.directives.iter() {
+            let kind = directive.run(self, context);
+
+            match kind {
+                TestResultKind::Pass => continue,
+                TestResultKind::Skip => {
+                    return TestResult {
+                        path: self.path.clone(),
+                        kind: TestResultKind::Pass,
+                    }
+                },
+                TestResultKind::Fail(msg, desc) => {
+                    return TestResult {
+                        path: self.path.clone(),
+                        kind: TestResultKind::Fail(msg, desc),
+                    }
+                },
+            }
+        }
+
+        TestResult {
+            path: self.path.clone(),
+            kind: TestResultKind::Pass,
+        }
+    }
+
     pub fn is_empty(&self) -> bool {
         self.directives.is_empty()
     }
 }
 
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub enum TestResultKind
 {
     Pass,
@@ -88,10 +169,18 @@ pub enum TestResultKind
     Skip,
 }
 
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub struct TestResult
 {
     pub path: String,
     pub kind: TestResultKind,
+}
+
+impl TestResult
+{
+    pub fn passed(&self) -> bool {
+        if let TestResultKind::Pass = self.kind { true } else { false }
+    }
 }
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -113,6 +202,12 @@ impl Context
     pub fn test(mut self, test: Test) -> Self {
         self.tests.push(test);
         self
+    }
+
+    pub fn run(&self) -> Vec<TestResult> {
+        self.tests.iter().map(|test| {
+            test.run(self)
+        }).collect()
     }
 
     pub fn add_search_dir(&mut self, dir: String) {

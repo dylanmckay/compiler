@@ -5,9 +5,7 @@ version = "0.0.1"
 authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
 [dependencies]
-argparse = "*"
 walkdir = "0.1"
-term = "*"
 
 [dependencies.compiler_ir]
 path = "../ir"

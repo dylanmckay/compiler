@@ -2,11 +2,9 @@
 
 extern crate compiler;
 extern crate argparse;
-extern crate walkdir;
 extern crate term;
 
 use argparse::ArgumentParser;
-use walkdir::WalkDir;
 use std::borrow::Borrow;
 
 use compiler::test::{self,TestResult, TestResultKind, Context};
@@ -24,15 +22,17 @@ fn main() {
         ap.parse_args_or_exit();
     }
 
-    let paths: Vec<&str> = files.iter()
-                                 .map(|s| s.borrow())
-                                 .collect();
-
-    if paths.is_empty() {
+    if files.is_empty() {
         util::abort("no filenames given")
     }
 
-    let test_paths = find_tests(&paths);
+    let paths = files.iter()
+                     .map(|s| s.borrow());
+
+    let test_paths = match test::find::in_paths(paths) {
+        Ok(paths) => paths,
+        Err(e) => util::abort(format!("could not find files: {}", e)),
+    };
 
     if test_paths.is_empty() {
         print::warning("could not find any tests");
@@ -49,7 +49,7 @@ fn main() {
         None => print::warning("could not find tool directory"),
     }
 
-    let results = run_tests(&context);
+    let results = context.run();
 
     for result in results.iter() {
         print_result(result)
@@ -85,59 +85,6 @@ fn print_result(result: &TestResult) {
             print::line();
         },
     }
-}
-
-/// Recursively finds tests for the given paths.
-fn find_tests(paths: &[&str]) -> Vec<String> {
-    paths.iter().flat_map(|path| {
-                    find_tests_in_path(path).into_iter()
-                })
-                .collect()
-}
-
-fn find_tests_in_path(path: &str) -> Vec<String> {
-    let metadata = match std::fs::metadata(path) {
-        Ok(meta) => meta,
-        Err(e) => util::abort(format!("failed to open '{}': {}",
-                                      path, e)),
-    };
-
-    if metadata.is_dir() {
-        find_tests_in_dir(path)
-    } else {
-        vec![path.to_owned()]
-    }
-}
-
-fn find_tests_in_dir(path: &str) -> Vec<String> {
-    find_files_in_dir(path).into_iter()
-                           .filter(|f| f.ends_with(".ir"))
-                           .collect()
-}
-
-fn find_files_in_dir(path: &str) -> Vec<String> {
-    let mut dir_tests = Vec::new();
-
-    for entry in WalkDir::new(path) {
-        let entry = entry.unwrap();
-
-        // don't go into an infinite loop
-        if entry.path().to_str().unwrap() == path {
-            continue;
-        }
-
-        if entry.metadata().unwrap().is_file() {
-            dir_tests.push(entry.path().to_str().unwrap().to_owned());
-        }
-    }
-
-    dir_tests
-}
-
-fn run_tests(context: &Context) -> Vec<TestResult> {
-    context.tests.iter().map(|test| {
-        test::run::test(test, context)
-    }).collect()
 }
 
 mod util
