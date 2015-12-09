@@ -1,4 +1,4 @@
-use {Type,Expression,value};
+use {Type,Register};
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -10,7 +10,7 @@ pub struct RegisterRef
 
 impl RegisterRef
 {
-    pub fn reference(register: &value::Register) -> Self {
+    pub fn reference(register: &Register) -> Self {
         use util::Identifiable;
 
         RegisterRef {
@@ -24,16 +24,4 @@ impl RegisterRef
     }
 }
 
-impl util::Identifiable for RegisterRef
-{
-    fn get_id(&self) -> util::Id { self.id }
-}
-
-impl value::ExpressionTrait for RegisterRef { }
-
-impl Into<Expression> for RegisterRef
-{
-    fn into(self) -> Expression {
-        Expression::RegisterRef(self)
-    }
-}
+impl_expression!(RegisterRef);

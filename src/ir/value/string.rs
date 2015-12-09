@@ -1,4 +1,4 @@
-use {Expression,Type};
+use Type;
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -31,14 +31,4 @@ impl String
     }
 }
 
-impl util::Identifiable for String
-{
-    fn get_id(&self) -> util::Id { self.id }
-}
-
-impl Into<Expression> for String
-{
-    fn into(self) -> Expression {
-        Expression::String(self)
-    }
-}
+impl_expression!(String);

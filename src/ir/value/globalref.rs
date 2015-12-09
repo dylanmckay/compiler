@@ -1,4 +1,4 @@
-use {Global,Type,Expression,value};
+use {Global,Type};
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -26,11 +26,4 @@ impl GlobalRef
     }
 }
 
-impl value::ExpressionTrait for GlobalRef { }
-
-impl Into<Expression> for GlobalRef
-{
-    fn into(self) -> Expression {
-        Expression::GlobalRef(self)
-    }
-}
+impl_expression!(GlobalRef);

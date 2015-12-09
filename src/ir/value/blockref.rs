@@ -1,22 +1,22 @@
-use {Expression,Type,Block,ExpressionTrait};
+use {Type,Block};
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct BlockRef
 {
-    block_id: util::Id,
+    id: util::Id,
 }
 
 impl BlockRef
 {
     pub fn reference(block: &Block) -> Self {
         BlockRef {
-            block_id: block.id(),
+            id: block.id(),
         }
     }
 
     pub fn block_id(&self) -> util::Id {
-        self.block_id
+        self.id
     }
 
     pub fn ty(&self) -> Type {
@@ -24,11 +24,4 @@ impl BlockRef
     }
 }
 
-impl ExpressionTrait for BlockRef { }
-
-impl Into<Expression> for BlockRef
-{
-    fn into(self) -> Expression {
-        Expression::BlockRef(self)
-    }
-}
+impl_expression!(BlockRef);

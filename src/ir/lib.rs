@@ -1,7 +1,7 @@
 #![feature(iter_arith)]
 
 pub use self::types::{Type,TypeTrait};
-pub use self::value::{Value,Expression,ExpressionTrait};
+pub use self::value::{Value,Expression,ExpressionTrait,Register};
 pub use lang::Name;
 pub use self::instruction::{Instruction,InstructionTrait};
 pub use self::print::printable;

@@ -1,4 +1,4 @@
-use {value,Expression,Type,Parameter};
+use {Type,Parameter};
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -24,17 +24,4 @@ impl ArgumentRef
     }
 }
 
-impl util::Identifiable for ArgumentRef
-{
-    fn get_id(&self) -> util::Id { self.id }
-}
-
-impl value::ExpressionTrait for ArgumentRef { }
-
-impl Into<Expression> for ArgumentRef
-{
-    fn into(self) -> Expression {
-        Expression::ArgumentRef(self)
-    }
-}
-
+impl_expression!(ArgumentRef);

@@ -295,6 +295,26 @@ impl Expression
 
 impl ExpressionTrait for Expression { }
 
+macro_rules! impl_expression {
+    ($ty:ident) => {
+        impl ::util::Identifiable for $ty
+        {
+            fn get_id(&self) -> ::util::Id {
+                self.id
+            }
+        }
+
+        impl ::ExpressionTrait for $ty { }
+
+        impl Into<::Expression> for $ty
+        {
+            fn into(self) -> ::Expression {
+                ::Expression::$ty(self)
+            }
+        }
+    }
+}
+
 /// Implements Into<Expression> for u8,i32,etc
 macro_rules! impl_into_value_for_integers {
     (

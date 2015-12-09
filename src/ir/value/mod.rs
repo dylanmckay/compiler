@@ -12,6 +12,7 @@ pub use self::argument_ref::ArgumentRef;
 pub use self::string::String;
 
 pub mod value;
+#[macro_use]
 pub mod expression;
 
 pub mod register;

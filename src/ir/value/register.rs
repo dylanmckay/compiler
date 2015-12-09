@@ -1,4 +1,4 @@
-use {Expression,Value,Type,Name};
+use {Value,Type,Name};
 use util;
 
 /// A register.
@@ -41,16 +41,4 @@ impl Register
     }
 }
 
-impl util::Identifiable for Register
-{
-    fn get_id(&self) -> util::Id {
-        self.id
-    }
-}
-
-impl Into<Expression> for Register
-{
-    fn into(self) -> Expression {
-        Expression::Register(self)
-    }
-}
+impl_expression!(Register);
