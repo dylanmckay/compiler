@@ -15,7 +15,7 @@ pub use self::void::Void;
 #[macro_use]
 pub mod ty
 {
-    use ir::types::{Void,Pointer,Integer,Decimal,Vector,Array,Struct,Function,Block};
+    use types::{Void,Pointer,Integer,Decimal,Vector,Array,Struct,Function,Block};
     use lang;
     use util::IntegerKind;
 
@@ -24,9 +24,9 @@ pub mod ty
     pub trait TypeTrait : Clone + Eq + fmt::Display + lang::Type + Into<Type>
     {
         /// Gets the size of the type in bits.
-        /// 
+        ///
         /// If the size is `0`, the object can only exist through a pointer.
-        /// 
+        ///
         /// By default, this function returns `0`.
         fn size(&self) -> u64 { 0 }
 
@@ -176,10 +176,10 @@ pub mod ty
 
     macro_rules! impl_into_type {
         ($ty:ident) => {
-            impl Into<::ir::Type> for $ty
+            impl Into<::Type> for $ty
             {
-                fn into(self) -> ::ir::Type {
-                    ::ir::Type::$ty(self)
+                fn into(self) -> ::Type {
+                    ::Type::$ty(self)
                 }
             }
 

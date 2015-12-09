@@ -1,15 +1,15 @@
-use ir::{self,Instruction,Value,Expression};
+use {Instruction,Value,Expression,Type};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Add
 {
-    lhs: Box<ir::Value>,
-    rhs: Box<ir::Value>,
+    lhs: Box<Value>,
+    rhs: Box<Value>,
 }
 
 impl Add
 {
-    pub fn new(lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn new(lhs: Value, rhs: Value) -> Self {
         assert!(lhs.ty() == rhs.ty());
 
         Add {
@@ -18,7 +18,7 @@ impl Add
         }
     }
 
-    pub fn ty(&self) -> ir::Type {
+    pub fn ty(&self) -> Type {
         self.lhs.ty()
     }
 }

@@ -1,21 +1,21 @@
 
-use ir::{self,Instruction,Value,Expression};
+use {Instruction,Value,Expression,Type};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Return
 {
-    value: Option<Box<ir::Value>>,
+    value: Option<Box<Value>>,
 }
 
 impl Return
 {
-    pub fn new(value: Option<ir::Value>) -> Return {
+    pub fn new(value: Option<Value>) -> Return {
         Return {
             value: value.map(Box::new),
         }
     }
 
-    pub fn value(value: ir::Value) -> Return {
+    pub fn value(value: Value) -> Return {
         Return::new(Some(value))
     }
 
@@ -31,7 +31,7 @@ impl Return
         }
     }
 
-    pub fn subvalue(&self) -> Option<&ir::Value> {
+    pub fn subvalue(&self) -> Option<&Value> {
         if let Some(ref val) = self.value {
             Some(val)
         } else {
@@ -51,19 +51,19 @@ impl Return
         self
     }
 
-    pub fn ty(&self) -> ir::Type { ir::Type::void() }
+    pub fn ty(&self) -> Type { Type::void() }
 }
 
 impl Into<Instruction> for Return
 {
     fn into(self) -> Instruction {
-        ir::Instruction::Return(self)
+        Instruction::Return(self)
     }
 }
 
 impl Into<Expression> for Return
 {
     fn into(self) -> Expression {
-        ir::Expression::Instruction(self.into())
+        Expression::Instruction(self.into())
     }
 }

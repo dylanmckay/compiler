@@ -1,23 +1,22 @@
-
-use ir::{self,Instruction,Value,Expression};
+use {Instruction,Value,Expression,Type};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Mul
 {
-    pub lhs: Box<ir::Value>,
-    pub rhs: Box<ir::Value>,
+    pub lhs: Box<Value>,
+    pub rhs: Box<Value>,
 }
 
 impl Mul
 {
-    pub fn new(lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn new(lhs: Value, rhs: Value) -> Self {
         Mul {
             lhs: Box::new(lhs),
             rhs: Box::new(rhs),
         }
     }
 
-    pub fn ty(&self) -> ir::Type { self.lhs.ty() }
+    pub fn ty(&self) -> Type { self.lhs.ty() }
 }
 
 impl_instruction!(Mul: lhs, rhs);

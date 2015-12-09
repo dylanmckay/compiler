@@ -18,6 +18,8 @@ path = "src/util"
 path = "src/lang"
 [dependencies.compiler_target]
 path = "src/target"
+[dependencies.compiler_ir]
+path = "src/ir"
 
 [lib]
 name = "compiler"

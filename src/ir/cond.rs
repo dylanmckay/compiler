@@ -1,5 +1,4 @@
-
-use ir;
+use Value;
 
 /// A branching condition.
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -11,13 +10,13 @@ pub enum Condition
     False,
 
     /// Equal to.
-    Equal(Box<ir::Value>, Box<ir::Value>),
-    NotEqual(Box<ir::Value>, Box<ir::Value>),
+    Equal(Box<Value>, Box<Value>),
+    NotEqual(Box<Value>, Box<Value>),
 
-    GreaterThan(Box<ir::Value>, Box<ir::Value>),
-    GreaterThanOrEq(Box<ir::Value>, Box<ir::Value>),
-    LessThan(Box<ir::Value>, Box<ir::Value>),
-    LessThanOrEq(Box<ir::Value>, Box<ir::Value>),
+    GreaterThan(Box<Value>, Box<Value>),
+    GreaterThanOrEq(Box<Value>, Box<Value>),
+    LessThan(Box<Value>, Box<Value>),
+    LessThanOrEq(Box<Value>, Box<Value>),
 }
 
 impl Condition

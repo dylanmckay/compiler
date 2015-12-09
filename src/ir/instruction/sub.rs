@@ -1,15 +1,15 @@
-use ir::{self,Instruction,Value,Expression};
+use {Instruction,Value,Expression,Type};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Sub
 {
-    lhs: Box<ir::Value>,
-    rhs: Box<ir::Value>,
+    lhs: Box<Value>,
+    rhs: Box<Value>,
 }
 
 impl Sub
 {
-    pub fn new(lhs: ir::Value, rhs: ir::Value) -> Self {
+    pub fn new(lhs: Value, rhs: Value) -> Self {
         assert!(lhs.ty() == rhs.ty());
 
         Sub {
@@ -18,7 +18,7 @@ impl Sub
         }
     }
 
-    pub fn ty(&self) -> ir::Type { self.lhs.ty() }
+    pub fn ty(&self) -> Type { self.lhs.ty() }
 }
 
 impl_instruction!(Sub: lhs, rhs);

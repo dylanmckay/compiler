@@ -1,5 +1,4 @@
-
-use ir::types;
+use types;
 use util::IntegerKind;
 use std::fmt;
 

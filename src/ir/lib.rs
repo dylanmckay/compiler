@@ -1,8 +1,9 @@
+#![feature(iter_arith)]
 
 pub use self::types::{Type,TypeTrait};
 pub use self::value::{Value,Expression,ExpressionTrait};
 pub use lang::Name;
-pub use ir::instruction::{Instruction,InstructionTrait};
+pub use self::instruction::{Instruction,InstructionTrait};
 pub use self::print::printable;
 pub use self::users::Users;
 pub use self::cond::Condition;
@@ -23,6 +24,12 @@ pub mod read;
 pub mod users;
 
 pub mod cond;
+
+extern crate compiler_util as util;
+extern crate compiler_lang as lang;
+
+extern crate num;
+extern crate bit_vec;
 
 pub type Module = ::lang::Module<Value>;
 pub type Global = ::lang::Global<Value>;

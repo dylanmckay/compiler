@@ -1,4 +1,3 @@
-
 pub use self::instruction::*;
 
 pub use self::add::Add;
@@ -16,11 +15,11 @@ pub use self::br::Break;
 pub mod instruction
 {
     use std::fmt;
-    use ir::{self,instruction,Value,Expression,Type};
+    use {instruction,Value,Expression,Type,ExpressionTrait,value,Block};
 
     pub trait InstructionTrait : fmt::Debug +
                                  Into<Expression> +
-                                 ir::ExpressionTrait
+                                 ExpressionTrait
     {
     }
 
@@ -115,7 +114,7 @@ pub mod instruction
         ///
         /// Subvalues are placed into registers in the block.
         /// The resulting instruction is returned.
-        pub fn flatten(self, block: &mut ir::Block) -> Self {
+        pub fn flatten(self, block: &mut Block) -> Self {
             self.map_subvalues(|v| {
                 if let Expression::Instruction(mut i) = v.expression().clone() {
 
@@ -125,7 +124,7 @@ pub mod instruction
                     if i.ty().is_void() {
                         i.into()
                     } else { // instruction does not give void
-                        let new_reg = ir::value::Register::unnamed(Value::new(i.into()));
+                        let new_reg = value::Register::unnamed(Value::new(i.into()));
                         let reg_ref = Value::register_ref(&new_reg);
 
                         block.append_value(Value::new(new_reg.into()));
@@ -141,7 +140,7 @@ pub mod instruction
     }
 
     impl InstructionTrait for Instruction { }
-    impl ir::ExpressionTrait for Instruction { }
+    impl ExpressionTrait for Instruction { }
 
     impl Into<Expression> for Instruction
     {
@@ -177,41 +176,41 @@ pub mod instruction
             where F: FnMut(Value) -> Value {
 
             match self {
-               ir::Instruction::Add(instr) => instr.map_subvalues(f).into(),
-               ir::Instruction::Sub(instr) => instr.map_subvalues(f).into(),
-               ir::Instruction::Mul(instr) => instr.map_subvalues(f).into(),
-               ir::Instruction::Div(instr) => instr.map_subvalues(f).into(),
-               ir::Instruction::Shl(instr) => instr.map_subvalues(f).into(),
-               ir::Instruction::Shr(instr) => instr.map_subvalues(f).into(),
-               ir::Instruction::Call(instr) => instr.map_subvalues(f).into(),
-               ir::Instruction::Break(instr) => instr.map_subvalues(f).into(),
-               ir::Instruction::Return(instr) => instr.map_subvalues(f).into(),
+               Instruction::Add(instr) => instr.map_subvalues(f).into(),
+               Instruction::Sub(instr) => instr.map_subvalues(f).into(),
+               Instruction::Mul(instr) => instr.map_subvalues(f).into(),
+               Instruction::Div(instr) => instr.map_subvalues(f).into(),
+               Instruction::Shl(instr) => instr.map_subvalues(f).into(),
+               Instruction::Shr(instr) => instr.map_subvalues(f).into(),
+               Instruction::Call(instr) => instr.map_subvalues(f).into(),
+               Instruction::Break(instr) => instr.map_subvalues(f).into(),
+               Instruction::Return(instr) => instr.map_subvalues(f).into(),
             }
         }
 
         pub fn is_single_critical(&self) -> bool {
             match *self {
-                ir::Instruction::Add(..) => false,
-                ir::Instruction::Sub(..) => false,
-                ir::Instruction::Mul(..) => false,
-                ir::Instruction::Div(..) => false,
-                ir::Instruction::Shl(..) => false,
-                ir::Instruction::Shr(..) => false,
-                ir::Instruction::Call(..) => true,
-                ir::Instruction::Break(..) => true,
-                ir::Instruction::Return(..) => true,
+                Instruction::Add(..) => false,
+                Instruction::Sub(..) => false,
+                Instruction::Mul(..) => false,
+                Instruction::Div(..) => false,
+                Instruction::Shl(..) => false,
+                Instruction::Shr(..) => false,
+                Instruction::Call(..) => true,
+                Instruction::Break(..) => true,
+                Instruction::Return(..) => true,
             }
         }
 
         pub fn is_terminator(&self) -> bool {
             match *self {
-                ir::Instruction::Return(..) => true,
-                ir::Instruction::Break(..) => true,
+                Instruction::Return(..) => true,
+                Instruction::Break(..) => true,
                 _ => false,
             }
         }
 
-        pub fn ty(&self) -> ir::Type {
+        pub fn ty(&self) -> Type {
             match *self {
                 Instruction::Add(ref instr) => instr.ty(),
                 Instruction::Sub(ref instr) => instr.ty(),
@@ -238,8 +237,8 @@ pub mod instruction
         ($inst:ident : $op:ident) => {
             impl_instruction_internal!($inst: $op);
 
-            impl ::ir::instruction::Unary for $inst {
-                fn operand(&self) -> &::ir::Value {
+            impl ::instruction::Unary for $inst {
+                fn operand(&self) -> &::Value {
                     &self.$op
                 }
             }
@@ -249,8 +248,8 @@ pub mod instruction
         ($inst:ident : $op1:ident, $op2:ident) => {
             impl_instruction_internal!($inst: $op1, $op2);
 
-            impl ::ir::instruction::Binary for $inst {
-                fn operands(&self) -> (&::ir::Value,&::ir::Value) {
+            impl ::instruction::Binary for $inst {
+                fn operands(&self) -> (&::Value,&::Value) {
                     (&self.$op1,
                      &self.$op2)
                 }
@@ -274,34 +273,34 @@ pub mod instruction
         ) => {
             impl $inst
             {
-                pub fn subvalues(&self) -> Vec<&::ir::Value> {
+                pub fn subvalues(&self) -> Vec<&::Value> {
                     vec![$(&self.$val_name),*]
                 }
 
                 #[allow(unused_mut,unused_variables)]
                 pub fn map_subvalues<F>(mut self, mut f: F) -> Self
-                    where F: FnMut(::ir::Value) -> ::ir::Value {
+                    where F: FnMut(::Value) -> ::Value {
 
                     $(*self.$val_name = f(*self.$val_name.clone()));*;
                     self.into()
                 }
             }
 
-            impl ::ir::InstructionTrait for $inst { }
+            impl ::InstructionTrait for $inst { }
 
-            impl ::ir::ExpressionTrait for $inst { }
+            impl ::ExpressionTrait for $inst { }
 
-            impl Into<::ir::Instruction> for $inst
+            impl Into<::Instruction> for $inst
             {
-                fn into(self) -> ir::Instruction {
-                    ir::Instruction::$inst(self)
+                fn into(self) -> Instruction {
+                    Instruction::$inst(self)
                 }
             }
 
-            impl Into<::ir::Expression> for $inst
+            impl Into<::Expression> for $inst
             {
-                fn into(self) -> ir::Expression {
-                    ir::Expression::Instruction(self.into())
+                fn into(self) -> Expression {
+                    Expression::Instruction(self.into())
                 }
             }
         }

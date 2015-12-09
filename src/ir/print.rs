@@ -1,7 +1,6 @@
 
-use ir;
+use {Module,Global,Expression,Function,Value,Type,value,Condition,Block};
 use util;
-use ir::Expression;
 use util::Identifiable;
 use std::fmt;
 use std::collections::HashMap;
@@ -9,7 +8,7 @@ use std::collections::HashMap;
 /// A hack to be able to implement `Display` on a module.
 ///
 /// This is to work around Rust's orphan rules.
-pub struct Printable<'a>(&'a ir::Module);
+pub struct Printable<'a>(&'a Module);
 
 impl<'a> fmt::Display for Printable<'a>
 {
@@ -19,7 +18,7 @@ impl<'a> fmt::Display for Printable<'a>
 }
 
 /// Creates a printable module.
-pub fn printable(module: &ir::Module) -> Printable {
+pub fn printable(module: &Module) -> Printable {
     Printable(module)
 }
 
@@ -27,7 +26,7 @@ pub fn printable(module: &ir::Module) -> Printable {
 pub struct Printer<'a>
 {
     /// The module that is being printed.
-    module: &'a ir::Module,
+    module: &'a Module,
 
     /// Keeps track of the current register number for
     /// each function.
@@ -42,7 +41,7 @@ impl<'a> Printer<'a>
 {
     /// Assigns a number to a register internally.
     /// Returns the registers newly assigned number.
-    fn assign_register(&mut self, reg: &ir::value::Register) -> u32 {
+    fn assign_register(&mut self, reg: &value::Register) -> u32 {
 
         let id = reg.get_id();
         let num = self.register_accumulator;
@@ -66,7 +65,7 @@ impl<'a> Printer<'a>
 }
 
 /// Prints an IR module.
-pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
+pub fn module(module: &Module, fmt: &mut fmt::Formatter) -> fmt::Result {
 
     let mut printer = Printer {
         register_map: HashMap::new(),
@@ -88,7 +87,7 @@ pub fn module(module: &ir::Module, fmt: &mut fmt::Formatter) -> fmt::Result {
     Ok(())
 }
 
-pub fn global(global: &ir::Global,
+pub fn global(global: &Global,
               printer: &mut Printer,
               fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "%{} = ", global.name()));
@@ -96,7 +95,7 @@ pub fn global(global: &ir::Global,
     write!(fmt, "\n")
 }
 
-pub fn function(func: &ir::Function,
+pub fn function(func: &Function,
                 printer: &mut Printer,
                 fmt: &mut fmt::Formatter) -> fmt::Result {
     // Initialise register accounting
@@ -115,7 +114,7 @@ pub fn function(func: &ir::Function,
     write!(fmt, "}}\n")
 }
 
-pub fn block(block: &ir::Block,
+pub fn block(block: &Block,
              printer: &mut Printer,
              fmt: &mut fmt::Formatter) -> fmt::Result {
 
@@ -128,21 +127,21 @@ pub fn block(block: &ir::Block,
     Ok(())
 }
 
-pub fn condition(cond: &ir::Condition,
+pub fn condition(cond: &Condition,
                  printer: &mut Printer,
                  fmt: &mut fmt::Formatter) -> fmt::Result {
     match *cond {
         // trivial conditions
-        ir::Condition::True => write!(fmt, "true"),
-        ir::Condition::False => write!(fmt, "false"),
+        Condition::True => write!(fmt, "true"),
+        Condition::False => write!(fmt, "false"),
 
         // binary conditions
-        ir::Condition::Equal(ref lhs, ref rhs) |
-        ir::Condition::NotEqual(ref lhs, ref rhs) |
-        ir::Condition::GreaterThan(ref lhs, ref rhs) |
-        ir::Condition::GreaterThanOrEq(ref lhs, ref rhs) |
-        ir::Condition::LessThan(ref lhs, ref rhs) |
-        ir::Condition::LessThanOrEq(ref lhs, ref rhs) => {
+        Condition::Equal(ref lhs, ref rhs) |
+        Condition::NotEqual(ref lhs, ref rhs) |
+        Condition::GreaterThan(ref lhs, ref rhs) |
+        Condition::GreaterThanOrEq(ref lhs, ref rhs) |
+        Condition::LessThan(ref lhs, ref rhs) |
+        Condition::LessThanOrEq(ref lhs, ref rhs) => {
             try!(value(lhs, printer, fmt));
             try!(write!(fmt, " {} ", cond.abbreviation()));
             try!(value(rhs, printer, fmt));
@@ -152,13 +151,13 @@ pub fn condition(cond: &ir::Condition,
     }
 }
 
-pub fn root_value(value: &ir::Value,
+pub fn root_value(value: &Value,
                   printer: &mut Printer,
                   fmt: &mut fmt::Formatter) -> fmt::Result {
     root_expression(value.expression(), printer, fmt)
 }
 
-pub fn root_expression(expression: &ir::Expression,
+pub fn root_expression(expression: &Expression,
                        printer: &mut Printer,
                        fmt: &mut fmt::Formatter) -> fmt::Result {
     try!(write!(fmt, "\t"));
@@ -166,13 +165,13 @@ pub fn root_expression(expression: &ir::Expression,
     write!(fmt, "\n")
 }
 
-pub fn value(value: &ir::Value,
+pub fn value(value: &Value,
              printer: &mut Printer,
              fmt: &mut fmt::Formatter) -> fmt::Result {
     expression::expression(value.expression(), printer, fmt)
 }
 
-pub fn plain_value(value: &ir::Value,
+pub fn plain_value(value: &Value,
                    printer: &mut Printer,
                    fmt: &mut fmt::Formatter) -> fmt::Result {
     expression::plain(value.expression(), printer, fmt)
@@ -180,7 +179,7 @@ pub fn plain_value(value: &ir::Value,
 
 pub mod expression
 {
-    use ir::{Expression,value};
+    use {Expression,value};
     use std::fmt;
     use lang;
     use util::Identifiable;
@@ -298,8 +297,8 @@ pub mod expression
 
     pub mod instruction
     {
-        use ir::{Expression,Instruction};
-        use ir::instruction::{self,Binary};
+        use {Expression,Instruction};
+        use instruction::{self,Binary};
         use std::fmt;
         use util;
         use super::super::value;

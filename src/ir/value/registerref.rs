@@ -1,17 +1,16 @@
-
-use ir;
+use {Type,Expression,value};
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct RegisterRef
 {
     id: util::Id,
-    ty: ir::Type,
+    ty: Type,
 }
 
 impl RegisterRef
 {
-    pub fn reference(register: &ir::value::Register) -> Self {
+    pub fn reference(register: &value::Register) -> Self {
         use util::Identifiable;
 
         RegisterRef {
@@ -20,7 +19,7 @@ impl RegisterRef
         }
     }
 
-    pub fn ty(&self) -> ir::Type {
+    pub fn ty(&self) -> Type {
         self.ty.clone()
     }
 }
@@ -30,11 +29,11 @@ impl util::Identifiable for RegisterRef
     fn get_id(&self) -> util::Id { self.id }
 }
 
-impl ir::value::ExpressionTrait for RegisterRef { }
+impl value::ExpressionTrait for RegisterRef { }
 
-impl Into<ir::Expression> for RegisterRef
+impl Into<Expression> for RegisterRef
 {
-    fn into(self) -> ir::Expression {
-        ir::Expression::RegisterRef(self)
+    fn into(self) -> Expression {
+        Expression::RegisterRef(self)
     }
 }

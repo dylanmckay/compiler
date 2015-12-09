@@ -1,5 +1,4 @@
-
-use ir::types::{Type,TypeTrait};
+use types::{Type,TypeTrait};
 use std::{self, fmt};
 
 /// Represents a struct.

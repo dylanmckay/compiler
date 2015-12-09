@@ -1,17 +1,16 @@
-
-use ir;
+use {Global,Type,Expression,value};
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct GlobalRef
 {
     id: util::Id,
-    ty: ir::Type,
+    ty: Type,
 }
 
 impl GlobalRef
 {
-    pub fn reference(global: &ir::Global) -> Self {
+    pub fn reference(global: &Global) -> Self {
         GlobalRef {
             id: global.id(),
             ty: global.ty().clone(),
@@ -22,16 +21,16 @@ impl GlobalRef
         self.id
     }
 
-    pub fn ty(&self) -> ir::Type {
-        ir::Type::pointer(self.ty.clone())
+    pub fn ty(&self) -> Type {
+        Type::pointer(self.ty.clone())
     }
 }
 
-impl ir::value::ExpressionTrait for GlobalRef { }
+impl value::ExpressionTrait for GlobalRef { }
 
-impl Into<ir::Expression> for GlobalRef
+impl Into<Expression> for GlobalRef
 {
-    fn into(self) -> ir::Expression {
-        ir::Expression::GlobalRef(self)
+    fn into(self) -> Expression {
+        Expression::GlobalRef(self)
     }
 }

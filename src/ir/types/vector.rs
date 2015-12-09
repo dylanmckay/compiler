@@ -1,5 +1,4 @@
-
-use ir::types::{Type,TypeTrait};
+use types::{Type,TypeTrait};
 use std::fmt;
 
 /// A vector value.

@@ -1,7 +1,9 @@
 use super::{Tokenizer,Token};
 
-use ir;
-use ir::{Module,Value,Expression,Type,Block,Signature,Function};
+use {
+    Global,Module,Value,Expression,Type,Block,
+    Signature,Function,Parameter,types
+};
 use std;
 
 pub type Result<T> = std::result::Result<T,String>;
@@ -69,7 +71,7 @@ impl<I> Parser<I>
 
         try!(self.expect(Token::new_line()));
 
-        self.module.add_global(ir::Global::new(name, value));
+        self.module.add_global(Global::new(name, value));
         Ok(())
     }
 
@@ -111,7 +113,7 @@ impl<I> Parser<I>
         unimplemented!();
     }
 
-    fn parse_parameter_list(&mut self) -> Result<Vec<ir::Parameter>> {
+    fn parse_parameter_list(&mut self) -> Result<Vec<Parameter>> {
         try!(self.eat_whitespace());
         try!(self.expect(Token::left_parenthesis()));
         try!(self.eat_whitespace());
@@ -125,7 +127,7 @@ impl<I> Parser<I>
             try!(self.expect(Token::colon()));
             let ty = try!(self.parse_type());
 
-            params.push(ir::Parameter::new(name, ty));
+            params.push(Parameter::new(name, ty));
 
             self.maybe_eat(Token::comma());
             try!(self.eat_whitespace());
@@ -228,7 +230,7 @@ impl<I> Parser<I>
     }
 
     fn parse_integer_type(&mut self, type_str: &str)
-        -> Result<ir::types::Integer> {
+        -> Result<types::Integer> {
         let kind = match type_str.chars().next().unwrap() {
             'i' => ::util::IntegerKind::Signed,
             'u' => ::util::IntegerKind::Unsigned,
@@ -238,7 +240,7 @@ impl<I> Parser<I>
         let width_str: String = type_str.chars().skip(1).collect();
         let width = try!(util::parse_integer(&width_str, 10));
 
-        Ok(ir::types::Integer::new(kind, width as u16))
+        Ok(types::Integer::new(kind, width as u16))
     }
 
     fn assert(&mut self, expected: Token) {
@@ -344,7 +346,7 @@ pub mod util
 
 pub mod keywords
 {
-    use ir::read::Token;
+    use read::Token;
 
     pub fn global() -> Token {
         Token::word("global")
@@ -359,10 +361,10 @@ pub mod keywords
 mod test
 {
     use super::Parser;
-    use ir::{Value,Function,Signature};
+    use {Value,Function,Signature};
 
     #[cfg(test)]
-    fn parse(text: &str) -> ::ir::Module {
+    fn parse(text: &str) -> ::Module {
         Parser::new(text.chars()).parse().expect("parsing failed")
     }
 

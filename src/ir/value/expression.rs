@@ -1,4 +1,4 @@
-use ir::{self,types,value,Type};
+use {types,value,Type,Instruction,Name,Block,Parameter,Function,Global};
 use std::fmt;
 use util;
 use super::Value;
@@ -14,7 +14,7 @@ pub enum Expression
 {
     Literal(value::Literal),
     Register(value::Register),
-    Instruction(ir::Instruction),
+    Instruction(Instruction),
 
     GlobalRef(value::GlobalRef),
     BlockRef(value::BlockRef),
@@ -39,7 +39,7 @@ impl Expression
 
     /// Creates an integer, returning `None` if `val` cannot fit into `ty`.
     pub fn integer<T: ToBigInt>(ty: types::Integer, val: T) -> Option<Self> {
-        ir::value::Literal::integer(ty,val).map(|i| i.into())
+        value::Literal::integer(ty,val).map(|i| i.into())
     }
 
     /// Creates a signed integer value.
@@ -63,23 +63,23 @@ impl Expression
     pub fn i32(value: i32) -> Self { Self::i(32, value) }
     pub fn i64(value: i64) -> Self { Self::i(64, value) }
 
-    pub fn global_ref(global: &ir::Global) -> Expression {
+    pub fn global_ref(global: &Global) -> Expression {
         value::GlobalRef::reference(global).into()
     }
 
-    pub fn block_ref(block: &ir::Block) -> Expression {
+    pub fn block_ref(block: &Block) -> Expression {
         value::BlockRef::reference(block).into()
     }
 
-    pub fn function_ref(func: &ir::Function) -> Expression {
+    pub fn function_ref(func: &Function) -> Expression {
         value::FunctionRef::reference(func).into()
     }
 
-    pub fn register_ref(reg: &ir::value::Register) -> Expression {
+    pub fn register_ref(reg: &value::Register) -> Expression {
         value::RegisterRef::reference(reg).into()
     }
 
-    pub fn argument_ref(param: &ir::Parameter) -> Expression {
+    pub fn argument_ref(param: &Parameter) -> Expression {
         value::ArgumentRef::reference(param).into()
     }
 
@@ -93,80 +93,80 @@ impl Expression
     pub fn register_named<I>(name: I, value: Expression) -> Expression
         where I: Into<String> {
 
-        let name = ir::Name::named(name);
+        let name = Name::named(name);
         value::Register::new(name, value.into()).into()
     }
 
     pub fn instruction<I>(inst: I) -> Self
-        where I: Into<ir::Instruction> {
+        where I: Into<Instruction> {
         Expression::Instruction(inst.into())
     }
 
     pub fn add<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            ir::Instruction::add(lhs, rhs)
+            Instruction::add(lhs, rhs)
         )
     }
 
     pub fn sub<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            ir::Instruction::sub(lhs, rhs)
+            Instruction::sub(lhs, rhs)
         )
     }
 
     pub fn mul<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            ir::Instruction::mul(lhs, rhs)
+            Instruction::mul(lhs, rhs)
         )
     }
 
     pub fn div<V>(lhs: V, rhs: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            ir::Instruction::div(lhs, rhs)
+            Instruction::div(lhs, rhs)
         )
     }
 
     pub fn shl<V>(value: V, amount: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            ir::Instruction::shl(value, amount)
+            Instruction::shl(value, amount)
         )
     }
 
     pub fn shr<V>(value: V, amount: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            ir::Instruction::shr(value, amount)
+            Instruction::shr(value, amount)
         )
     }
 
     pub fn call<V>(target: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            ir::Instruction::call(target)
+            Instruction::call(target)
         )
     }
 
     pub fn br<V>(target: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            ir::Instruction::br(target)
+            Instruction::br(target)
         )
     }
 
-    pub fn ret(value: ir::Value) -> Self {
+    pub fn ret(value: Value) -> Self {
         Expression::instruction(
-            ir::Instruction::ret(value)
+            Instruction::ret(value)
         )
     }
 
     pub fn ret_void() -> Self {
         Expression::instruction(
-            ir::Instruction::ret_void()
+            Instruction::ret_void()
         )
     }
 
@@ -215,7 +215,7 @@ impl Expression
         if let Expression::ArgumentRef(..) = *self { true } else { false }
     }
 
-    pub fn ty(&self) -> ir::Type {
+    pub fn ty(&self) -> Type {
          match *self {
             Expression::Literal(ref val) => val.ty(),
             Expression::Register(ref val) => val.ty(),
@@ -256,7 +256,7 @@ impl Expression
         }
     }
 
-    pub fn flatten(self, block: &mut ir::Block) -> Self {
+    pub fn flatten(self, block: &mut Block) -> Self {
         // only instructions need flattening
         if let Expression::Instruction(i) = self {
             i.flatten(block).into()
@@ -275,7 +275,7 @@ impl Expression
 
     pub fn is_terminator(&self) -> bool {
         // only instructions can be terminators
-        if let ir::Expression::Instruction(ref inst) = *self {
+        if let Expression::Instruction(ref inst) = *self {
             inst.is_terminator()
         } else {
             false

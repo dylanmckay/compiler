@@ -1,7 +1,5 @@
-use ir;
-
-use ir::{Expression,Type};
-use ir::types;
+use {Global,Function,Parameter,Block,types,Expression,Type};
+use value;
 use util;
 
 use num::bigint::ToBigInt;
@@ -33,27 +31,27 @@ impl Value
         self.expression
     }
 
-    pub fn ty(&self) -> ir::Type {
+    pub fn ty(&self) -> Type {
         self.expression.ty()
     }
 
-    pub fn global_ref(global: &ir::Global) -> Self {
+    pub fn global_ref(global: &Global) -> Self {
         Value::new(Expression::global_ref(global))
     }
 
-    pub fn function_ref(func: &ir::Function) -> Self {
+    pub fn function_ref(func: &Function) -> Self {
         Value::new(Expression::function_ref(func))
     }
 
-    pub fn block_ref(block: &ir::Block) -> Self {
+    pub fn block_ref(block: &Block) -> Self {
         Value::new(Expression::block_ref(block))
     }
 
-    pub fn register_ref(register: &ir::value::Register) -> Self {
+    pub fn register_ref(register: &value::Register) -> Self {
         Value::new(Expression::register_ref(register))
     }
 
-    pub fn argument_ref(param: &ir::Parameter) -> Self {
+    pub fn argument_ref(param: &Parameter) -> Self {
         Value::new(Expression::argument_ref(param))
     }
 
@@ -87,15 +85,15 @@ impl Value
         Value::new(Expression::shr(value, amount))
     }
 
-    pub fn call(target: ir::Value) -> Self {
+    pub fn call(target: Value) -> Self {
         Value::new(Expression::call(target))
     }
 
-    pub fn br(target: ir::Value) -> Self {
+    pub fn br(target: Value) -> Self {
         Value::new(Expression::br(target))
     }
 
-    pub fn ret(value: ir::Value) -> Self {
+    pub fn ret(value: Value) -> Self {
         Value::new(Expression::ret(value))
     }
 
@@ -120,7 +118,7 @@ impl Value
     }
 
     pub fn unit_struct() -> Self {
-        Value::new(ir::value::Literal::unit_struct().into())
+        Value::new(value::Literal::unit_struct().into())
     }
 
     /// Creates a signed integer value.
@@ -173,7 +171,7 @@ impl ::lang::Value for Value
         self
     }
 
-    fn flatten(mut self, block: &mut ir::Block) -> Self {
+    fn flatten(mut self, block: &mut Block) -> Self {
         self.expression = self.expression.flatten(block);
         self
     }
@@ -186,7 +184,7 @@ impl ::lang::Value for Value
         self.expression.is_simple()
     }
 
-    fn ty(&self) -> ir::Type {
+    fn ty(&self) -> Type {
         self.expression.ty()
     }
 

@@ -3,7 +3,7 @@ pub use self::integer::Integer;
 pub use self::decimal::Decimal;
 pub use self::strukt::Struct;
 
-use ir::{types,Value,Expression,ExpressionTrait,Type};
+use {types,Value,Expression,ExpressionTrait,Type};
 use bit_vec::BitVec;
 
 use num::bigint::ToBigInt;

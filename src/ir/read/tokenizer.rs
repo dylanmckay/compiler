@@ -253,7 +253,7 @@ mod internal
 #[allow(unused_imports)]
 mod test
 {
-    use ir::read::{Token,Tokenizer};
+    use read::{Token,Tokenizer};
 
     /// Expects a mapping from a string of tokens into
     /// a list of tokens with the default tokenizer.

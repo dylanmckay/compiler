@@ -1,6 +1,4 @@
-
-use ir;
-use lang::{Module,Function,Block};
+use {Module,Function,Block,Value,Expression};
 use std;
 
 // TODO: check that each Register has only one user
@@ -17,7 +15,7 @@ macro_rules! condition {
 pub type Result = std::result::Result<(),String>;
 
 /// Verifies the well-formedness of a module.
-pub fn verify(module: &ir::Module) -> Result {
+pub fn verify(module: &Module) -> Result {
 
     for func in module.functions() {
         try!(self::verify_function(module, func));
@@ -27,8 +25,8 @@ pub fn verify(module: &ir::Module) -> Result {
 }
 
 /// Verifies that a function is well-formed.
-pub fn verify_function(module: &ir::Module,
-                       func: &ir::Function) -> Result {
+pub fn verify_function(module: &Module,
+                       func: &Function) -> Result {
 
     try!(util::verify_ident(func.name()));
 
@@ -46,8 +44,8 @@ pub fn verify_function(module: &ir::Module,
 }
 
 /// Verifies that a block is well-formed.
-pub fn verify_block(module: &ir::Module,
-                    block: &ir::Block) -> Result {
+pub fn verify_block(module: &Module,
+                    block: &Block) -> Result {
 
     use lang::Value;
 
@@ -73,23 +71,23 @@ pub fn verify_block(module: &ir::Module,
 }
 
 /// Verifies that a value is well-formed.
-pub fn verify_value(module: &ir::Module,
-                    value: &ir::Value) -> Result {
+pub fn verify_value(module: &Module,
+                    value: &Value) -> Result {
     verify_expression(module, value.expression())
 }
 
 /// Verifies that an expression is well-formed.
-pub fn verify_expression(module: &ir::Module,
-                         expr: &ir::Expression) -> Result {
+pub fn verify_expression(module: &Module,
+                         expr: &Expression) -> Result {
     match *expr {
-        ir::Expression::Instruction(ref val) => values::instruction(module, val),
+        Expression::Instruction(ref val) => values::instruction(module, val),
         _ => Ok(()),
     }
 }
 
 mod values
 {
-    use ir::{Module,Instruction};
+    use {Module,Instruction};
     use super::Result;
 
     pub fn instruction(module: &Module,
@@ -110,7 +108,7 @@ mod values
 
     pub mod instruction
     {
-        use ir::{Module,instruction};
+        use {Module,instruction};
         use super::super::Result;
 
         // TODO: check that arguments are the same in type and number

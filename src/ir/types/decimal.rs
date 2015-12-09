@@ -1,5 +1,4 @@
-
-use ir::types;
+use types;
 use std::fmt;
 
 /// A decimal type.

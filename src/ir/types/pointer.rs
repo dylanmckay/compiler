@@ -1,18 +1,17 @@
-
-use ir;
+use {Type,TypeTrait};
 use std::fmt;
 
 /// A pointer.
 #[derive(Clone,Debug,Eq,PartialEq)]
 pub struct Pointer
 {
-    to: Box<ir::Type>,
+    to: Box<Type>,
 }
 
 impl Pointer
 {
     /// Creates a pointer. 
-    pub fn to(value: ir::Type) -> Self {
+    pub fn to(value: Type) -> Self {
         Pointer {
             to: Box::new(value),
         }
@@ -26,7 +25,7 @@ impl fmt::Display for Pointer
     }
 }
 
-impl ir::TypeTrait for Pointer
+impl TypeTrait for Pointer
 {
     fn size(&self) -> u64 {
         // we need to know more about the target

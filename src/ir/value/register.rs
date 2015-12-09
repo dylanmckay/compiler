@@ -1,5 +1,4 @@
-
-use ir;
+use {Expression,Value,Type,Name};
 use util;
 
 /// A register.
@@ -8,14 +7,14 @@ pub struct Register
 {
     id: util::Id,
 
-    name: ir::Name,
-    value: Box<ir::Value>,
+    name: Name,
+    value: Box<Value>,
 }
 
 impl Register
 {
     /// Creates a new register.
-    pub fn new(name: ir::Name, value: ir::Value) -> Self {
+    pub fn new(name: Name, value: Value) -> Self {
         Register {
             id: util::Id::next(),
 
@@ -25,20 +24,20 @@ impl Register
     }
 
     /// Creates an unnamed register.
-    pub fn unnamed(value: ir::Value) -> Self {
-        Register::new(ir::Name::Unnamed, value)
+    pub fn unnamed(value: Value) -> Self {
+        Register::new(Name::Unnamed, value)
     }
 
-    pub fn name(&self) -> &ir::Name { &self.name }
+    pub fn name(&self) -> &Name { &self.name }
 
-    pub fn subvalue(&self) -> &ir::Value {
+    pub fn subvalue(&self) -> &Value {
         &self.value
     }
 
-    pub fn ty(&self) -> ir::Type {
+    pub fn ty(&self) -> Type {
         // the register itself has no type.
         // only references to the register have one.
-        ir::Type::void()
+        Type::void()
     }
 }
 
@@ -49,9 +48,9 @@ impl util::Identifiable for Register
     }
 }
 
-impl Into<ir::Expression> for Register
+impl Into<Expression> for Register
 {
-    fn into(self) -> ir::Expression {
-        ir::Expression::Register(self)
+    fn into(self) -> Expression {
+        Expression::Register(self)
     }
 }

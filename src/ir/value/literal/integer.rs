@@ -1,6 +1,4 @@
-
-
-use ir::{self,types,Expression,ExpressionTrait,Type};
+use {value,types,Expression,ExpressionTrait,Type};
 use util;
 use std;
 
@@ -148,7 +146,7 @@ impl std::ops::Shr<Integer> for Integer
     }
 }
 
-impl ir::value::literal::LiteralTrait for Integer { }
+impl value::literal::LiteralTrait for Integer { }
 
 impl ExpressionTrait for Integer { }
 
@@ -159,9 +157,9 @@ impl Into<Expression> for Integer
     }
 }
 
-impl Into<ir::value::Literal> for Integer {
-    fn into(self) -> ir::value::Literal {
-        ir::value::Literal::Integer(self)
+impl Into<value::Literal> for Integer {
+    fn into(self) -> value::Literal {
+        value::Literal::Integer(self)
     }
 }
 

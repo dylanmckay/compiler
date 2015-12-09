@@ -1,5 +1,4 @@
-
-use ir::{self,types,Value,Expression,ExpressionTrait,Type};
+use {value,types,Value,Expression,ExpressionTrait,Type};
 use std;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -31,7 +30,7 @@ impl Struct
     }
 }
 
-impl ir::value::LiteralTrait for Struct { }
+impl value::LiteralTrait for Struct { }
 
 impl ExpressionTrait for Struct { }
 
@@ -42,9 +41,9 @@ impl Into<Expression> for Struct
     }
 }
 
-impl Into<ir::value::Literal> for Struct {
-    fn into(self) -> ir::value::Literal {
-        ir::value::Literal::Struct(self)
+impl Into<value::Literal> for Struct {
+    fn into(self) -> value::Literal {
+        value::Literal::Struct(self)
     }
 }
 

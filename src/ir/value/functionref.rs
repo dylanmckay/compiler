@@ -1,5 +1,4 @@
-
-use ir;
+use {Function,Type,Expression,types,value,Signature};
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -8,16 +7,16 @@ pub struct FunctionRef
     func_id: util::Id,
 
     name: String,
-    ty: ir::types::Function,
+    ty: types::Function,
 }
 
 impl FunctionRef
 {
-    pub fn reference(func: &ir::Function) -> Self {
+    pub fn reference(func: &Function) -> Self {
         FunctionRef {
             func_id: func.id(),
             name: func.name().into(),
-            ty: ir::types::Function::new(func.signature().clone()),
+            ty: types::Function::new(func.signature().clone()),
         }
     }
 
@@ -25,7 +24,7 @@ impl FunctionRef
     pub fn name(&self) -> &str { &self.name }
 
     /// Gets the signature of the callee.
-    pub fn signature(&self) -> &ir::Signature {
+    pub fn signature(&self) -> &Signature {
         self.ty.signature()
     }
 
@@ -33,16 +32,16 @@ impl FunctionRef
         self.func_id
     }
 
-    pub fn ty(&self) -> ir::Type {
-        ir::Type::pointer(self.ty.clone().into())
+    pub fn ty(&self) -> Type {
+        Type::pointer(self.ty.clone().into())
     }
 }
 
-impl ir::value::ExpressionTrait for FunctionRef { }
+impl value::ExpressionTrait for FunctionRef { }
 
-impl Into<ir::Expression> for FunctionRef
+impl Into<Expression> for FunctionRef
 {
-    fn into(self) -> ir::Expression {
-        ir::Expression::FunctionRef(self)
+    fn into(self) -> Expression {
+        Expression::FunctionRef(self)
     }
 }

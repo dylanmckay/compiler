@@ -1,6 +1,5 @@
-
-use ir::types::TypeTrait;
-use ir::Signature;
+use types::TypeTrait;
+use Signature;
 use std;
 
 /// A function signature in IR.

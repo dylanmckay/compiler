@@ -1,0 +1,19 @@
+[package]
+
+name = "compiler_ir"
+version = "0.0.1"
+authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+
+[dependencies]
+num = "*"
+bit-vec = "*"
+
+[dependencies.compiler_util]
+path = "../util"
+[dependencies.compiler_lang]
+path = "../lang"
+
+[lib]
+name = "compiler_ir"
+path = "lib.rs"
+

@@ -8,7 +8,7 @@ pub mod token;
 pub mod tokenizer;
 pub mod parse;
 
-pub fn textual<I>(characters: I) -> Result<::ir::Module,String>
+pub fn textual<I>(characters: I) -> Result<::Module,String>
     where I: Iterator<Item=char> {
     Parser::new(characters).parse()
 }

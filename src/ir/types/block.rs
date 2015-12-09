@@ -1,4 +1,4 @@
-use ir::types;
+use types;
 use std::fmt;
 
 /// A basic block type.

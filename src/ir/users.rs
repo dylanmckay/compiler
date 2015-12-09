@@ -1,11 +1,9 @@
-
-use ir;
-
+use Expression;
 
 /// Stores the users of a value.
 pub struct Users<'a>
 {
-    users: Vec<&'a ir::Expression>,
+    users: Vec<&'a Expression>,
 }
 
 impl<'a> Users<'a>
@@ -16,7 +14,7 @@ impl<'a> Users<'a>
         }
     }
 
-    pub fn users(&self) -> ::std::slice::Iter<&ir::Expression> {
+    pub fn users(&self) -> ::std::slice::Iter<&Expression> {
         self.users.iter()
     }
 }
