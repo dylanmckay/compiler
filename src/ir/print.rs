@@ -1,4 +1,3 @@
-
 use {Module,Global,Expression,Function,Value,value,Condition,Block};
 use util;
 use util::Identifiable;
@@ -102,16 +101,30 @@ pub fn function(func: &Function,
     printer.clear_registers();
     let signature = func.signature();
 
-    try!(write!(fmt, "define {} @{}({}) {{\n",
-                     util::comma_separated_values(signature.returns()),
+    try!(write!(fmt, "fn @{}({})",
                      func.name(),
                      util::comma_separated_values(signature.parameters())));
+
+    try!(function_tail(func, fmt));
+
+    try!(write!(fmt, " {{\n"));
 
     for block in func.blocks() {
         try!(self::block(block, printer, fmt));
     }
 
     write!(fmt, "}}\n")
+}
+
+pub fn function_tail(func: &Function,
+                     fmt: &mut fmt::Formatter) -> fmt::Result {
+    let returns = func.signature().returns();
+
+    if func.signature().has_returns() {
+        try!(write!(fmt, " -> {}",
+               util::comma_separated_values(returns)));
+    }
+    Ok(())
 }
 
 pub fn block(block: &Block,

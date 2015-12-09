@@ -90,6 +90,11 @@ impl<T: Identifiable> List<T>
         self.elements.iter_mut()
     }
 
+    /// Checks if there are elements in the list.
+    pub fn is_empty(&self) -> bool {
+        self.elements.is_empty()
+    }
+
     // TODO: Clone should be unnecessay
     //       It should be possible to replace the locked element with
     //       garbage data and move the value out.

@@ -111,9 +111,19 @@ impl<V> Signature<V>
         self.return_types.iter()
     }
 
+    /// Checks if the function has return values.
+    pub fn has_returns(&self) -> bool {
+        !self.return_types.is_empty()
+    }
+
     /// Gets the parameter types.
     pub fn parameters(&self) -> std::slice::Iter<Parameter<V>> {
         self.params.iter()
+    }
+
+    /// Checks if the function has any parameters.
+    pub fn has_parameters(&self) -> bool {
+        !self.params.is_empty()
     }
 
     /// Looks up a parameter given its name.
