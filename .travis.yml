@@ -8,7 +8,7 @@ rust:
 
 script:
   - cargo build
-  - cargo run --bin test test
+  - cargo run --bin test tests
 
 matrix:
   allow_failures:
