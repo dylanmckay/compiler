@@ -1,0 +1,18 @@
+[package]
+
+name = "compiler_pass"
+version = "0.0.1"
+authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+
+[dependencies]
+num = "*"
+
+[dependencies.compiler_ir]
+path = "../ir"
+[dependencies.compiler_lang]
+path = "../lang"
+
+[lib]
+name = "compiler_pass"
+path = "lib.rs"
+

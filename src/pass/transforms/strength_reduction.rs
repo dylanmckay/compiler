@@ -1,5 +1,4 @@
-
-use pass;
+use {Metadata,Id,Info,Transform};
 use ir;
 
 // FIXME: do not perform strength reduction if the value would overflow
@@ -7,13 +6,13 @@ use ir;
 /// An IR strength reduction pass.
 pub struct StrengthReduction;
 
-impl pass::Metadata for StrengthReduction
+impl Metadata for StrengthReduction
 {
-    fn id(&self) -> pass::Id { pass::Id(0x242343a1) }
+    fn id(&self) -> Id { Id(0x242343a1) }
     fn name(&self) -> &'static str { "strength reduction" }
 }
 
-impl pass::Transform<ir::Value> for StrengthReduction
+impl Transform<ir::Value> for StrengthReduction
 {
     fn run_value(&mut self, value: ir::Value) -> ir::Value {
 
@@ -28,10 +27,10 @@ impl pass::Transform<ir::Value> for StrengthReduction
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Value>> for Box<StrengthReduction>
+impl Into<Info<ir::Value>> for Box<StrengthReduction>
 {
-    fn into(self) -> pass::Info<ir::Value> {
-        pass::Info::Transform(self)
+    fn into(self) -> Info<ir::Value> {
+        Info::Transform(self)
     }
 }
 

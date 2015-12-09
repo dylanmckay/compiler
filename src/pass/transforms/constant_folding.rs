@@ -1,17 +1,16 @@
-
-use pass;
+use {Metadata,Id,Info,Transform};
 use ir;
 
 /// An IR strength reduction pass.
 pub struct ConstantFolding;
 
-impl pass::Metadata for ConstantFolding
+impl Metadata for ConstantFolding
 {
-    fn id(&self) -> pass::Id { pass::Id(0x32fabb11) }
+    fn id(&self) -> Id { Id(0x32fabb11) }
     fn name(&self) -> &'static str { "constant folding" }
 }
 
-impl pass::Transform<ir::Value> for ConstantFolding
+impl Transform<ir::Value> for ConstantFolding
 {
     fn run_value(&mut self, value: ir::Value) -> ir::Value {
         self::fold::value(value)
@@ -19,10 +18,10 @@ impl pass::Transform<ir::Value> for ConstantFolding
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Value>> for Box<ConstantFolding>
+impl Into<Info<ir::Value>> for Box<ConstantFolding>
 {
-    fn into(self) -> pass::Info<ir::Value> {
-        pass::Info::Transform(self)
+    fn into(self) -> Info<ir::Value> {
+        Info::Transform(self)
     }
 }
 

@@ -8,8 +8,10 @@ pub mod transforms;
 /// Passes which perform analysis.
 pub mod analysis;
 
+extern crate compiler_lang as lang;
+extern crate compiler_ir as ir;
 
-use lang;
+extern crate num;
 
 /// A pass identifier.
 #[derive(Copy,Clone,Debug,PartialEq,Eq)]

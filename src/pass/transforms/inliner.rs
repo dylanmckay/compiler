@@ -1,17 +1,16 @@
-
-use pass;
+use {Metadata,Id,Info,Transform};
 use ir;
 
 /// An IR strength reduction pass.
 pub struct Inliner;
 
-impl pass::Metadata for Inliner
+impl Metadata for Inliner
 {
-    fn id(&self) -> pass::Id { pass::Id(0x32bbc291) }
+    fn id(&self) -> Id { Id(0x32bbc291) }
     fn name(&self) -> &'static str { "inliner" }
 }
 
-impl pass::Transform<ir::Value> for Inliner
+impl Transform<ir::Value> for Inliner
 {
     fn run_function(&mut self, 
                     func: ir::Function,
@@ -22,10 +21,10 @@ impl pass::Transform<ir::Value> for Inliner
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Value>> for Box<Inliner>
+impl Into<Info<ir::Value>> for Box<Inliner>
 {
-    fn into(self) -> pass::Info<ir::Value> {
-        pass::Info::Transform(self)
+    fn into(self) -> Info<ir::Value> {
+        Info::Transform(self)
     }
 }
 

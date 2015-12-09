@@ -1,5 +1,4 @@
-
-use pass;
+use {Metadata,Id,Info,Transform};
 use ir;
 
 // TODO: This removes all but the most trivial dead code.
@@ -12,13 +11,13 @@ use ir;
 /// A dead code elimination pass.
 pub struct DeadCodeElimination;
 
-impl pass::Metadata for DeadCodeElimination
+impl Metadata for DeadCodeElimination
 {
-    fn id(&self) -> pass::Id { pass::Id(0xbb2af3bc) }
+    fn id(&self) -> Id { Id(0xbb2af3bc) }
     fn name(&self) -> &'static str { "dead code elimination" }
 }
 
-impl pass::Transform<ir::Value> for DeadCodeElimination
+impl Transform<ir::Value> for DeadCodeElimination
 {
     fn run_block(&mut self, block: ir::Block)
         -> ir::Block {
@@ -28,10 +27,10 @@ impl pass::Transform<ir::Value> for DeadCodeElimination
 }
 
 // TODO: blamket impl for all passes
-impl Into<pass::Info<ir::Value>> for Box<DeadCodeElimination>
+impl Into<Info<ir::Value>> for Box<DeadCodeElimination>
 {
-    fn into(self) -> pass::Info<ir::Value> {
-        pass::Info::Transform(self)
+    fn into(self) -> Info<ir::Value> {
+        Info::Transform(self)
     }
 }
 

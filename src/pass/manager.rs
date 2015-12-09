@@ -1,12 +1,11 @@
-
-use pass::{self,Metadata,Analysis,Transform,Id};
+use {Metadata,Info,Analysis,Transform,Id};
 use lang;
 use std;
 
 /// The pass manager.
 pub struct Manager<V: lang::Value>
 {
-    passes: Vec<pass::Info<V>>,
+    passes: Vec<Info<V>>,
 }
 
 impl<V: lang::Value> Manager<V>
@@ -19,14 +18,14 @@ impl<V: lang::Value> Manager<V>
 
     /// Adds a pass to the manager.
     pub fn add_pass<P>(mut self, pass: P) -> Self
-        where Box<P>: Into<pass::Info<V>> {
+        where Box<P>: Into<Info<V>> {
 
         self.passes.push(Box::new(pass).into());
 
         self
     }
 
-    pub fn passes(&self) -> std::slice::Iter<pass::Info<V>> {
+    pub fn passes(&self) -> std::slice::Iter<Info<V>> {
         self.passes.iter()
     }
 
@@ -38,8 +37,8 @@ impl<V: lang::Value> Manager<V>
             let pass = self::lookup_pass_mut(pass_id, &mut self.passes).unwrap();
 
             match *pass {
-                pass::Info::Analysis(ref mut p) => p.run_module(&module),
-                pass::Info::Transform(ref mut p) => module = p.run_module(module),
+                Info::Analysis(ref mut p) => p.run_module(&module),
+                Info::Transform(ref mut p) => module = p.run_module(module),
             }
         }
 
@@ -48,14 +47,14 @@ impl<V: lang::Value> Manager<V>
 }
 
 /// Builds a list of passes to be run in order.
-pub fn build_pass_list<V>(passes: &[pass::Info<V>])
+pub fn build_pass_list<V>(passes: &[Info<V>])
     -> Vec<Id> where V: lang::Value {
     // FIXME: Take into account dependencies.
     passes.iter().map(|p| p.id()).collect()
 }
 
 /// Finds a pass in an array based on ID.
-fn lookup_pass_mut<V: lang::Value>(id: Id, passes: &mut [pass::Info<V>])
-    -> Option<&mut pass::Info<V>> {
+fn lookup_pass_mut<V: lang::Value>(id: Id, passes: &mut [Info<V>])
+    -> Option<&mut Info<V>> {
     passes.iter_mut().find(|p| p.id() == id)
 }

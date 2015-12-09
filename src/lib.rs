@@ -1,8 +1,6 @@
 #![feature(plugin)]
 #![feature(associated_consts)]
 
-// #![plugin(clippy)]
-
 extern crate num;
 extern crate bit_vec;
 
@@ -14,11 +12,12 @@ pub use self::compiler_lang as lang;
 pub use self::compiler_ir as ir;
 /// The target information module.
 pub use self::compiler_target as target;
-
-pub mod pass;
+/// The pass infrastructure.
+pub use self::compiler_pass as pass;
 
 #[macro_use]
 extern crate compiler_util;
 extern crate compiler_lang;
 extern crate compiler_ir;
 extern crate compiler_target;
+extern crate compiler_pass;
