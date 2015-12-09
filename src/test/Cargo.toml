@@ -9,8 +9,8 @@ argparse = "*"
 walkdir = "0.1"
 term = "*"
 
-[dependencies.compiler]
-path = "../../"
+[dependencies.compiler_ir]
+path = "../ir"
 
 [lib]
 name = "compiler_test"
