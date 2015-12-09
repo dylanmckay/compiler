@@ -4,8 +4,6 @@ extern crate compiler_test as test;
 
 const TEST_DIR: &'static str = "tests";
 
-use std::io::Write;
-
 #[test]
 fn integrated_test_suite() {
     let test_paths = test::find::in_path(TEST_DIR).unwrap().into_iter();
@@ -18,6 +16,21 @@ fn integrated_test_suite() {
     context.add_search_dir(util::tool_dir());
 
     let results = context.run();
+
+    for result in results.iter() {
+        match result.kind {
+            test::TestResultKind::Pass => continue,
+            test::TestResultKind::Skip => {
+                test::print::result(result);
+                panic!("Test does not contain any directives: {}",
+                       result.path);
+            },
+            test::TestResultKind::Fail(..) => {
+                test::print::result(result);
+                panic!("Test failed: {}", result.path);
+            },
+        }
+    }
 }
 
 mod util

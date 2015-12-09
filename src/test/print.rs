@@ -58,7 +58,7 @@ pub fn success<S>(msg: S)
 pub fn warning<S>(msg: S)
     where S: Into<String> {
     with(format!("{}\n", msg.into()),
-         term::stdout().unwrap(),
+         term::stderr().unwrap(),
          term::color::YELLOW);
 }
 

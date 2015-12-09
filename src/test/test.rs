@@ -181,6 +181,10 @@ impl TestResult
     pub fn passed(&self) -> bool {
         if let TestResultKind::Pass = self.kind { true } else { false }
     }
+
+    pub fn failed(&self) -> bool {
+        if let TestResultKind::Fail(..) = self.kind { true } else { false }
+    }
 }
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -204,10 +208,14 @@ impl Context
         self
     }
 
-    pub fn run(&self) -> Vec<TestResult> {
-        self.tests.iter().map(|test| {
+    pub fn run(&self) -> Results {
+        let test_results = self.tests.iter().map(|test| {
             test.run(self)
-        }).collect()
+        }).collect();
+
+        Results {
+            test_results: test_results,
+        }
     }
 
     pub fn add_search_dir(&mut self, dir: String) {
@@ -239,3 +247,28 @@ impl Context
     }
 }
 
+
+#[derive(Clone,Debug,PartialEq,Eq)]
+pub struct Results
+{
+    test_results: Vec<TestResult>,
+}
+
+impl Results
+{
+    pub fn test_results(&self) -> ::std::slice::Iter<TestResult> {
+        self.test_results.iter()
+    }
+
+    pub fn iter(&self) -> ::std::slice::Iter<TestResult> {
+        self.test_results()
+    }
+
+    pub fn passed(&self) -> bool {
+        self.test_results().all(TestResult::passed)
+    }
+
+    pub fn failed(&self) -> bool {
+        self.test_results().any(TestResult::failed)
+    }
+}
