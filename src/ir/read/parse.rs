@@ -401,12 +401,12 @@ mod test
 
     #[test]
     fn globals() {
-        expect_global!("global ABCD = i32 5" => "ABCD", Value::i32(5));
+        expect_global!("global @ABCD = i32 5" => "ABCD", Value::i32(5));
 
-        expect_global!("global hello_world = u127 38"
+        expect_global!("global @hello_world = u127 38"
                        => "hello_world", Value::u(127, 38));
 
-        expect_global!("global ewf = i16 52" => "ewf", Value::i(16, 52));
+        expect_global!("global @ewf = i16 52" => "ewf", Value::i(16, 52));
     }
 }
 
