@@ -1,5 +1,5 @@
 
-use {Module,Global,Expression,Function,Value,Type,value,Condition,Block};
+use {Module,Global,Expression,Function,Value,value,Condition,Block};
 use util;
 use util::Identifiable;
 use std::fmt;
@@ -289,9 +289,9 @@ pub mod expression
         write!(fmt, "%{}", number)
     }
 
-    pub fn argument_ref(arg_ref: &value::ArgumentRef,
-                        printer: &mut Printer,
-                        fmt: &mut fmt::Formatter) -> fmt::Result {
+    pub fn argument_ref(_arg_ref: &value::ArgumentRef,
+                        _printer: &mut Printer,
+                        _fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
     }
 

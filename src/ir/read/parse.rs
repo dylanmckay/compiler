@@ -109,7 +109,7 @@ impl<I> Parser<I>
     }
 
     fn parse_block(&mut self) -> Result<Block> {
-        self.expect(Token::right_curly_brace());
+        try!(self.expect(Token::right_curly_brace()));
         unimplemented!();
     }
 
@@ -129,7 +129,7 @@ impl<I> Parser<I>
 
             params.push(Parameter::new(name, ty));
 
-            self.maybe_eat(Token::comma());
+            try!(self.maybe_eat(Token::comma()));
             try!(self.eat_whitespace());
         }
 
@@ -149,7 +149,7 @@ impl<I> Parser<I>
             let ty = try!(self.parse_type());
             types.push(ty);
 
-            self.maybe_eat(Token::comma());
+            try!(self.maybe_eat(Token::comma()));
             try!(self.eat_whitespace());
         }
 
@@ -224,7 +224,7 @@ impl<I> Parser<I>
         Ok(Expression::integer(ty, value).unwrap())
     }
 
-    fn parse_string_expression(&mut self, string: String)
+    fn parse_string_expression(&mut self, _string: String)
         -> Result<Expression> {
         unimplemented!();
     }
