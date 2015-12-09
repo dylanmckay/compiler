@@ -236,6 +236,7 @@ pub mod expression
             Expression::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
             Expression::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
             Expression::ArgumentRef(ref val) => self::argument_ref(val, printer, fmt),
+            Expression::String(ref val) => self::string(val, fmt),
         }
     }
 
@@ -312,6 +313,11 @@ pub mod expression
                         _printer: &mut Printer,
                         _fmt: &mut fmt::Formatter) -> fmt::Result {
         unimplemented!();
+    }
+
+    pub fn string(s: &value::String,
+                  fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "\"{}\"", s.text())
     }
 
     pub mod instruction

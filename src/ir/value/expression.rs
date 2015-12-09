@@ -21,6 +21,8 @@ pub enum Expression
     FunctionRef(value::FunctionRef),
     RegisterRef(value::RegisterRef),
     ArgumentRef(value::ArgumentRef),
+
+    String(value::String),
 }
 
 impl Expression
@@ -81,6 +83,12 @@ impl Expression
 
     pub fn argument_ref(param: &Parameter) -> Expression {
         value::ArgumentRef::reference(param).into()
+    }
+
+    /// Creates a new string.
+    pub fn string<S>(text: S) -> Self
+        where S: Into<String> {
+        value::String::new(text.into()).into()
     }
 
     /// Creates an unnamed register.
@@ -225,6 +233,7 @@ impl Expression
             Expression::FunctionRef(ref val) => val.ty(),
             Expression::RegisterRef(ref val) => val.ty(),
             Expression::ArgumentRef(ref val) => val.ty(),
+            Expression::String(ref val) => val.ty(),
         }
     }
 
@@ -238,6 +247,7 @@ impl Expression
              Expression::FunctionRef(..) => true,
              Expression::RegisterRef(..) => true,
              Expression::ArgumentRef(..) => true,
+             Expression::String(..) => true,
          }
     }
 
