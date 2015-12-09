@@ -4,7 +4,9 @@ pub use self::test::*;
 pub mod tool;
 pub mod test;
 pub mod find;
+pub mod print;
 
 extern crate compiler_ir as ir;
-extern crate walkdir;
 
+extern crate walkdir;
+extern crate term;
