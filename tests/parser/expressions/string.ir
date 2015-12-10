@@ -1,0 +1,6 @@
+
+global @ABCD = "sfd"
+global @FOO = "qwerty"
+global @adf = ""
+
+global @qwer = "abcdef!"

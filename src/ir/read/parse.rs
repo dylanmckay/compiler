@@ -224,9 +224,9 @@ impl<I> Parser<I>
         Ok(Expression::integer(ty, value).unwrap())
     }
 
-    fn parse_string_expression(&mut self, _string: String)
+    fn parse_string_expression(&mut self, string: String)
         -> Result<Expression> {
-        unimplemented!();
+        Ok(Expression::string(string))
     }
 
     fn parse_integer_type(&mut self, type_str: &str)
@@ -253,8 +253,8 @@ impl<I> Parser<I>
         self.expect_word()
     }
 
-    fn assert(&mut self, expected: Token) {
-        self.expect(expected).unwrap();
+    fn assert(&mut self, expected: Token) -> Token {
+        self.expect(expected).unwrap()
     }
 
     fn expect_something(&mut self) -> Result<Token> {
@@ -304,8 +304,8 @@ impl<I> Parser<I>
 
     fn expect_word(&mut self) -> Result<String> {
         match self.expect_something() {
-            Ok(ref token) => match *token {
-                Token::Word(ref w) => Ok(w.clone()),
+            Ok(token) => match token {
+                Token::Word(w) => Ok(w.clone()),
                 _ => Err("expected a word".into()),
             },
             Err(e) => Err(e),
