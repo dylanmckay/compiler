@@ -39,6 +39,9 @@ impl<V> Parameter<V>
 impl<V: Value> util::Identifiable for Parameter<V>
 {
     fn get_id(&self) -> util::Id { self.id }
+    fn internal_set_id(&mut self, id: util::Id) {
+        self.id = id;
+    }
 }
 
 impl<V> std::fmt::Display for Parameter<V>
@@ -265,6 +268,7 @@ impl<V> Function<V>
 impl<V: Value> util::Identifiable for Function<V>
 {
     fn get_id(&self) -> util::Id { self.id }
+    fn internal_set_id(&mut self, id: util::Id) { self.id = id; }
 }
 
 impl<V: PartialEq + Value> std::cmp::PartialEq for Function<V>

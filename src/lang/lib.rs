@@ -8,6 +8,7 @@ pub use self::value::Value;
 pub use self::ty::Type;
 pub use self::attrs::{CallingConvention,InlineHint,ComplexityHint};
 
+#[macro_use]
 extern crate compiler_util as util;
 
 pub mod name;

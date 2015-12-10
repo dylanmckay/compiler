@@ -4,7 +4,7 @@ use util;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct GlobalRef
 {
-    id: util::Id,
+    global_id: util::Id,
     ty: Type,
 }
 
@@ -12,13 +12,13 @@ impl GlobalRef
 {
     pub fn reference(global: &Global) -> Self {
         GlobalRef {
-            id: global.id(),
+            global_id: global.id(),
             ty: global.ty().clone(),
         }
     }
 
     pub fn global_id(&self) -> util::Id {
-        self.id
+        self.global_id
     }
 
     pub fn ty(&self) -> Type {

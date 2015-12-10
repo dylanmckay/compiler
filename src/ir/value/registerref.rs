@@ -4,7 +4,7 @@ use util;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct RegisterRef
 {
-    id: util::Id,
+    reg_id: util::Id,
     ty: Type,
 }
 
@@ -14,10 +14,12 @@ impl RegisterRef
         use util::Identifiable;
 
         RegisterRef {
-            id: register.get_id(),
+            reg_id: register.get_id(),
             ty: register.ty().clone(),
         }
     }
+
+    pub fn register_id(&self) -> util::Id { self.reg_id }
 
     pub fn ty(&self) -> Type {
         self.ty.clone()

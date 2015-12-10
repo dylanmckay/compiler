@@ -25,6 +25,7 @@ pub mod users;
 
 pub mod cond;
 
+#[macro_use]
 extern crate compiler_util as util;
 extern crate compiler_lang as lang;
 

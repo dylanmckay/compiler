@@ -41,4 +41,12 @@ impl Register
     }
 }
 
+impl util::Identifiable for Register
+{
+    fn get_id(&self) -> util::Id { self.id }
+    fn internal_set_id(&mut self, id: util::Id) {
+        self.id = id;
+    }
+}
+
 impl_expression!(Register);

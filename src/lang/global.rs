@@ -40,6 +40,9 @@ impl<V> Global<V>
 impl<V: Value> util::Identifiable for Global<V>
 {
     fn get_id(&self) -> util::Id { self.id }
+    fn internal_set_id(&mut self, id: util::Id) {
+        self.id = id;
+    }
 }
 
 impl<V: Value> std::fmt::Display for Global<V>

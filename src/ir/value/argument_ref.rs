@@ -4,7 +4,7 @@ use util;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct ArgumentRef
 {
-    id: util::Id,
+    param_id: util::Id,
     ty: Type,
 }
 
@@ -14,9 +14,13 @@ impl ArgumentRef
         use util::Identifiable;
 
         ArgumentRef {
-            id: parameter.get_id(),
+            param_id: parameter.get_id(),
             ty: parameter.ty().clone(),
         }
+    }
+
+    pub fn parameter_id(&self) -> util::Id {
+        self.param_id
     }
 
     pub fn ty(&self) -> Type {

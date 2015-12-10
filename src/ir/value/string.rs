@@ -1,11 +1,8 @@
 use Type;
-use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct String
 {
-    id: util::Id,
-
     text: ::std::string::String,
 }
 
@@ -13,7 +10,6 @@ impl String
 {
     pub fn new(text: ::std::string::String) -> Self {
         String {
-            id: util::Id::next(),
             text: text,
         }
     }

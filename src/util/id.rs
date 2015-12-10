@@ -32,6 +32,8 @@ impl Id
 pub trait Identifiable
 {
     fn get_id(&self) -> Id;
+
+    fn internal_set_id(&mut self, id: Id);
 }
 
 impl std::cmp::PartialEq for Id
@@ -54,3 +56,4 @@ impl std::fmt::Display for Id
         val.fmt(fmt)
     }
 }
+

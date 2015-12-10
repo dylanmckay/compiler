@@ -298,13 +298,6 @@ impl ExpressionTrait for Expression { }
 
 macro_rules! impl_expression {
     ($ty:ident) => {
-        impl ::util::Identifiable for $ty
-        {
-            fn get_id(&self) -> ::util::Id {
-                self.id
-            }
-        }
-
         impl ::ExpressionTrait for $ty { }
 
         impl Into<::Expression> for $ty

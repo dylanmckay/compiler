@@ -201,7 +201,6 @@ pub mod expression
     use {Expression,value};
     use std::fmt;
     use lang;
-    use util::Identifiable;
     use super::Printer;
 
     pub fn expression(expr: &Expression,
@@ -305,7 +304,7 @@ pub mod expression
     pub fn register_ref(reg_ref: &value::RegisterRef,
                         printer: &mut Printer,
                         fmt: &mut fmt::Formatter) -> fmt::Result {
-        let number = printer.register_number(reg_ref.get_id());
+        let number = printer.register_number(reg_ref.register_id());
         write!(fmt, "%{}", number)
     }
 
