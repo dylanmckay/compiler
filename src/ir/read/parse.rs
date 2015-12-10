@@ -120,8 +120,33 @@ impl<I> Parser<I>
     }
 
     fn parse_block(&mut self) -> Result<Block> {
-        try!(self.expect(Token::right_curly_brace()));
-        unimplemented!();
+        try!(self.eat_whitespace());
+        let label = try!(self.parse_label());
+        try!(self.eat_whitespace());
+
+        let mut values = Vec::new();
+
+        while !try!(self.is_end_of_block_next()) {
+            let value = try!(self.parse_value());
+            values.push(value);
+            try!(self.eat_whitespace());
+        }
+
+        Ok(Block::new(label, values))
+    }
+
+    fn is_end_of_block_next(&mut self) -> Result<bool> {
+        let next = try!(self.peek_something());
+
+        Ok(next == Token::colon() || next == Token::right_curly_brace())
+    }
+
+    fn parse_label(&mut self) -> Result<String> {
+        try!(self.expect(Token::colon()));
+        let name = try!(self.expect_word());
+        try!(self.expect(Token::new_line()));
+
+        Ok(name)
     }
 
     fn parse_parameter_list(&mut self) -> Result<Vec<Parameter>> {
@@ -232,7 +257,7 @@ impl<I> Parser<I>
         match first_token {
             Token::Word(word) => self.parse_word_expression(word),
             Token::String(string) => self.parse_string_expression(string),
-            _ => Err("unknown token for expression".into()),
+            _ => Err(format!("unknown token for expression: {}", first_token)),
         }
     }
 

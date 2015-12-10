@@ -1,0 +1,19 @@
+; RUN: asm @file
+
+fn @foo(%a: i32) -> u32 {
+:entry
+
+  "baz"
+  "bing"
+  i32 5
+  add i32 5, i32 6
+:other
+  ret
+}
+
+fn @bar(%a: i11, %b: i22) -> u1,i2 {
+:baz
+:bar
+:boo
+:bag
+}
