@@ -144,3 +144,20 @@ impl<V> Module<V>
     }
 }
 
+impl<V> Extend<Global<V>> for Module<V>
+    where V: Value
+{
+    fn extend<I>(&mut self, it: I)
+        where I: IntoIterator<Item=Global<V>> {
+        self.globals.extend(it)
+    }
+}
+
+impl<V> Extend<Function<V>> for Module<V>
+    where V: Value
+{
+    fn extend<I>(&mut self, it: I)
+        where I: IntoIterator<Item=Function<V>> {
+        self.functions.extend(it)
+    }
+}

@@ -148,6 +148,14 @@ impl<T: Identifiable> std::iter::FromIterator<T> for List<T>
     }
 }
 
+impl<T: Identifiable> Extend<T> for List<T>
+{
+    fn extend<I>(&mut self, it: I)
+        where I: IntoIterator<Item=T> {
+        self.elements.extend(it)
+    }
+}
+
 impl<T: Identifiable + std::fmt::Debug> std::fmt::Debug for List<T>
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {

@@ -1,4 +1,4 @@
-use super::{Tokenizer,Token};
+use super::{Tokenizer,Token,Resolve};
 
 use {
     Global,Module,Value,Expression,Type,Block,
@@ -13,7 +13,9 @@ pub type Result<T> = std::result::Result<T,String>;
 pub struct Parser<I: Iterator<Item=char>>
 {
     tokenizer: Tokenizer<I>,
-    module: Module,
+
+    resolve_global: Resolve<Global>,
+    resolve_function: Resolve<Function>,
 }
 
 impl<I> Parser<I>
@@ -23,7 +25,9 @@ impl<I> Parser<I>
     pub fn new(chars: I) -> Self {
         Parser {
             tokenizer: Tokenizer::new(chars),
-            module: Module::empty(),
+
+            resolve_global: Resolve::new(),
+            resolve_function: Resolve::new(),
         }
     }
 
@@ -39,7 +43,11 @@ impl<I> Parser<I>
             try!(self.parse_next());
         }
 
-        Ok(self.module)
+        let mut module = Module::empty();
+        self.resolve_global.give_to(&mut module);
+        self.resolve_function.give_to(&mut module);
+
+        Ok(module)
     }
 
     fn parse_next(&mut self) -> Result<()> {
@@ -72,7 +80,8 @@ impl<I> Parser<I>
 
         try!(self.expect(Token::new_line()));
 
-        self.module.add_global(Global::new(name, value));
+        self.resolve_global.resolve(Global::new(name, value));
+
         Ok(())
     }
 
@@ -87,7 +96,8 @@ impl<I> Parser<I>
         let signature = Signature::new(params, returns);
         let function = Function::new(name, signature, body);
 
-        self.module.add_function(function);
+        self.resolve_function.resolve(function);
+
         Ok(())
     }
 
