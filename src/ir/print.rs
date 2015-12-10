@@ -4,6 +4,8 @@ use util::Identifiable;
 use std::fmt;
 use std::collections::HashMap;
 
+pub const TAB_STRING: &'static str = "  ";
+
 /// A hack to be able to implement `Display` on a module.
 ///
 /// This is to work around Rust's orphan rules.
@@ -179,7 +181,7 @@ pub fn root_value(value: &Value,
 pub fn root_expression(expression: &Expression,
                        printer: &mut Printer,
                        fmt: &mut fmt::Formatter) -> fmt::Result {
-    try!(write!(fmt, "\t"));
+    try!(write!(fmt, "{}", TAB_STRING));
     try!(self::expression::plain(expression, printer, fmt));
     write!(fmt, "\n")
 }
