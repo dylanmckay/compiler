@@ -22,10 +22,9 @@ pub mod print;
 pub mod read;
 /// Expression user information.
 pub mod users;
-
+/// Condition codes.
 pub mod cond;
 
-#[macro_use]
 extern crate compiler_util as util;
 extern crate compiler_lang as lang;
 
