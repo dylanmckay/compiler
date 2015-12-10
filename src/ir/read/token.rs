@@ -43,6 +43,8 @@ impl Token
     pub fn right_curly_brace() -> Self { Token::symbol("}") }
     pub fn equal_sign() -> Self { Token::symbol("=") }
     pub fn function_arrow() -> Self { Token::symbol("->") }
+    pub fn boolean_true() -> Self { Token::word("true") }
+    pub fn boolean_false() -> Self { Token::word("false") }
 
     pub fn word<S>(word: S) -> Self
         where S: Into<String> {
@@ -106,6 +108,11 @@ impl Token
 
     pub fn is_new_line(&self) -> bool {
         if let Token::NewLine = *self { true } else { false }
+    }
+
+    pub fn is_boolean(&self) -> bool {
+        self == &Token::boolean_true() ||
+            self == &Token::boolean_false()
     }
 }
 

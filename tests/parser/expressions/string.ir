@@ -1,3 +1,4 @@
+; RUN: asm @file
 
 global @ABCD = "sfd"
 global @FOO = "qwerty"

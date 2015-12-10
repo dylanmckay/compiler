@@ -1,4 +1,5 @@
-use {types,value,Type,Instruction,Name,Block,Parameter,Function,Global};
+use {types,value,Type,Instruction,Name,Block,
+     Parameter,Function,Global,Condition};
 use std::fmt;
 use util;
 use super::Value;
@@ -159,10 +160,10 @@ impl Expression
         )
     }
 
-    pub fn br<V>(target: V) -> Self
+    pub fn br<V>(condition: Condition, target: V) -> Self
         where V: Into<Value> {
         Expression::instruction(
-            Instruction::br(target)
+            Instruction::br(condition, target)
         )
     }
 

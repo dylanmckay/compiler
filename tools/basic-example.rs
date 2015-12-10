@@ -43,7 +43,8 @@ fn create_module() -> ir::Module {
         };
 
         let bb1 = {
-            let inst_br = ir::Value::br(ir::Value::block_ref(&bb2));
+            let inst_br = ir::Value::br(ir::Condition::True,
+                                        ir::Value::block_ref(&bb2));
 
             let mut block = ir::Block::empty("entry");
             block.append_value(inst_br);

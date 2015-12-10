@@ -9,9 +9,9 @@ pub struct Break
 
 impl Break
 {
-    /// Creates a conditional branch.
-    pub fn conditional(cond: Condition,
-                       target: Value) -> Self {
+    /// Creates a branch.
+    pub fn new(cond: Condition,
+               target: Value) -> Self {
         Break {
             cond: cond,
             target: Box::new(target),
@@ -20,7 +20,7 @@ impl Break
 
     /// Creates an unconditional branch.
     pub fn unconditional(target: Value) -> Self {
-        Break::conditional(Condition::True, target)
+        Break::new(Condition::True, target)
     }
 
     pub fn condition(&self) -> &Condition {

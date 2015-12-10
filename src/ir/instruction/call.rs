@@ -34,4 +34,4 @@ impl Call
 }
 
 impl_instruction!(Call: target);
-
+impl_instruction_unary!(Call: target);

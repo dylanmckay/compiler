@@ -1,4 +1,4 @@
-use {Global,Function,Parameter,Block,types,Expression,Type};
+use {Global,Function,Parameter,Block,types,Expression,Type,Condition};
 use value;
 use util;
 
@@ -89,8 +89,8 @@ impl Value
         Value::new(Expression::call(target))
     }
 
-    pub fn br(target: Value) -> Self {
-        Value::new(Expression::br(target))
+    pub fn br(condition: Condition, target: Value) -> Self {
+        Value::new(Expression::br(condition, target))
     }
 
     pub fn ret(value: Value) -> Self {

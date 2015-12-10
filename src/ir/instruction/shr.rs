@@ -22,4 +22,4 @@ impl Shr
 }
 
 impl_instruction!(Shr: value, amount);
-
+impl_instruction_binary!(Shr: value, amount);

@@ -1,0 +1,6 @@
+; RUN: asm @file
+
+global @ABCD = sub i32 5, i32 10
+global @FOO = sub i21 2, i21 10
+
+global @bar = sub i1200 2, i1200 10

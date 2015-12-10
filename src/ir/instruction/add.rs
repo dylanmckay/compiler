@@ -24,4 +24,4 @@ impl Add
 }
 
 impl_instruction!(Add: lhs, rhs);
-
+impl_instruction_binary!(Add: lhs, rhs);

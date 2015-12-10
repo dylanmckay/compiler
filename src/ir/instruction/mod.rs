@@ -15,7 +15,8 @@ pub use self::br::Break;
 pub mod instruction
 {
     use std::fmt;
-    use {instruction,Value,Expression,Type,ExpressionTrait,value,Block};
+    use {instruction,Value,Expression,Type,ExpressionTrait,value,Block,
+         Condition};
 
     pub trait InstructionTrait : fmt::Debug +
                                  Into<Expression> +
@@ -26,8 +27,12 @@ pub mod instruction
     /// An instruction with one operand.
     pub trait Unary : InstructionTrait
     {
+        fn with_operand(value: Value) -> Self;
+
         fn operand(&self) -> &Value;
 
+        // TODO: remove this, it was a stub from when
+        // Value and Expression were split up
         fn operand_expression(&self) -> &Expression {
             self.operand().expression()
         }
@@ -36,6 +41,8 @@ pub mod instruction
     /// An instruction with two operands.
     pub trait Binary : InstructionTrait
     {
+        fn with_operands(lhs: Value, rhs: Value) -> Self;
+
         fn operands(&self) -> (&Value,&Value);
 
         fn operand_expressions(&self) -> (&Expression, &Expression) {
@@ -100,9 +107,9 @@ pub mod instruction
             instruction::Return::new(None).into()
         }
 
-        pub fn br<V>(target: V) -> Self
+        pub fn br<V>(condition: Condition, target: V) -> Self
             where V: Into<Value> {
-            instruction::Break::unconditional(target.into()).into()
+            instruction::Break::new(condition, target.into()).into()
         }
 
         pub fn call<V>(target: V) -> Self
@@ -226,45 +233,42 @@ pub mod instruction
 
     }
 
-    /// Implements several traits for an instruction.
-    macro_rules! impl_instruction {
-        // An instruction with no operands.
-        ($inst:ident) => {
-            impl_instruction_internal!($inst);
-        };
-
-        // A unary instruction.
+    macro_rules! impl_instruction_unary {
         ($inst:ident : $op:ident) => {
-            impl_instruction_internal!($inst: $op);
-
             impl ::instruction::Unary for $inst {
+                fn with_operand(op: ::Value) -> Self {
+                    $inst::new(op)
+                }
+
                 fn operand(&self) -> &::Value {
                     &self.$op
                 }
             }
-        };
+        }
+    }
 
-        // A binary instruction.
-        ($inst:ident : $op1:ident, $op2:ident) => {
-            impl_instruction_internal!($inst: $op1, $op2);
-
+    macro_rules! impl_instruction_binary {
+        ($inst:ident : $lhs:ident, $rhs:ident) => {
             impl ::instruction::Binary for $inst {
+                fn with_operands(lhs: ::Value, rhs: ::Value) -> Self {
+                    $inst::new(lhs, rhs)
+                }
+
                 fn operands(&self) -> (&::Value,&::Value) {
-                    (&self.$op1,
-                     &self.$op2)
+                    (&self.$lhs,
+                     &self.$rhs)
                 }
             }
-        };
+        }
     }
 
     /// Implements several traits for an instruction.
-    /// **Note**: Do not use this macro directly.
-    macro_rules! impl_instruction_internal {
+    macro_rules! impl_instruction {
         // No operands.
         (
             $inst:ident
         ) => {
-            impl_instruction_internal!($inst: );
+            impl_instruction!($inst: );
         };
 
         // One or more operands.

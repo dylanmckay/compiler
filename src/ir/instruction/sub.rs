@@ -22,3 +22,4 @@ impl Sub
 }
 
 impl_instruction!(Sub: lhs, rhs);
+impl_instruction_binary!(Sub: lhs, rhs);

@@ -21,6 +21,10 @@ pub enum Condition
 
 impl Condition
 {
+    pub fn from_boolean(value: bool) -> Self {
+        if value { Condition::True } else { Condition::False }
+    }
+
     /// Checks if the condition is `true` or `false`.
     pub fn is_trivial(&self) -> bool {
         match *self {

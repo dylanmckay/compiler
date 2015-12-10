@@ -20,3 +20,4 @@ impl Mul
 }
 
 impl_instruction!(Mul: lhs, rhs);
+impl_instruction_binary!(Mul: lhs, rhs);

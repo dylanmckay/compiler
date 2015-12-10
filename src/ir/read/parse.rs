@@ -2,7 +2,8 @@ use super::{Tokenizer,Token};
 
 use {
     Global,Module,Value,Expression,Type,Block,
-    Signature,Function,Parameter,types
+    Signature,Function,Parameter,Instruction,types,
+    Unary, Binary, Condition,
 };
 use std;
 
@@ -176,6 +177,26 @@ impl<I> Parser<I>
         self.parse_expression().map(|expr| Value::new(expr))
     }
 
+    fn parse_condition(&mut self) -> Result<Condition> {
+        let first_token = try!(self.peek_something());
+
+        if first_token.is_boolean() {
+            Ok(Condition::from_boolean(try!(self.parse_boolean())))
+        } else {
+            unimplemented!();
+        }
+    }
+
+    fn parse_boolean(&mut self) -> Result<bool> {
+        let value = try!(self.expect_word());
+
+        match &*value {
+            "true" => Ok(true),
+            "false" => Ok(false),
+            _ => Err(format!("{} is not a valid boolean value", value)),
+        }
+    }
+
     fn parse_type(&mut self) -> Result<Type> {
         let first_token =  try!(self.expect_something());
 
@@ -210,7 +231,7 @@ impl<I> Parser<I>
         if util::is_integer_type(&first_word) {
             self.parse_integer_expression(&first_word)
         } else {
-            Err("unknown token for expression".into())
+            self.parse_instruction(&first_word)
         }
     }
 
@@ -251,6 +272,63 @@ impl<I> Parser<I>
     fn parse_local_identifier(&mut self) -> Result<String> {
         try!(self.expect(Token::percent_sign()));
         self.expect_word()
+    }
+
+    fn parse_instruction(&mut self, mnemonic: &str)
+        -> Result<Expression> {
+        use instruction::*;
+
+        match mnemonic {
+            "add" => self.parse_binary_instruction::<Add>(),
+            "sub" => self.parse_binary_instruction::<Sub>(),
+            "mul" => self.parse_binary_instruction::<Mul>(),
+            "div" => self.parse_binary_instruction::<Div>(),
+            "shl" => self.parse_binary_instruction::<Shl>(),
+            "shr" => self.parse_binary_instruction::<Shr>(),
+            "call" => self.parse_unary_instruction::<Call>(),
+            "ret" => self.parse_ret_instruction(),
+            "br" => self.parse_br_instruction(),
+
+            _ => Err(format!("unknown instruction: {}", mnemonic)),
+        }
+    }
+
+    fn parse_unary_instruction<U>(&mut self) -> Result<Expression>
+        where U: Unary {
+        let op = try!(self.parse_value());
+
+        Ok(U::with_operand(op).into())
+    }
+
+    fn parse_binary_instruction<B>(&mut self) -> Result<Expression>
+        where B: Binary {
+        let lhs = try!(self.parse_value());
+        try!(self.expect(Token::comma()));
+        let rhs = try!(self.parse_value());
+
+        Ok(B::with_operands(lhs, rhs).into())
+    }
+
+    fn parse_ret_instruction(&mut self) -> Result<Expression> {
+        use instruction::Return;
+
+        let first_token = try!(self.peek_something());
+
+        let target = if first_token.is_new_line() {
+            None
+        } else {
+            Some(try!(self.parse_value()))
+        };
+
+        Ok(Return::new(target).into())
+    }
+
+    fn parse_br_instruction(&mut self) -> Result<Expression> {
+        let condition = try!(self.parse_condition());
+        try!(self.expect(Token::comma()));
+        let target = try!(self.parse_value());
+
+        Ok(Instruction::br(condition, target).into())
     }
 
     fn assert(&mut self, expected: Token) -> Token {

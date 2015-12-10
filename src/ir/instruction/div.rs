@@ -23,4 +23,4 @@ impl Div
 }
 
 impl_instruction!(Div: lhs, rhs);
-
+impl_instruction_binary!(Div: lhs, rhs);
