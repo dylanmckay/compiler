@@ -41,9 +41,7 @@ impl<I> Parser<I>
             try!(self.parse_next());
         }
 
-        let mut module = Module::empty();
-        self.resolve.give_to(&mut module);
-
+        let module = self.resolve.resolve(Module::empty());
         Ok(module)
     }
 
@@ -77,7 +75,7 @@ impl<I> Parser<I>
 
         try!(self.expect(Token::new_line()));
 
-        self.resolve.resolve(Global::new(name, value));
+        self.resolve.give(Global::new(name, value));
 
         Ok(())
     }
@@ -93,7 +91,7 @@ impl<I> Parser<I>
         let signature = Signature::new(params, returns);
         let function = Function::new(name, signature, body);
 
-        self.resolve.resolve(function);
+        self.resolve.give(function);
 
         Ok(())
     }
@@ -249,36 +247,41 @@ impl<I> Parser<I>
     }
 
     fn parse_expression(&mut self) -> Result<Expression> {
-        let first_token = try!(self.expect_something());
+        let first_token = try!(self.peek_something());
 
         match first_token {
-            Token::Word(word) => self.parse_word_expression(word),
-            Token::String(string) => self.parse_string_expression(string),
+            Token::Word(..) => self.parse_word_expression(),
+            Token::String(..) => self.parse_string_expression(),
+            Token::Symbol(..) => self.parse_symbol_expression(),
             _ => Err(format!("unknown token for expression: {}", first_token)),
         }
     }
 
-    fn parse_word_expression(&mut self, first_word: String)
+    fn parse_word_expression(&mut self)
         -> Result<Expression> {
+        let first_word = try!(self.peek_word());
+
         if util::is_integer_type(&first_word) {
-            self.parse_integer_expression(&first_word)
+            self.parse_integer_expression()
         } else {
-            self.parse_instruction(&first_word)
+            self.parse_instruction()
         }
     }
 
-    fn parse_integer_expression(&mut self, type_word: &str)
+    fn parse_integer_expression(&mut self)
         -> Result<Expression> {
+        let type_word = self.assert_word();
         debug_assert!(type_word.starts_with('i') || type_word.starts_with('u'));
 
-        let ty = try!(self.parse_integer_type(type_word));
+        let ty = try!(self.parse_integer_type(&type_word));
         let value = try!(self.expect_integer());
 
         Ok(Expression::integer(ty, value).unwrap())
     }
 
-    fn parse_string_expression(&mut self, string: String)
+    fn parse_string_expression(&mut self)
         -> Result<Expression> {
+        let string = self.assert_string();
         Ok(Expression::string(string))
     }
 
@@ -306,11 +309,34 @@ impl<I> Parser<I>
         self.expect_word()
     }
 
-    fn parse_instruction(&mut self, mnemonic: &str)
+    fn parse_symbol_expression(&mut self) -> Result<Expression> {
+        let symbol = self.assert_symbol();
+
+        match &*symbol {
+            "@" => self.parse_global_reference(),
+            "%" => self.parse_local_reference(),
+            _ => Err(format!("unknown expression: {}", symbol)),
+        }
+    }
+
+    // FIXME: this refers to something in the global scope, not
+    // necessarily a global variable. come up with a better name.
+    fn parse_global_reference(&mut self) -> Result<Expression> {
+        let name = try!(self.expect_word());
+        Ok(self.resolve.reference(name))
+    }
+
+    fn parse_local_reference(&mut self) -> Result<Expression> {
+        unimplemented!();
+    }
+
+    fn parse_instruction(&mut self)
         -> Result<Expression> {
         use instruction::*;
 
-        match mnemonic {
+        let mnemonic = self.assert_word();
+
+        match &*mnemonic {
             "add" => self.parse_binary_instruction::<Add>(),
             "sub" => self.parse_binary_instruction::<Sub>(),
             "mul" => self.parse_binary_instruction::<Mul>(),
@@ -373,6 +399,34 @@ impl<I> Parser<I>
 
     fn peek_something(&mut self) -> Result<Token> {
         util::expect(self.tokenizer.peek())
+    }
+
+    fn peek_word(&mut self) -> Result<String> {
+        if let Token::Word(word) = try!(self.peek_something()) {
+            Ok(word)
+        } else {
+            Err("expected word".to_owned())
+        }
+    }
+
+    fn assert_word(&mut self) -> String { self.expect_word().unwrap() }
+    fn assert_string(&mut self) -> String { self.expect_string().unwrap() }
+    fn assert_symbol(&mut self) -> String { self.expect_symbol().unwrap() }
+
+    fn expect_string(&mut self) -> Result<String> {
+        if let Token::String(s) = try!(self.expect_something()) {
+            Ok(s)
+        } else {
+            Err("expected a string".to_owned())
+        }
+    }
+
+    fn expect_symbol(&mut self) -> Result<String> {
+        if let Token::Symbol(s) = try!(self.expect_something()) {
+            Ok(s)
+        } else {
+            Err("expected a symbol".to_owned())
+        }
     }
 
     fn maybe_eat(&mut self, token: Token) -> Result<()> {

@@ -237,6 +237,9 @@ pub mod expression
             Expression::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
             Expression::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
             Expression::ArgumentRef(ref val) => self::argument_ref(val, printer, fmt),
+            Expression::UnresolvedRef(val) => {
+                panic!("unresolved reference: {}", val);
+            },
             Expression::String(ref val) => self::string(val, fmt),
         }
     }

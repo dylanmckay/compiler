@@ -1,6 +1,9 @@
 use {Function,Type,types,Signature};
 use util;
 
+// FIXME: remove 'name'
+// Also clean up 'ir::read::resolve' afterwards
+
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct FunctionRef
 {
@@ -12,6 +15,16 @@ pub struct FunctionRef
 
 impl FunctionRef
 {
+    pub fn new(func_id: util::Id,
+               name: String,
+               ty: types::Function) -> Self {
+        FunctionRef {
+            func_id: func_id,
+            name: name,
+            ty: ty,
+        }
+    }
+
     pub fn reference(func: &Function) -> Self {
         FunctionRef {
             func_id: func.id(),

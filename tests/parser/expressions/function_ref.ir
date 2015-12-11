@@ -1,0 +1,9 @@
+; RUN: asm @file
+
+fn @foo() -> i1 { }
+
+fn @bar()
+{
+:entry
+  call @foo
+}

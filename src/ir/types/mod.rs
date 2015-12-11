@@ -15,7 +15,9 @@ pub use self::void::Void;
 #[macro_use]
 pub mod ty
 {
-    use types::{Void,Pointer,Integer,Decimal,Vector,Array,Struct,Function,Block};
+    use Signature;
+    use types::{Void,Pointer,Integer,Decimal,Vector,Array,
+                Struct,Function,Block};
     use lang;
     use util::IntegerKind;
 
@@ -114,6 +116,10 @@ pub mod ty
 
         /// Creates a new unit struct.
         pub fn unit_struct() -> Type { Type::Struct(Struct::unit()) }
+
+        pub fn function(signature: Signature) -> Self {
+            Type::Function(Function::new(signature))
+        }
 
         /// Creates a new block type.
         pub fn block() -> Type { Type::Block(Block::new()) }

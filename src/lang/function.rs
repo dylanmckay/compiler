@@ -249,6 +249,14 @@ impl<V> Function<V>
         vals.into_iter()
     }
 
+    pub fn map_values<F>(mut self, mut f: F) -> Self
+        where F: FnMut(V) -> V {
+        self.blocks = self.blocks.into_iter()
+                                 .map(|b| b.map_values(|a| f(a)))
+                                 .collect();
+        self
+    }
+
     /// Gets the calling convention.
     pub fn calling_convention(&self) -> CallingConvention {
         self.cc

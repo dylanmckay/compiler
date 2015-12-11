@@ -1,0 +1,10 @@
+; RUN: asm @file
+
+global @G1 = i32 2
+global @G2 = i61 5
+
+fn @abc() {
+:entry
+  @G1
+  @G2
+}

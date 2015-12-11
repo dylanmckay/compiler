@@ -52,6 +52,7 @@ fn tokenize_module(file_name: &str) {
 fn assemble_module(file_name: &str) {
     let module = parse_module(&file_name);
 
+    // verify_module(&module);
     print_module(&module);
 }
 
@@ -72,6 +73,16 @@ fn parse_module(file_name: &str) -> ir::Module {
         Err(e) => abort(format!("could not parse IR file: {}", e)),
     }
 }
+
+fn verify_module(module: &ir::Module) {
+    match ir::verifier::verify(module) {
+        Ok(..) => (),
+        Err(e) => {
+            abort(format!("module verification failed: {}", e))
+        },
+    }
+}
+
 
 fn print_module(module: &ir::Module) {
     println!("{}", ir::printable(module));

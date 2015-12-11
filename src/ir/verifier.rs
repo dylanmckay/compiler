@@ -81,6 +81,9 @@ pub fn verify_expression(module: &Module,
                          expr: &Expression) -> Result {
     match *expr {
         Expression::Instruction(ref val) => values::instruction(module, val),
+        Expression::UnresolvedRef(id) => {
+            Err(format!("item with id {} was not resolved", id))
+        },
         _ => Ok(()),
     }
 }

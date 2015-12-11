@@ -22,6 +22,9 @@ pub enum Expression
     FunctionRef(value::FunctionRef),
     RegisterRef(value::RegisterRef),
     ArgumentRef(value::ArgumentRef),
+    /// A stub expression for storing an expression that hasn't
+    /// been resolved yet.
+    UnresolvedRef(util::Id),
 
     String(value::String),
 }
@@ -234,6 +237,9 @@ impl Expression
             Expression::FunctionRef(ref val) => val.ty(),
             Expression::RegisterRef(ref val) => val.ty(),
             Expression::ArgumentRef(ref val) => val.ty(),
+            Expression::UnresolvedRef(id) => {
+                panic!("unresolved reference: {}", id);
+            },
             Expression::String(ref val) => val.ty(),
         }
     }
@@ -248,6 +254,9 @@ impl Expression
              Expression::FunctionRef(..) => true,
              Expression::RegisterRef(..) => true,
              Expression::ArgumentRef(..) => true,
+             Expression::UnresolvedRef(id) => {
+                 panic!("unresolved reference: {}", id);
+             },
              Expression::String(..) => true,
          }
     }

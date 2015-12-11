@@ -133,6 +133,18 @@ impl<V> Module<V>
         self
     }
 
+    pub fn map_values<F>(mut self, mut f: F) -> Self
+        where F: FnMut(V) -> V {
+
+        self.globals = self.globals.into_iter()
+                                   .map(|g| g.map_value(|v| f(v)))
+                                   .collect();
+        self.functions = self.functions.into_iter()
+                                       .map(|a| a.map_values(|v| f(v)))
+                                       .collect();
+        self
+    }
+
     pub fn values(&self) -> std::vec::IntoIter<&V> {
         // FIXME: use 'impl Iterator' once supported
         let vals: Vec<_> = self.globals.iter()

@@ -141,6 +141,18 @@ impl Value
     pub fn i16(value: i16) -> Self { Self::i(16, value) }
     pub fn i32(value: i32) -> Self { Self::i(32, value) }
     pub fn i64(value: i64) -> Self { Self::i(64, value) }
+
+    pub fn map_subvalues<F>(mut self, f: F) -> Self
+        where F: FnMut(Value) -> Value {
+        self.expression = self.expression.map_subvalues(f);
+        self
+    }
+
+    pub fn map_expression<F>(mut self, mut f: F) -> Self
+        where F: FnMut(Expression) -> Expression {
+        self.expression = f(self.expression);
+        self
+    }
 }
 
 impl Into<Expression> for Value

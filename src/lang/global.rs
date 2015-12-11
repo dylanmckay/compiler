@@ -35,6 +35,12 @@ impl<V> Global<V>
     pub fn ty(&self) -> V::Type { self.value.ty() }
     /// Gets the ID of the global.
     pub fn id(&self) -> util::Id { self.id }
+
+    pub fn map_value<F>(mut self, mut f: F) -> Self
+        where F: FnMut(V) -> V {
+        self.value = f(self.value);
+        self
+    }
 }
 
 impl<V: Value> util::Identifiable for Global<V>

@@ -10,6 +10,14 @@ pub struct GlobalRef
 
 impl GlobalRef
 {
+    pub fn new(global_id: util::Id,
+               ty: Type) -> Self {
+        GlobalRef {
+            global_id: global_id,
+            ty: ty,
+        }
+    }
+
     pub fn reference(global: &Global) -> Self {
         GlobalRef {
             global_id: global.id(),
