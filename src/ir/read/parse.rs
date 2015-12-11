@@ -14,8 +14,7 @@ pub struct Parser<I: Iterator<Item=char>>
 {
     tokenizer: Tokenizer<I>,
 
-    resolve_global: Resolve<Global>,
-    resolve_function: Resolve<Function>,
+    resolve: Resolve,
 }
 
 impl<I> Parser<I>
@@ -26,8 +25,7 @@ impl<I> Parser<I>
         Parser {
             tokenizer: Tokenizer::new(chars),
 
-            resolve_global: Resolve::new(),
-            resolve_function: Resolve::new(),
+            resolve: Resolve::new(),
         }
     }
 
@@ -44,8 +42,7 @@ impl<I> Parser<I>
         }
 
         let mut module = Module::empty();
-        self.resolve_global.give_to(&mut module);
-        self.resolve_function.give_to(&mut module);
+        self.resolve.give_to(&mut module);
 
         Ok(module)
     }
@@ -80,7 +77,7 @@ impl<I> Parser<I>
 
         try!(self.expect(Token::new_line()));
 
-        self.resolve_global.resolve(Global::new(name, value));
+        self.resolve.resolve(Global::new(name, value));
 
         Ok(())
     }
@@ -96,7 +93,7 @@ impl<I> Parser<I>
         let signature = Signature::new(params, returns);
         let function = Function::new(name, signature, body);
 
-        self.resolve_function.resolve(function);
+        self.resolve.resolve(function);
 
         Ok(())
     }
