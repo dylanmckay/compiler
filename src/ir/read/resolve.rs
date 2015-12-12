@@ -1,7 +1,7 @@
 use {Function,Global,Module,Value,Expression,Type};
 use util::{Id,Identifiable};
 
-pub enum ResolvableInfo
+pub enum Info
 {
     Function {
         ty: ::types::Function,
@@ -16,7 +16,7 @@ pub trait Resolvable : Identifiable
 {
     fn name(&self) -> &str;
     fn give_to(self: Box<Self>, module: &mut Module);
-    fn info(&self) -> ResolvableInfo;
+    fn info(&self) -> Info;
 }
 
 impl Resolvable for Function {
@@ -24,8 +24,8 @@ impl Resolvable for Function {
     fn give_to(self: Box<Self>, module: &mut Module) {
         module.add_function(*self);
     }
-    fn info(&self) -> ResolvableInfo {
-        ResolvableInfo::Function {
+    fn info(&self) -> Info {
+        Info::Function {
             ty: ::types::Function::new(self.signature().clone()),
         }
     }
@@ -36,8 +36,8 @@ impl Resolvable for Global {
     fn give_to(self: Box<Self>, module: &mut Module) where Self: Sized {
         module.add_global(*self)
     }
-    fn info(&self) -> ResolvableInfo {
-        ResolvableInfo::Global {
+    fn info(&self) -> Info {
+        Info::Global {
             ty: self.ty()
         }
     }
@@ -137,7 +137,7 @@ struct ResolveItem
     id: Id,
     name: String,
     item: Option<Box<Resolvable>>,
-    info: Option<ResolvableInfo>,
+    info: Option<Info>,
 }
 
 impl ResolveItem
@@ -187,14 +187,14 @@ impl ResolveItem
         let info = if let Some(ref i) = self.info { i } else { return None; };
 
         match *info {
-            ResolvableInfo::Function { ref ty } => {
+            Info::Function { ref ty } => {
                 Some(FunctionRef::new(
                     self.id,
                     self.name.clone(),
                     ty.clone()
                 ).into())
             },
-            ResolvableInfo::Global { ref ty } => {
+            Info::Global { ref ty } => {
                 Some(GlobalRef::new(
                     self.id,
                     ty.clone(),
