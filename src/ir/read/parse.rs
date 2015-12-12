@@ -9,6 +9,8 @@ use std;
 
 pub type Result<T> = std::result::Result<T,String>;
 
+pub const ENTRY_LABEL_NAME: &'static str = "entry";
+
 /// An IR parser.
 pub struct Parser<I: Iterator<Item=char>>
 {
@@ -108,8 +110,16 @@ impl<I> Parser<I>
 
         let mut blocks = Vec::new();
 
+        let mut is_first_block = true;
         while try!(self.peek_something()) != Token::right_curly_brace() {
-            let block = try!(self.parse_block());
+
+            let block = if is_first_block {
+                is_first_block = false;
+                try!(self.parse_entry_block())
+            } else {
+                try!(self.parse_block())
+            };
+
             blocks.push(block);
         }
 
@@ -118,11 +128,35 @@ impl<I> Parser<I>
         Ok(blocks)
     }
 
+    /// Parses a block which has an implied label of 'entry' if
+    /// no label is specified.
+    fn parse_entry_block(&mut self) -> Result<Block> {
+        try!(self.eat_whitespace());
+
+        let label = if try!(self.is_label_next()) {
+            try!(self.parse_label())
+        } else {
+            ENTRY_LABEL_NAME.to_owned()
+        };
+
+        try!(self.eat_whitespace());
+
+        let values = try!(self.parse_block_values());
+
+        Ok(Block::new(label, values))
+    }
+
     fn parse_block(&mut self) -> Result<Block> {
         try!(self.eat_whitespace());
         let label = try!(self.parse_label());
         try!(self.eat_whitespace());
 
+        let values = try!(self.parse_block_values());
+
+        Ok(Block::new(label, values))
+    }
+
+    fn parse_block_values(&mut self) -> Result<Vec<Value>> {
         let mut values = Vec::new();
 
         while !try!(self.is_end_of_block_next()) {
@@ -131,13 +165,19 @@ impl<I> Parser<I>
             try!(self.eat_whitespace());
         }
 
-        Ok(Block::new(label, values))
+        Ok(values)
+    }
+
+    fn is_label_next(&mut self) -> Result<bool> {
+        let next = try!(self.peek_something());
+
+        Ok(next == Token::colon())
     }
 
     fn is_end_of_block_next(&mut self) -> Result<bool> {
         let next = try!(self.peek_something());
 
-        Ok(next == Token::colon() || next == Token::right_curly_brace())
+        Ok(try!(self.is_label_next()) || next == Token::right_curly_brace())
     }
 
     fn parse_label(&mut self) -> Result<String> {
