@@ -3,7 +3,7 @@ use super::{Tokenizer,Token,Resolve};
 use {
     Global,Module,Value,Expression,Type,Block,
     Signature,Function,Parameter,Instruction,types,
-    Unary, Binary, Condition,
+    Unary, Binary, Condition, Register, Name,
 };
 use std;
 
@@ -360,21 +360,42 @@ impl<I> Parser<I>
         let symbol = self.assert_symbol();
 
         match &*symbol {
-            "@" => self.parse_global_reference(),
-            "%" => self.parse_local_reference(),
+            "@" => {
+                let name = try!(self.expect_word());
+                self.parse_global_reference(name)
+            },
+            "%" => {
+                let name = try!(self.expect_word());
+
+                // check if this is a register assignment
+                if try!(self.peek_something()) == Token::equal_sign() {
+                    self.parse_register_assignment(name)
+                } else {
+                    self.parse_local_reference(name)
+                }
+            },
             _ => Err(format!("unknown expression: {}", symbol)),
         }
     }
 
+    fn parse_register_assignment(&mut self, name: String)
+        -> Result<Expression> {
+        self.assert(Token::equal_sign());
+        let value = try!(self.parse_value());
+
+        Ok(Register::new(
+            Name::named(name),
+            value
+        ).into())
+    }
+
     // FIXME: this refers to something in the global scope, not
     // necessarily a global variable. come up with a better name.
-    fn parse_global_reference(&mut self) -> Result<Expression> {
-        let name = try!(self.expect_word());
+    fn parse_global_reference(&mut self, name: String) -> Result<Expression> {
         Ok(self.resolve.reference(name))
     }
 
-    fn parse_local_reference(&mut self) -> Result<Expression> {
-        let name = try!(self.expect_word());
+    fn parse_local_reference(&mut self, name: String) -> Result<Expression> {
         Ok(self.resolve.reference(name))
     }
 

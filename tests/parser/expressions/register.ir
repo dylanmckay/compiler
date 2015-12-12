@@ -1,0 +1,5 @@
+; RUN: asm @file
+
+fn @foo() {
+  %abc = i32 2
+}
