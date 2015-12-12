@@ -45,21 +45,88 @@ impl Resolvable for Global {
 
 pub struct Resolve
 {
-    items: Vec<Item>,
+    scope_stack: Vec<Scope>,
 }
 
 impl Resolve
 {
+    pub fn new() -> Self {
+        let global_scope = Scope::new();
+
+        Resolve {
+            scope_stack: vec![global_scope],
+        }
+    }
+
+    pub fn reference(&mut self, name: String) -> Expression {
+        // Use the global context if the item
+        // has not been resolved yet.
+        for scope in self.scope_stack.iter_mut() {
+            if scope.has_defined(&name) {
+                return scope.reference(name);
+            }
+        }
+
+        // if the item has not been defined yet, it must
+        // lay in the global scope.
+        self.global_scope_mut().reference(name)
+    }
+
+    pub fn give<T>(&mut self, item: T)
+        where T: Resolvable + 'static {
+        self.local_scope_mut().give(item);
+    }
+
+    pub fn resolve(&mut self, module: Module)
+        -> Module {
+        self.scope_stack.iter_mut().fold(module, |m,scope| {
+            scope.resolve(m)
+        })
+    }
+
+    pub fn begin_scope(&mut self) {
+        self.scope_stack.push(Scope::new());
+    }
+
+    pub fn end_scope(&mut self) {
+        assert!(self.scope_stack.len() > 1,
+                "cannot close the global scope");
+
+        self.scope_stack.pop();
+    }
+
+    fn global_scope_mut(&mut self) -> &mut Scope {
+        self.scope_stack.first_mut().unwrap()
+    }
+
+    fn local_scope_mut(&mut self) -> &mut Scope {
+        self.scope_stack.last_mut().unwrap()
+    }
+}
+
+struct Scope
+{
+    items: Vec<Item>,
+}
+
+impl Scope
+{
     /// Creates a new resolver.
     pub fn new() -> Self {
-        Resolve {
+        Scope {
             items: Vec::new(),
         }
+    }
+
+    pub fn has_defined(&mut self, name: &str) -> bool {
+        self.lookup_name(&name).map_or(false, |item| item.is_resolved())
     }
 
     /// Gives back an `ID` which will be used to reference an item.
     pub fn reference(&mut self, name: String) -> Expression {
         if let Some(item) = self.lookup_name(&name) {
+            // TODO: we could probably create the right type of
+            // expression right here in some cases.
             return Expression::UnresolvedRef(item.id);
         }
 
@@ -171,6 +238,8 @@ impl Item
 
         if let Some(i) = item { i.give_to(module) }
     }
+
+    pub fn is_resolved(&self) -> bool { self.item.is_some() }
 
     pub fn resolve<T>(&mut self, mut item: T)
         where T: Resolvable + 'static {

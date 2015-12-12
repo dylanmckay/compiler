@@ -83,6 +83,8 @@ impl<I> Parser<I>
     fn parse_function(&mut self) -> Result<()> {
         self.assert(keywords::function());
 
+        self.resolve.begin_scope();
+
         let name = try!(self.parse_global_identifier());
         let params = try!(self.parse_parameter_list());
         let returns = try!(self.parse_function_returns());
@@ -90,6 +92,8 @@ impl<I> Parser<I>
 
         let signature = Signature::new(params, returns);
         let function = Function::new(name, signature, body);
+
+        self.resolve.end_scope();
 
         self.resolve.give(function);
 
