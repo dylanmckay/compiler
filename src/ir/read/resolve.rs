@@ -45,7 +45,7 @@ impl Resolvable for Global {
 
 pub struct Resolve
 {
-    items: Vec<ResolveItem>,
+    items: Vec<Item>,
 }
 
 impl Resolve
@@ -65,7 +65,7 @@ impl Resolve
 
         let id = Id::next();
 
-        self.items.push(ResolveItem::unresolved(id, name));
+        self.items.push(Item::unresolved(id, name));
 
         Expression::UnresolvedRef(id)
     }
@@ -78,7 +78,7 @@ impl Resolve
         }
 
         // otherwise create a new item
-        self.items.push(ResolveItem::resolved(
+        self.items.push(Item::resolved(
             item.get_id(),
             item.name().to_owned(),
             item,
@@ -116,23 +116,23 @@ impl Resolve
         self.find_id(id).make_reference()
     }
 
-    fn find_id(&self, id: Id) -> &ResolveItem {
+    fn find_id(&self, id: Id) -> &Item {
         self.items.iter().find(|a| a.id == id)
             .expect("no item with that ID was found")
     }
 
     fn lookup_name(&self, name: &str)
-        -> Option<&ResolveItem> {
+        -> Option<&Item> {
         self.items.iter().find(|a| a.name == name)
     }
 
     fn lookup_name_mut(&mut self, name: &str)
-        -> Option<&mut ResolveItem> {
+        -> Option<&mut Item> {
         self.items.iter_mut().find(|a| a.name == name)
     }
 }
 
-struct ResolveItem
+struct Item
 {
     id: Id,
     name: String,
@@ -140,11 +140,11 @@ struct ResolveItem
     info: Option<Info>,
 }
 
-impl ResolveItem
+impl Item
 {
     pub fn unresolved(id: Id,
                       name: String) -> Self {
-        ResolveItem {
+        Item {
             id: id,
             name: name,
             item: None,
@@ -156,7 +156,7 @@ impl ResolveItem
                        name: String,
                        item: T) -> Self
         where T: Resolvable + 'static {
-        ResolveItem {
+        Item {
             id: id,
             name: name,
             info: Some(item.info()),
