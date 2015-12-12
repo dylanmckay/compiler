@@ -133,6 +133,13 @@ impl<V> Signature<V>
     pub fn find_parameter(&self, name:&str) -> Option<&Parameter<V>> {
         self.params.iter().find(|param| param.name() == name)
     }
+
+    /// Looks up a parameter given its ID.
+    pub fn find_parameter_by_id(&self, id: util::Id)
+        -> Option<&Parameter<V>> {
+        use util::Identifiable;
+        self.params.iter().find(|param| param.get_id() == id)
+    }
 }
 
 impl<V: Value> std::cmp::PartialEq for Signature<V>

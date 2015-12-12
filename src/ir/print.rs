@@ -29,6 +29,9 @@ pub struct Printer<'a>
     /// The module that is being printed.
     module: &'a Module,
 
+    /// The function that is currently being enumerated.
+    current_function: Option<&'a Function>,
+
     /// Keeps track of the current register number for
     /// each function.
     register_accumulator: u32,
@@ -66,11 +69,12 @@ impl<'a> Printer<'a>
 }
 
 /// Prints an IR module.
-pub fn module(module: &Module, fmt: &mut fmt::Formatter) -> fmt::Result {
+pub fn module<'a>(module: &'a Module, fmt: &mut fmt::Formatter) -> fmt::Result {
 
     let mut printer = Printer {
         register_map: HashMap::new(),
         module: module,
+        current_function: None,
         register_accumulator: 0,
     };
 
@@ -96,11 +100,12 @@ pub fn global(global: &Global,
     write!(fmt, "\n")
 }
 
-pub fn function(func: &Function,
-                printer: &mut Printer,
-                fmt: &mut fmt::Formatter) -> fmt::Result {
+pub fn function<'a>(func: &'a Function,
+                    printer: &mut Printer<'a>,
+                    fmt: &mut fmt::Formatter) -> fmt::Result {
     // Initialise register accounting
     printer.clear_registers();
+    printer.current_function = Some(func);
 
     try!(write!(fmt, "fn @{}", func.name()));
     try!(function_parameters(&func, fmt));
@@ -112,7 +117,10 @@ pub fn function(func: &Function,
         try!(self::block(block, printer, fmt));
     }
 
-    write!(fmt, "}}\n")
+    try!(write!(fmt, "}}\n"));
+
+    printer.current_function = None;
+    Ok(())
 }
 
 pub fn function_parameters(func: &Function,
@@ -236,7 +244,7 @@ pub mod expression
             Expression::BlockRef(ref val) => self::block_ref(val, printer, fmt),
             Expression::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
             Expression::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
-            Expression::ArgumentRef(ref val) => self::argument_ref(val, fmt),
+            Expression::ArgumentRef(ref val) => self::argument_ref(val, printer, fmt),
             Expression::UnresolvedRef(val) => {
                 panic!("unresolved reference: {}", val);
             },
@@ -314,8 +322,12 @@ pub mod expression
     }
 
     pub fn argument_ref(arg_ref: &value::ArgumentRef,
+                        printer: &mut Printer,
                         fmt: &mut fmt::Formatter) -> fmt::Result {
-        write!(fmt, "<param id #{}>", arg_ref.parameter_id())
+        let func_sig = printer.current_function.unwrap().signature();
+        let param = func_sig.find_parameter_by_id(arg_ref.parameter_id()).unwrap();
+
+        write!(fmt, "%{}", param.name())
     }
 
     pub fn string(s: &value::String,
