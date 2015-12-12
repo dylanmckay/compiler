@@ -162,7 +162,10 @@ impl<I> Parser<I>
             try!(self.expect(Token::colon()));
             let ty = try!(self.parse_type());
 
-            params.push(Parameter::new(name, ty));
+            let param = Parameter::new(name, ty);
+            self.resolve.give(param.clone());
+
+            params.push(param);
 
             try!(self.maybe_eat(Token::comma()));
             try!(self.eat_whitespace());
@@ -331,7 +334,8 @@ impl<I> Parser<I>
     }
 
     fn parse_local_reference(&mut self) -> Result<Expression> {
-        unimplemented!();
+        let name = try!(self.expect_word());
+        Ok(self.resolve.reference(name))
     }
 
     fn parse_instruction(&mut self)

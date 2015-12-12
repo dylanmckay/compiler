@@ -1,4 +1,4 @@
-use {Function,Global,Module,Value,Expression,Type};
+use {Function,Global,Parameter,Module,Value,Expression,Type};
 use util::{Id,Identifiable};
 
 pub enum Info
@@ -9,13 +9,16 @@ pub enum Info
     Global {
         ty: Type,
     },
+    Argument {
+        ty: Type,
+    },
 }
 
 /// Something that may be resolved.
 pub trait Resolvable : Identifiable
 {
     fn name(&self) -> &str;
-    fn give_to(self: Box<Self>, module: &mut Module);
+    fn give_to(self: Box<Self>, _module: &mut Module) { }
     fn info(&self) -> Info;
 }
 
@@ -39,6 +42,15 @@ impl Resolvable for Global {
     fn info(&self) -> Info {
         Info::Global {
             ty: self.ty()
+        }
+    }
+}
+
+impl Resolvable for Parameter {
+    fn name(&self) -> &str { Parameter::name(self) }
+    fn info(&self) -> Info {
+        Info::Argument {
+            ty: self.ty().clone(),
         }
     }
 }
@@ -125,9 +137,11 @@ impl Scope
     /// Gives back an `ID` which will be used to reference an item.
     pub fn reference(&mut self, name: String) -> Expression {
         if let Some(item) = self.lookup_name(&name) {
-            // TODO: we could probably create the right type of
-            // expression right here in some cases.
-            return Expression::UnresolvedRef(item.id);
+            if item.is_resolved() {
+                return item.make_reference().unwrap();
+            } else {
+                return Expression::UnresolvedRef(item.id);
+            }
         }
 
         let id = Id::next();
@@ -251,7 +265,7 @@ impl Item
     }
 
     pub fn make_reference(&self) -> Option<Expression> {
-        use ::value::{FunctionRef,GlobalRef};
+        use ::value::{FunctionRef,GlobalRef,ArgumentRef};
 
         let info = if let Some(ref i) = self.info { i } else { return None; };
 
@@ -265,6 +279,12 @@ impl Item
             },
             Info::Global { ref ty } => {
                 Some(GlobalRef::new(
+                    self.id,
+                    ty.clone(),
+                ).into())
+            },
+            Info::Argument { ref ty } => {
+                Some(ArgumentRef::new(
                     self.id,
                     ty.clone(),
                 ).into())

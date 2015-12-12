@@ -236,7 +236,7 @@ pub mod expression
             Expression::BlockRef(ref val) => self::block_ref(val, printer, fmt),
             Expression::FunctionRef(ref val) => self::function_ref(val, printer, fmt),
             Expression::RegisterRef(ref val) => self::register_ref(val, printer, fmt),
-            Expression::ArgumentRef(ref val) => self::argument_ref(val, printer, fmt),
+            Expression::ArgumentRef(ref val) => self::argument_ref(val, fmt),
             Expression::UnresolvedRef(val) => {
                 panic!("unresolved reference: {}", val);
             },
@@ -313,10 +313,9 @@ pub mod expression
         write!(fmt, "%{}", number)
     }
 
-    pub fn argument_ref(_arg_ref: &value::ArgumentRef,
-                        _printer: &mut Printer,
-                        _fmt: &mut fmt::Formatter) -> fmt::Result {
-        unimplemented!();
+    pub fn argument_ref(arg_ref: &value::ArgumentRef,
+                        fmt: &mut fmt::Formatter) -> fmt::Result {
+        write!(fmt, "<param id #{}>", arg_ref.parameter_id())
     }
 
     pub fn string(s: &value::String,

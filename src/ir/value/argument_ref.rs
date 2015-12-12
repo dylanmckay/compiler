@@ -10,6 +10,14 @@ pub struct ArgumentRef
 
 impl ArgumentRef
 {
+    pub fn new(param_id: util::Id,
+               ty: Type) -> Self {
+        ArgumentRef {
+            param_id: param_id,
+            ty: ty,
+        }
+    }
+
     pub fn reference(parameter: &Parameter) -> Self {
         use util::Identifiable;
 

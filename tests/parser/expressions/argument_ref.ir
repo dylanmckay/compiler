@@ -1,0 +1,23 @@
+; RUN: asm @file
+
+fn @foo(%a: u32) {
+:entry
+  %a
+}
+
+fn @bar(
+  %q: u1,
+  %w: u2,
+  %e: u3,
+  %r: u4,
+  %t: u5,
+  %y: u6,
+) -> u7 {
+:entry
+  %q
+  %w
+  %e
+  %r
+  %t
+  %y
+}
