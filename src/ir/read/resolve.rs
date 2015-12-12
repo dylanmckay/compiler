@@ -1,4 +1,4 @@
-use {Function,Global,Parameter,Module,Value,Expression,Type};
+use {Function,Global,Parameter,Module,Value,Expression,Type,Register};
 use util::{Id,Identifiable};
 
 pub enum Info
@@ -12,18 +12,21 @@ pub enum Info
     Argument {
         ty: Type,
     },
+    Register {
+        ty: Type,
+    },
 }
 
 /// Something that may be resolved.
 pub trait Resolvable : Identifiable
 {
-    fn name(&self) -> &str;
+    fn name(&self) -> String;
     fn give_to(self: Box<Self>, _module: &mut Module) { }
     fn info(&self) -> Info;
 }
 
 impl Resolvable for Function {
-    fn name(&self) -> &str { Function::name(self) }
+    fn name(&self) -> String { Function::name(self).to_owned() }
     fn give_to(self: Box<Self>, module: &mut Module) {
         module.add_function(*self);
     }
@@ -35,7 +38,7 @@ impl Resolvable for Function {
 }
 
 impl Resolvable for Global {
-    fn name(&self) -> &str { Global::name(self) }
+    fn name(&self) -> String { Global::name(self).to_owned() }
     fn give_to(self: Box<Self>, module: &mut Module) where Self: Sized {
         module.add_global(*self)
     }
@@ -47,10 +50,23 @@ impl Resolvable for Global {
 }
 
 impl Resolvable for Parameter {
-    fn name(&self) -> &str { Parameter::name(self) }
+    fn name(&self) -> String { Parameter::name(self).to_owned() }
     fn info(&self) -> Info {
         Info::Argument {
             ty: self.ty().clone(),
+        }
+    }
+}
+
+impl Resolvable for Register {
+    fn name(&self) -> String {
+        let n: ::Name = Register::name(self).clone();
+        n.into()
+    }
+
+    fn info(&self) -> Info {
+        Info::Register {
+            ty: self.ty(),
         }
     }
 }
@@ -153,7 +169,7 @@ impl Scope
 
     pub fn give<T>(&mut self, item: T)
         where T: Resolvable + 'static {
-        if let Some(a) =  self.lookup_name_mut(item.name()) {
+        if let Some(a) =  self.lookup_name_mut(&item.name()) {
             a.resolve(item);
             return;
         }
@@ -265,7 +281,7 @@ impl Item
     }
 
     pub fn make_reference(&self) -> Option<Expression> {
-        use ::value::{FunctionRef,GlobalRef,ArgumentRef};
+        use ::value::{FunctionRef,GlobalRef,ArgumentRef,RegisterRef};
 
         let info = if let Some(ref i) = self.info { i } else { return None; };
 
@@ -285,6 +301,12 @@ impl Item
             },
             Info::Argument { ref ty } => {
                 Some(ArgumentRef::new(
+                    self.id,
+                    ty.clone(),
+                ).into())
+            },
+            Info::Register { ref ty } => {
+                Some(RegisterRef::new(
                     self.id,
                     ty.clone(),
                 ).into())

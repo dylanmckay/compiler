@@ -1,0 +1,6 @@
+; RUN: asm @file
+
+fn @foo() {
+  %a = "a"
+  %a
+}

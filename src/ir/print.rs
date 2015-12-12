@@ -1,4 +1,4 @@
-use {Module,Global,Expression,Function,Value,value,Condition,Block};
+use {Module,Global,Expression,Function,Value,value,Condition,Block,Register};
 use util;
 use util::Identifiable;
 use std::fmt;
@@ -54,6 +54,29 @@ impl<'a> Printer<'a>
         self.register_map.insert(id, num);
 
         num
+    }
+
+    fn register_name(&mut self,
+                     reg_ref: &value::RegisterRef) -> String {
+        let reg = self.get_register(reg_ref.register_id());
+
+        if reg.name().is_named() {
+            reg.name().clone().into()
+        } else {
+            format!("{}", self.register_number(reg_ref.register_id()))
+        }
+    }
+
+    fn get_register(&self, id: util::Id) -> &Register {
+        for value in self.current_function.unwrap().values() {
+            match *value.expression() {
+                Expression::Register(ref r) if r.get_id() == id => {
+                    return r;
+                },
+                _ => continue,
+            }
+        }
+        panic!("register with with ID {} not found", id);
     }
 
     /// Gets the assigned number of a register.
@@ -317,8 +340,8 @@ pub mod expression
     pub fn register_ref(reg_ref: &value::RegisterRef,
                         printer: &mut Printer,
                         fmt: &mut fmt::Formatter) -> fmt::Result {
-        let number = printer.register_number(reg_ref.register_id());
-        write!(fmt, "%{}", number)
+        let name = printer.register_name(reg_ref);
+        write!(fmt, "%{}", name)
     }
 
     pub fn argument_ref(arg_ref: &value::ArgumentRef,

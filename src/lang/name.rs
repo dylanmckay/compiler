@@ -31,6 +31,16 @@ impl Name
     }
 }
 
+impl Into<String> for Name
+{
+    fn into(self) -> String {
+        match self {
+            Name::Unnamed => unimplemented!(),
+            Name::Named(s) => s,
+        }
+    }
+}
+
 impl std::fmt::Display for Name
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> Result<(),std::fmt::Error> {

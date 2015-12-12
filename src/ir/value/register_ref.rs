@@ -10,6 +10,14 @@ pub struct RegisterRef
 
 impl RegisterRef
 {
+    pub fn new(register_id: util::Id,
+               ty: Type) -> Self {
+        RegisterRef {
+            reg_id: register_id,
+            ty: ty,
+        }
+    }
+
     pub fn reference(register: &Register) -> Self {
         use util::Identifiable;
 

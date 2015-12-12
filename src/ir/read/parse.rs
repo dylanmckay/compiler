@@ -383,10 +383,14 @@ impl<I> Parser<I>
         self.assert(Token::equal_sign());
         let value = try!(self.parse_value());
 
-        Ok(Register::new(
+        let reg = Register::new(
             Name::named(name),
             value
-        ).into())
+        );
+
+        self.resolve.give(reg.clone());
+
+        Ok(reg.into())
     }
 
     // FIXME: this refers to something in the global scope, not
