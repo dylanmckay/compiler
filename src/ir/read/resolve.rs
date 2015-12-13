@@ -181,7 +181,7 @@ impl Scope
         self.items.push(Item::resolved(item))
     }
 
-    pub fn resolve(&mut self, mut module: Module)
+    pub fn resolve(&mut self, module: Module)
         -> Module {
         module.map_values(|v| self.resolve_value(v))
     }

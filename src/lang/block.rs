@@ -101,6 +101,15 @@ impl<V> Block<V>
     }
 }
 
+impl<V> Extend<V> for Block<V>
+    where V: Value
+{
+    fn extend<I>(&mut self, it: I)
+        where I: IntoIterator<Item=V> {
+        self.body.extend(it)
+    }
+}
+
 impl<V> util::Identifiable for Block<V>
     where V: Value
 {
