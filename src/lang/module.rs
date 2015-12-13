@@ -1,4 +1,5 @@
 use {Value,Function,Global,Block};
+use util::Identifiable;
 use util;
 
 use std;
@@ -75,7 +76,7 @@ impl<V> Module<V>
     /// Finds a block by its ID.
     pub fn find_block(&self, id: util::Id) -> Option<&Block<V>> {
         self.functions().flat_map(|f| f.blocks())
-                        .find(|b| b.id() == id)
+                        .find(|b| b.get_id() == id)
     }
 
     /// Gets a block from its ID, `panic`ing if it does not exist.

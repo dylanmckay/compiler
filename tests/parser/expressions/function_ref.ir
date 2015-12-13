@@ -6,4 +6,5 @@ fn @bar()
 {
 :entry
   call @foo
+  call @bar
 }

@@ -1,0 +1,8 @@
+; RUN: asm @file
+
+fn @foo() {
+:ab
+:entry
+    add i32 6, i32 5
+    br true, %entry
+}

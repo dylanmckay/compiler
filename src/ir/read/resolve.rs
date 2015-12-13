@@ -1,4 +1,4 @@
-use {Function,Global,Parameter,Module,Value,Expression,Type,Register};
+use {Function,Global,Parameter,Module,Value,Expression,Type,Register,Block};
 use util::{Id,Identifiable};
 
 pub enum Info
@@ -15,6 +15,7 @@ pub enum Info
     Register {
         ty: Type,
     },
+    Block,
 }
 
 /// Something that may be resolved.
@@ -71,6 +72,15 @@ impl Resolvable for Register {
     }
 }
 
+impl Resolvable for Block {
+    fn name(&self) -> String {
+        Block::name(self).into()
+    }
+    fn info(&self) -> Info {
+        Info::Block
+    }
+}
+
 pub struct Resolve
 {
     scope_stack: Vec<Scope>,
@@ -87,6 +97,7 @@ impl Resolve
     }
 
     pub fn reference(&mut self, name: String) -> Expression {
+        println!("referencing {}", name);
         // Use the global context if the item
         // has not been resolved yet.
         for scope in self.scope_stack.iter_mut() {
@@ -102,6 +113,7 @@ impl Resolve
 
     pub fn give<T>(&mut self, item: T)
         where T: Resolvable + 'static {
+        println!("giving {} with id {}", item.name(), item.get_id());
         self.local_scope_mut().give(item);
     }
 
@@ -281,7 +293,7 @@ impl Item
     }
 
     pub fn make_reference(&self) -> Option<Expression> {
-        use ::value::{FunctionRef,GlobalRef,ArgumentRef,RegisterRef};
+        use ::value::{FunctionRef,GlobalRef,ArgumentRef,RegisterRef,BlockRef};
 
         let info = if let Some(ref i) = self.info { i } else { return None; };
 
@@ -311,6 +323,10 @@ impl Item
                     ty.clone(),
                 ).into())
             },
+            Info::Block => {
+                println!("ref");
+                Some(BlockRef::new(self.id).into())
+            }
         }
     }
 }

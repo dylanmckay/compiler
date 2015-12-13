@@ -143,7 +143,7 @@ impl<I> Parser<I>
 
         let values = try!(self.parse_block_values());
 
-        Ok(Block::new(label, values))
+        self.create_block(label, values)
     }
 
     fn parse_block(&mut self) -> Result<Block> {
@@ -153,7 +153,7 @@ impl<I> Parser<I>
 
         let values = try!(self.parse_block_values());
 
-        Ok(Block::new(label, values))
+        self.create_block(label, values)
     }
 
     fn parse_block_values(&mut self) -> Result<Vec<Value>> {
@@ -166,6 +166,12 @@ impl<I> Parser<I>
         }
 
         Ok(values)
+    }
+
+    fn create_block(&mut self, label: String, values: Vec<Value>) -> Result<Block> {
+        let block = Block::new(label, values);
+        self.resolve.give(block.clone());
+        Ok(block)
     }
 
     fn is_label_next(&mut self) -> Result<bool> {

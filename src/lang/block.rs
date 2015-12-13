@@ -66,9 +66,6 @@ impl<V> Block<V>
         last
     }
 
-    /// Gets the ID of the block.
-    pub fn id(&self) -> util::Id { self.id }
-
     /// Gets the values that the block contains.
     pub fn values(&self) -> ::std::slice::Iter<V> {
         self.body.iter()
@@ -102,6 +99,13 @@ impl<V> Block<V>
                              .collect();
         self
     }
+}
+
+impl<V> util::Identifiable for Block<V>
+    where V: Value
+{
+    fn get_id(&self) -> util::Id { self.id }
+    fn internal_set_id(&mut self, id: util::Id) { self.id = id; }
 }
 
 pub mod values
