@@ -16,6 +16,7 @@ pub struct Parser<I: Iterator<Item=char>>
 {
     tokenizer: Tokenizer<I>,
 
+    module: Module,
     resolve: Resolve,
 }
 
@@ -27,6 +28,7 @@ impl<I> Parser<I>
         Parser {
             tokenizer: Tokenizer::new(chars),
 
+            module: Module::empty(),
             resolve: Resolve::new(),
         }
     }
@@ -43,8 +45,8 @@ impl<I> Parser<I>
             try!(self.parse_next());
         }
 
-        let module = self.resolve.resolve(Module::empty());
-        Ok(module)
+        self.module = self.resolve.resolve(self.module);
+        Ok(self.module)
     }
 
     fn parse_next(&mut self) -> Result<()> {
@@ -77,7 +79,10 @@ impl<I> Parser<I>
 
         try!(self.expect(Token::new_line()));
 
-        self.resolve.give(Global::new(name, value));
+        let mut global = Global::new(name, value);
+        self.resolve.give(&mut global);
+
+        self.module.add_global(global);
 
         Ok(())
     }
@@ -93,11 +98,12 @@ impl<I> Parser<I>
         let body = try!(self.parse_body());
 
         let signature = Signature::new(params, returns);
-        let function = Function::new(name, signature, body);
+        let mut function = Function::new(name, signature, body);
 
         self.resolve.end_scope();
 
-        self.resolve.give(function);
+        self.resolve.give(&mut function);
+        self.module.add_function(function);
 
         Ok(())
     }
@@ -169,8 +175,9 @@ impl<I> Parser<I>
     }
 
     fn create_block(&mut self, label: String, values: Vec<Value>) -> Result<Block> {
-        let block = Block::new(label, values);
-        self.resolve.give(block.clone());
+        let mut block = Block::new(label, values);
+        self.resolve.give(&mut block);
+
         Ok(block)
     }
 
@@ -208,8 +215,8 @@ impl<I> Parser<I>
             try!(self.expect(Token::colon()));
             let ty = try!(self.parse_type());
 
-            let param = Parameter::new(name, ty);
-            self.resolve.give(param.clone());
+            let mut param = Parameter::new(name, ty);
+            self.resolve.give(&mut param);
 
             params.push(param);
 
@@ -389,12 +396,12 @@ impl<I> Parser<I>
         self.assert(Token::equal_sign());
         let value = try!(self.parse_value());
 
-        let reg = Register::new(
+        let mut reg = Register::new(
             Name::named(name),
             value
         );
 
-        self.resolve.give(reg.clone());
+        self.resolve.give(&mut reg);
 
         Ok(reg.into())
     }

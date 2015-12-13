@@ -22,15 +22,11 @@ pub enum Info
 pub trait Resolvable : Identifiable
 {
     fn name(&self) -> String;
-    fn give_to(self: Box<Self>, _module: &mut Module) { }
     fn info(&self) -> Info;
 }
 
 impl Resolvable for Function {
     fn name(&self) -> String { Function::name(self).to_owned() }
-    fn give_to(self: Box<Self>, module: &mut Module) {
-        module.add_function(*self);
-    }
     fn info(&self) -> Info {
         Info::Function {
             ty: ::types::Function::new(self.signature().clone()),
@@ -40,9 +36,6 @@ impl Resolvable for Function {
 
 impl Resolvable for Global {
     fn name(&self) -> String { Global::name(self).to_owned() }
-    fn give_to(self: Box<Self>, module: &mut Module) where Self: Sized {
-        module.add_global(*self)
-    }
     fn info(&self) -> Info {
         Info::Global {
             ty: self.ty()
@@ -97,7 +90,6 @@ impl Resolve
     }
 
     pub fn reference(&mut self, name: String) -> Expression {
-        println!("referencing {}", name);
         // Use the global context if the item
         // has not been resolved yet.
         for scope in self.scope_stack.iter_mut() {
@@ -111,9 +103,8 @@ impl Resolve
         self.global_scope_mut().reference(name)
     }
 
-    pub fn give<T>(&mut self, item: T)
+    pub fn give<T>(&mut self, item: &mut T)
         where T: Resolvable + 'static {
-        println!("giving {} with id {}", item.name(), item.get_id());
         self.local_scope_mut().give(item);
     }
 
@@ -179,7 +170,7 @@ impl Scope
         Expression::UnresolvedRef(id)
     }
 
-    pub fn give<T>(&mut self, item: T)
+    pub fn give<T>(&mut self, item: &mut T)
         where T: Resolvable + 'static {
         if let Some(a) =  self.lookup_name_mut(&item.name()) {
             a.resolve(item);
@@ -187,21 +178,11 @@ impl Scope
         }
 
         // otherwise create a new item
-        self.items.push(Item::resolved(
-            item.get_id(),
-            item.name().to_owned(),
-            item,
-        ));
+        self.items.push(Item::resolved(item))
     }
 
     pub fn resolve(&mut self, mut module: Module)
         -> Module {
-        // move the actual items (functions, globals)
-        // into the module
-        for item in self.items.iter_mut() {
-            item.give_to(&mut module);
-        }
-
         module.map_values(|v| self.resolve_value(v))
     }
 
@@ -245,7 +226,6 @@ struct Item
 {
     id: Id,
     name: String,
-    item: Option<Box<Resolvable>>,
     info: Option<Info>,
 }
 
@@ -256,41 +236,28 @@ impl Item
         Item {
             id: id,
             name: name,
-            item: None,
             info: None,
         }
     }
 
-    pub fn resolved<T>(id: Id,
-                       name: String,
-                       item: T) -> Self
+    pub fn resolved<T>(item: &T) -> Self
         where T: Resolvable + 'static {
         Item {
-            id: id,
-            name: name,
+            id: item.get_id(),
+            name: item.name(),
             info: Some(item.info()),
-            item: Some(Box::new(item)),
         }
     }
 
-    pub fn give_to(&mut self, module: &mut Module) {
-        use std::mem;
-
-        let item = mem::replace(&mut self.item, None);
-
-        if let Some(i) = item { i.give_to(module) }
-    }
-
-    pub fn is_resolved(&self) -> bool { self.item.is_some() }
-
-    pub fn resolve<T>(&mut self, mut item: T)
+    pub fn resolve<T>(&mut self, item: &mut T)
         where T: Resolvable + 'static {
         // Make the item have the ID we have have been referring to it as.
         item.internal_set_id(self.id);
 
         self.info = Some(item.info());
-        self.item = Some(Box::new(item));
     }
+
+    pub fn is_resolved(&self) -> bool { self.info.is_some() }
 
     pub fn make_reference(&self) -> Option<Expression> {
         use ::value::{FunctionRef,GlobalRef,ArgumentRef,RegisterRef,BlockRef};
