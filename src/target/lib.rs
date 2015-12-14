@@ -1,5 +1,19 @@
-
 pub use self::target::{RegisterClass,Target,MachineTarget};
+pub use self::value::Value;
+pub use self::ty::Type;
+
+pub mod value;
+pub mod ty;
+
+extern crate compiler_lang as lang;
+extern crate compiler_ir as ir;
+
+pub type Module = ::lang::Module<Value>;
+pub type Global = ::lang::Global<Value>;
+pub type Function = ::lang::Function<Value>;
+pub type Block = ::lang::Block<Value>;
+pub type Signature = ::lang::Signature<Value>;
+pub type Parameter = ::lang::Parameter<Value>;
 
 pub mod target
 {
