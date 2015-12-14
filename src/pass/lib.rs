@@ -7,6 +7,8 @@ pub mod manager;
 pub mod transforms;
 /// Passes which perform analysis.
 pub mod analysis;
+/// The pass registry.
+pub mod registrar;
 
 extern crate compiler_lang as lang;
 extern crate compiler_ir as ir;
