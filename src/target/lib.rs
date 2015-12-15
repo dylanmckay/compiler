@@ -1,10 +1,12 @@
 pub use self::value::Value;
 pub use self::ty::Type;
 pub use self::machine::{RegisterClass,MachineTarget};
+pub use self::opcodes::OpCode;
 
 pub mod value;
 pub mod ty;
 pub mod machine;
+pub mod opcodes;
 
 extern crate compiler_lang as lang;
 extern crate compiler_ir as ir;
