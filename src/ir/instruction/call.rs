@@ -21,7 +21,7 @@ impl Call
     }
 
     pub fn target_id(&self) -> ::util::Id {
-        if let Expression::FunctionRef(ref r) = *self.target().expression() {
+        if let Expression::FunctionRef(ref r) = self.target().expression {
             r.function_id()
         } else {
             panic!("a call instruction must have a function reference as its target");

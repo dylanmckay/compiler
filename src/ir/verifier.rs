@@ -73,7 +73,7 @@ pub fn verify_block(module: &Module,
 /// Verifies that a value is well-formed.
 pub fn verify_value(module: &Module,
                     value: &Value) -> Result {
-    verify_expression(module, value.expression())
+    verify_expression(module, &value.expression)
 }
 
 /// Verifies that an expression is well-formed.
@@ -118,7 +118,7 @@ mod values
         pub fn call(_module: &Module,
                     inst: &instruction::Call) -> Result {
 
-            condition!(inst.target().expression().is_function_ref(),
+            condition!(inst.target().expression.is_function_ref(),
                        "call instructions must refer to functions");
 
 
@@ -130,7 +130,7 @@ mod values
         pub fn br(_module: &Module,
                   inst: &instruction::Break) -> Result {
 
-            condition!(inst.target().expression().is_block_ref(),
+            condition!(inst.target().expression.is_block_ref(),
                        "break instructions must refer to basic blocks");
 
             Ok(())

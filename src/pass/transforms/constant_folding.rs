@@ -31,7 +31,7 @@ pub mod fold
     use ir::value::literal::{Literal,Integer};
 
     pub fn value(value: Value) -> Value {
-        match value.into_expression() {
+        match value.expression {
             Expression::Instruction(i) => Value::new(instruction(i)),
             e => Value::new(e),
         }

@@ -8,7 +8,7 @@ use bit_vec::BitVec;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Value
 {
-    expression: Expression,
+    pub expression: Expression,
 }
 
 impl Value
@@ -17,18 +17,6 @@ impl Value
         Value {
             expression: expression,
         }
-    }
-
-    pub fn expression(&self) -> &Expression {
-        &self.expression
-    }
-
-    pub fn expression_mut(&mut self) -> &mut Expression {
-        &mut self.expression
-    }
-
-    pub fn into_expression(self) -> Expression {
-        self.expression
     }
 
     pub fn ty(&self) -> Type {

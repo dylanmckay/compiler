@@ -69,7 +69,7 @@ impl<'a> Printer<'a>
 
     fn get_register(&self, id: util::Id) -> &Register {
         for value in self.current_function.unwrap().values() {
-            match *value.expression() {
+            match value.expression {
                 Expression::Register(ref r) if r.get_id() == id => {
                     return r;
                 },
@@ -206,7 +206,7 @@ pub fn condition(cond: &Condition,
 pub fn root_value(value: &Value,
                   printer: &mut Printer,
                   fmt: &mut fmt::Formatter) -> fmt::Result {
-    root_expression(value.expression(), printer, fmt)
+    root_expression(&value.expression, printer, fmt)
 }
 
 pub fn root_expression(expression: &Expression,
@@ -220,13 +220,13 @@ pub fn root_expression(expression: &Expression,
 pub fn value(value: &Value,
              printer: &mut Printer,
              fmt: &mut fmt::Formatter) -> fmt::Result {
-    expression::expression(value.expression(), printer, fmt)
+    expression::expression(&value.expression, printer, fmt)
 }
 
 pub fn plain_value(value: &Value,
                    printer: &mut Printer,
                    fmt: &mut fmt::Formatter) -> fmt::Result {
-    expression::plain(value.expression(), printer, fmt)
+    expression::plain(&value.expression, printer, fmt)
 }
 
 pub mod expression
@@ -401,7 +401,7 @@ pub mod expression
 
         pub fn call(inst: &instruction::Call,
                     fmt: &mut fmt::Formatter) -> fmt::Result {
-            let func = if let Expression::FunctionRef(ref f) = *inst.target().expression()  {
+            let func = if let Expression::FunctionRef(ref f) = inst.target().expression  {
                 f
             } else {
                 unreachable!(); // target must be function

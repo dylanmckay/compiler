@@ -83,8 +83,7 @@ impl Value
     pub fn from_ir(value: &ir::Value) -> Self {
         use num::traits::ToPrimitive;
 
-        let expression = value.expression();
-        match *expression {
+        match value.expression {
             ir::Expression::Literal(ref literal) => {
                 match *literal {
                     ir::value::Literal::Integer(ref i) => {
