@@ -3,7 +3,7 @@
 extern crate compiler;
 extern crate argparse;
 
-use compiler::{ir,target};
+use compiler::{ir,isel};
 use std::error::Error;
 use std::io::{Read,Write};
 
@@ -113,7 +113,7 @@ fn print_isel(file_name: &str) {
 
     for func in module.functions() {
         for block in func.blocks() {
-            let dag = target::Dag::from_block(block);
+            let dag = isel::Dag::from_block(block);
 
             println!("{:#?}", dag);
         }

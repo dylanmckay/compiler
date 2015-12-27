@@ -1,0 +1,17 @@
+[package]
+
+name = "compiler_isel"
+version = "0.0.1"
+authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+
+[dependencies.compiler_lang]
+path = "../lang"
+[dependencies.compiler_ir]
+path = "../ir"
+
+[dependencies]
+num = "*"
+
+[lib]
+name = "compiler_isel"
+path = "lib.rs"
