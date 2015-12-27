@@ -1,11 +1,19 @@
 use Target;
-use std;
+
+pub mod avr;
+
+#[derive(Clone,Debug,PartialEq,Eq)]
+pub struct Register
+{
+    name: &'static str,
+    number: u32,
+}
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct RegisterClass
 {
-    name: String,
-    size: u16,
+    name: &'static str,
+    registers: &'static [&'static Register],
 }
 
 /// A target.
@@ -15,5 +23,5 @@ pub trait MachineTarget : Target
     fn pointer_width(&self) -> u16;
 
     /// Gets the register classes the target supports.
-    fn register_classes(&self) -> std::slice::Iter<RegisterClass>;
+    fn register_classes(&self) -> &'static [&'static RegisterClass];
 }
