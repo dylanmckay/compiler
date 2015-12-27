@@ -9,6 +9,9 @@ path = "../lang"
 [dependencies.compiler_ir]
 path = "../ir"
 
+[dependencies]
+num = "*"
+
 [lib]
 name = "compiler_target"
 path = "lib.rs"
