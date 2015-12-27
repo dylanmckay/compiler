@@ -1,4 +1,4 @@
-; RUN: asm @file
+; RUN: asm --parse @file
 
 fn @foo() {
   add i32 3, i32 4

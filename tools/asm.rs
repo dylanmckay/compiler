@@ -9,10 +9,20 @@ use std::io::{Read,Write};
 
 use argparse::ArgumentParser;
 
+#[derive(Copy,Clone)]
+enum Task
+{
+    Tokenize,
+    Parse,
+
+    PrintISel,
+    Assemble,
+}
+
 fn main() {
     let mut files: Vec<String> = Vec::new();
-    let mut tokenize = false;
-    let mut do_print_isel = false;
+
+    let mut task = Task::Assemble;
 
     {
         let mut ap = ArgumentParser::new();
@@ -21,31 +31,31 @@ fn main() {
         ap.refer(&mut files)
             .add_argument("files", argparse::List,
                           r#"Files to process"#);
-        ap.refer(&mut tokenize)
-            .add_option(&["--tokenize"], argparse::StoreTrue,
-                        "Only tokenize the input");
-        ap.refer(&mut do_print_isel)
-            .add_option(&["--print-isel"], argparse::StoreTrue,
-                        "Print the ISel graph");
+        ap.refer(&mut task)
+            .add_option(&["--tokenize"], argparse::StoreConst(Task::Tokenize),
+                        "only tokenize the module")
+            .add_option(&["--parse"], argparse::StoreConst(Task::Parse),
+                        "only parse the module")
+            .add_option(&["--print-isel"], argparse::StoreConst(Task::PrintISel),
+                        "print the ISel graph");
         ap.parse_args_or_exit();
     }
 
     if files.is_empty() {
-        abort("expected a filename to assemble");
+        abort("expected a file_name to assemble");
     }
 
-    for filename in files.iter() {
-        if tokenize {
-            tokenize_module(&filename)
-        } else if do_print_isel {
-            print_isel(&filename)
-        } else {
-            assemble_module(&filename)
+    for file_name in files.iter() {
+        match task {
+            Task::Tokenize => tokenize(&file_name),
+            Task::Parse => parse(&file_name),
+            Task::PrintISel => print_isel(&file_name),
+            Task::Assemble => assemble(&file_name),
         }
     }
 }
 
-fn tokenize_module(file_name: &str) {
+fn tokenize(file_name: &str) {
     let chars = open_file(file_name).chars().map(|c| c.unwrap());
 
     let tokenizer = ir::read::Tokenizer::new(chars).preserve_comments();
@@ -55,10 +65,16 @@ fn tokenize_module(file_name: &str) {
     }
 }
 
-fn assemble_module(file_name: &str) {
+fn assemble(file_name: &str) {
     let module = parse_module(&file_name);
 
-    // verify_module(&module);
+    verify_module(&module);
+    print_module(&module);
+}
+
+fn parse(file_name: &str) {
+    let module = parse_module(&file_name);
+
     print_module(&module);
 }
 

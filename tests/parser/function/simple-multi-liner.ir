@@ -1,4 +1,4 @@
-; RUN: asm @file
+; RUN: asm --parse @file
 fn @foo(
   %a: i63,
   %b: i1,
