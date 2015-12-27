@@ -6,8 +6,15 @@ pub trait MachineTarget : Target
     /// Gets the width of a pointer.
     fn pointer_width(&self) -> u16;
 
+    /// Gets register information.
+    fn register_info(&self) -> &RegisterInfo;
+}
+
+pub trait RegisterInfo
+{
     /// Gets the register classes the target supports.
-    fn register_classes(&self) -> &'static [&'static RegisterClass];
+    fn classes(&self)
+        -> &'static [&'static RegisterClass];
 }
 
 #[derive(Clone,Debug,PartialEq,Eq)]

@@ -1,4 +1,26 @@
-use machine::{Register,RegisterClass};
+use machine::{self,Register,RegisterClass};
+
+pub struct Info
+{
+    classes: &'static [&'static RegisterClass],
+}
+
+impl Info
+{
+    pub fn new() -> Self {
+        Info {
+            classes: CLASSES,
+        }
+    }
+}
+
+impl machine::RegisterInfo for Info
+{
+    fn classes(&self)
+        -> &'static [&'static RegisterClass] {
+        self.classes
+    }
+}
 
 macro_rules! define_gpr {
     ($ident:ident, $name:expr, $number: expr) => {
