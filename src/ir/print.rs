@@ -371,20 +371,22 @@ pub mod expression
                            printer: &mut Printer,
                            fmt: &mut fmt::Formatter) -> fmt::Result {
             match *inst {
-                Instruction::Add(ref i) => arithmetic_binop("add", i, printer, fmt),
-                Instruction::Sub(ref i) => arithmetic_binop("sub", i, printer, fmt),
-                Instruction::Mul(ref i) => arithmetic_binop("mul", i, printer, fmt),
-                Instruction::Div(ref i) => arithmetic_binop("div", i, printer, fmt),
-                Instruction::Shl(ref i) => arithmetic_binop("shl", i, printer, fmt),
-                Instruction::Shr(ref i) => arithmetic_binop("shr", i, printer, fmt),
+                Instruction::Add(ref i) => basic_binop("add", i, printer, fmt),
+                Instruction::Sub(ref i) => basic_binop("sub", i, printer, fmt),
+                Instruction::Mul(ref i) => basic_binop("mul", i, printer, fmt),
+                Instruction::Div(ref i) => basic_binop("div", i, printer, fmt),
+                Instruction::Shl(ref i) => basic_binop("shl", i, printer, fmt),
+                Instruction::Shr(ref i) => basic_binop("shr", i, printer, fmt),
 
                 Instruction::Call(ref i) => call(i, fmt),
                 Instruction::Break(ref i) => br(i, printer, fmt),
                 Instruction::Return(ref i) => ret(i, printer, fmt),
+
+                Instruction::Copy(ref i) => basic_binop("copy", i, printer, fmt),
             }
         }
 
-        pub fn arithmetic_binop<I>(mnemonic: &'static str,
+        pub fn basic_binop<I>(mnemonic: &'static str,
                                    inst: &I,
                                    printer: &mut Printer,
                                    fmt: &mut fmt::Formatter) -> fmt::Result

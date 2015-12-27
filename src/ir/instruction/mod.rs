@@ -9,6 +9,7 @@ pub use self::shr::Shr;
 pub use self::call::Call;
 pub use self::ret::Return;
 pub use self::br::Break;
+pub use self::copy::Copy;
 
 
 #[macro_use]
@@ -64,6 +65,8 @@ pub mod instruction
         Call(instruction::Call),
         Break(instruction::Break),
         Return(instruction::Return),
+
+        Copy(instruction::Copy),
     }
 
     impl Instruction
@@ -176,6 +179,7 @@ pub mod instruction
                Instruction::Call(ref instr) => instr.subvalues(),
                Instruction::Break(ref instr) => instr.subvalues(),
                Instruction::Return(ref instr) => instr.subvalues(),
+               Instruction::Copy(ref instr) => instr.subvalues(),
             }
         }
 
@@ -192,6 +196,7 @@ pub mod instruction
                Instruction::Call(instr) => instr.map_subvalues(f).into(),
                Instruction::Break(instr) => instr.map_subvalues(f).into(),
                Instruction::Return(instr) => instr.map_subvalues(f).into(),
+               Instruction::Copy(instr) => instr.map_subvalues(f).into(),
             }
         }
 
@@ -206,6 +211,7 @@ pub mod instruction
                 Instruction::Call(..) => true,
                 Instruction::Break(..) => true,
                 Instruction::Return(..) => true,
+                Instruction::Copy(..) => false,
             }
         }
 
@@ -228,6 +234,7 @@ pub mod instruction
                 Instruction::Call(ref instr) => instr.ty(),
                 Instruction::Break(ref instr) => instr.ty(),
                 Instruction::Return(ref instr) => instr.ty(),
+                Instruction::Copy(ref instr) => instr.ty(),
              }
         }
 
@@ -320,4 +327,5 @@ pub mod shr;
 pub mod call;
 pub mod ret;
 pub mod br;
+pub mod copy;
 

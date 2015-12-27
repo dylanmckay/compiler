@@ -106,6 +106,7 @@ mod values
             Instruction::Div(ref i) => instruction::binary_arith(module,i),
             Instruction::Shl(ref i) => instruction::binary_arith(module,i),
             Instruction::Shr(ref i) => instruction::binary_arith(module,i),
+            Instruction::Copy(ref i) => instruction::copy(module, i),
         }
     }
 
@@ -151,6 +152,12 @@ mod values
 
             condition!(lhs.ty() == rhs.ty(),
                        format!("binary arithmetic operations must have operands of the same type"));
+            Ok(())
+        }
+
+        pub fn copy(_module: &Module,
+                    _inst: &instruction::Copy) -> Result {
+            // TODO: make sure the destination is a register
             Ok(())
         }
     }
