@@ -12,8 +12,8 @@ pub use self::compiler_util as util;
 pub use self::compiler_lang as lang;
 /// The intermediate representation.
 pub use self::compiler_ir as ir;
-/// The instruction selector.
-pub use self::compiler_isel as isel;
+/// The machine level IR.
+pub use self::compiler_mir as mir;
 /// The target information module.
 pub use self::compiler_target as target;
 /// The pass infrastructure.
@@ -25,7 +25,7 @@ pub use self::compiler_test as test;
 pub extern crate compiler_util;
 pub extern crate compiler_lang;
 pub extern crate compiler_ir;
-pub extern crate compiler_isel;
+pub extern crate compiler_mir;
 pub extern crate compiler_target;
 pub extern crate compiler_pass;
 pub extern crate compiler_test;

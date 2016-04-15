@@ -1,6 +1,6 @@
 [package]
 
-name = "compiler_isel"
+name = "compiler_mir"
 version = "0.0.1"
 authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
@@ -13,5 +13,5 @@ path = "../ir"
 num = "*"
 
 [lib]
-name = "compiler_isel"
+name = "compiler_mir"
 path = "lib.rs"
