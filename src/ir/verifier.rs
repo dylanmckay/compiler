@@ -51,15 +51,6 @@ pub fn verify_block(module: &Module,
 
     try!(util::verify_ident(block.name()));
 
-    for value in block.values() {
-        // TODO: only the last instruction in a block can be a terminator.
-
-        try!(self::verify_value(module, value));
-
-        condition!(value.ty().is_void(),
-                   "all top-level values must be of type void");
-    }
-
     if let Some(value) = block.values().last() {
         condition!(value.is_terminator(),
                    "every basic block must end with a terminating instruction");
