@@ -1,13 +1,7 @@
-pub use self::machine::{RegisterClass,MachineTarget};
+pub use self::target::Target;
 
+pub use self::machine::avr;
+
+pub mod target;
 pub mod machine;
-
-/// The AVR target.
-pub mod avr;
-
-/// A target.
-pub trait Target
-{
-    fn name(&self) -> &'static str;
-}
 

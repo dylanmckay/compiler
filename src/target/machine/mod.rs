@@ -1,5 +1,7 @@
 use Target;
 
+pub mod avr;
+
 /// A target.
 pub trait MachineTarget : Target
 {
