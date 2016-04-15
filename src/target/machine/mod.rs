@@ -2,6 +2,8 @@ use Target;
 
 pub mod avr;
 
+pub mod select;
+
 /// A target.
 pub trait MachineTarget : Target
 {
