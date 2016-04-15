@@ -3,6 +3,8 @@ use Target;
 /// A target.
 pub trait MachineTarget : Target
 {
+    type OpCode;
+
     /// Gets the width of a pointer.
     fn pointer_width(&self) -> u16;
 
