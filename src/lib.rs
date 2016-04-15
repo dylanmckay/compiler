@@ -1,6 +1,8 @@
 #![feature(plugin)]
 #![feature(associated_consts)]
 
+#![plugin(clippy)]
+
 extern crate num;
 extern crate bit_vec;
 
@@ -20,10 +22,10 @@ pub use self::compiler_pass as pass;
 pub use self::compiler_test as test;
 
 #[macro_use]
-extern crate compiler_util;
-extern crate compiler_lang;
-extern crate compiler_ir;
-extern crate compiler_isel;
-extern crate compiler_target;
-extern crate compiler_pass;
-extern crate compiler_test;
+pub extern crate compiler_util;
+pub extern crate compiler_lang;
+pub extern crate compiler_ir;
+pub extern crate compiler_isel;
+pub extern crate compiler_target;
+pub extern crate compiler_pass;
+pub extern crate compiler_test;
