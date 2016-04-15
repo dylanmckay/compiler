@@ -15,7 +15,6 @@ enum Task
     Tokenize,
     Parse,
 
-    PrintISel,
     Assemble,
 }
 
@@ -35,9 +34,7 @@ fn main() {
             .add_option(&["--tokenize"], argparse::StoreConst(Task::Tokenize),
                         "only tokenize the module")
             .add_option(&["--parse"], argparse::StoreConst(Task::Parse),
-                        "only parse the module")
-            .add_option(&["--print-isel"], argparse::StoreConst(Task::PrintISel),
-                        "print the ISel graph");
+                        "only parse the module");
         ap.parse_args_or_exit();
     }
 
@@ -49,7 +46,6 @@ fn main() {
         match task {
             Task::Tokenize => tokenize(&file_name),
             Task::Parse => parse(&file_name),
-            Task::PrintISel => print_isel(&file_name),
             Task::Assemble => assemble(&file_name),
         }
     }
@@ -69,7 +65,16 @@ fn assemble(file_name: &str) {
     let module = parse_module(&file_name);
 
     verify_module(&module);
-    print_module(&module);
+
+    let module = parse_module(&file_name);
+
+    for func in module.functions() {
+        for block in func.blocks() {
+            let dag = isel::Dag::from_block(block);
+
+            println!("{:#?}", dag);
+        }
+    }
 }
 
 fn parse(file_name: &str) {
@@ -106,18 +111,6 @@ fn verify_module(module: &ir::Module) {
 
 fn print_module(module: &ir::Module) {
     println!("{}", ir::printable(module));
-}
-
-fn print_isel(file_name: &str) {
-    let module = parse_module(&file_name);
-
-    for func in module.functions() {
-        for block in func.blocks() {
-            let dag = isel::Dag::from_block(block);
-
-            println!("{:#?}", dag);
-        }
-    }
 }
 
 fn abort<S>(msg: S) -> !

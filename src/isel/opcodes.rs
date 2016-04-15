@@ -7,5 +7,6 @@ pub enum OpCode
     Div,
     Shl,
     Shr,
+    Ret,
 }
 

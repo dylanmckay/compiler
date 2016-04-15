@@ -1,4 +1,4 @@
-; RUN: asm --print-isel @file
+; RUN: asm @file
 
 fn @main() {
   add i32 6, i32 5

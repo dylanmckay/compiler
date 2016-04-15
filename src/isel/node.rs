@@ -56,7 +56,13 @@ impl Node
             Instruction::Shr(ref i) => {
                 let (lhs, rhs) = i.operands();
                 Self::shr(vec![Value::from_ir(lhs), Value::from_ir(rhs)].into_iter())
-            }
+            },
+            Instruction::Return(ref i) => {
+                match i.subvalue() {
+                    Some(value) => Self::ret(vec![Value::from_ir(value)].into_iter()),
+                    None => Self::ret(vec![]),
+                }
+            },
             _ => unimplemented!(),
         }
     }
@@ -67,6 +73,7 @@ impl Node
     define_ctor!(div, OpCode::Div);
     define_ctor!(shl, OpCode::Shl);
     define_ctor!(shr, OpCode::Shr);
+    define_ctor!(ret, OpCode::Ret);
 }
 
 #[derive(Clone,Debug,PartialEq,Eq)]
