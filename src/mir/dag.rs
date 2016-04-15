@@ -1,35 +1,28 @@
 use Node;
+use Value;
 use ir;
+use build;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
-pub struct Dag
+pub struct Dag<V>
 {
-    nodes: Vec<Node>,
+    nodes: Vec<Node<V>>,
 }
 
-impl Dag
+impl<V> Dag<V>
 {
     pub fn new<I>(nodes: I) -> Self
-        where I: IntoIterator<Item=Node> {
+        where I: IntoIterator<Item=Node<V>> {
         Dag {
             nodes: nodes.into_iter().collect(),
         }
     }
+}
 
-    pub fn from_block(block: &ir::Block) -> Self {
-        let nodes = block.values().map(|value| {
-
-            if let ir::Expression::Instruction(ref i) = value.expression {
-                Node::from_instruction(i)
-            } else {
-                panic!("all block-level values should be instructions: \
-                       expected instruction but got: {:?}", value.expression);
-            }
-        }).collect();
-
-        Dag {
-            nodes: nodes,
-        }
+impl Dag<Value>
+{
+    pub fn from_block(block: &ir::Block) -> Dag<Value> {
+        build::from_block(block)
     }
 }
 
