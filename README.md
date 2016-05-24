@@ -1,7 +1,7 @@
-
 # An optimising compiler middle/back end
 
 [![Build Status](https://travis-ci.org/dylanmckay/compiler.svg)](https://travis-ci.org/dylanmckay/compiler)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 This program is written in Rust and runs on the nightly channel.
 
