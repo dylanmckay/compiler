@@ -1,4 +1,4 @@
-use {Value,Function,Global,Block};
+use {Item,Value,Function,Global,Block};
 use util::Identifiable;
 use util;
 
@@ -10,6 +10,7 @@ pub struct Module
 {
     functions: util::List<Function>,
     globals: util::List<Global>,
+    items: util::List<Item>,
 }
 
 impl Module
@@ -19,6 +20,7 @@ impl Module
         Module {
             functions: util::List::empty(),
             globals: util::List::empty(),
+            items: util::List::empty(),
         }
     }
 

@@ -8,12 +8,18 @@ pub use self::users::Users;
 pub use self::cond::Condition;
 
 pub use self::module::Module;
-pub use self::global::Global;
-pub use self::function::{Function,Signature,Parameter};
+
+pub use self::item::Item;
+pub use self::item::Global;
+pub use self::item::{Function,Signature,Parameter};
+
 pub use self::block::Block;
 pub use self::name::Name;
 
 pub use self::attrs::*;
+
+/// A item.
+pub mod item;
 
 /// Where types are implemented.
 pub mod types;
@@ -34,10 +40,6 @@ pub mod cond;
 
 /// Module stuff.
 pub mod module;
-/// Global variable stuff.
-pub mod global;
-/// Function stuff.
-pub mod function;
 /// Basic block handling.
 pub mod block;
 /// A name.
