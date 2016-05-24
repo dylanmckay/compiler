@@ -1,4 +1,3 @@
-
 pub use self::ty::{Type,TypeTrait};
 
 pub use self::pointer::Pointer;
@@ -18,12 +17,11 @@ pub mod ty
     use Signature;
     use types::{Void,Pointer,Integer,Decimal,Vector,Array,
                 Struct,Function,Block};
-    use lang;
     use util::IntegerKind;
 
     use std::fmt;
 
-    pub trait TypeTrait : Clone + Eq + fmt::Display + lang::Type + Into<Type>
+    pub trait TypeTrait : Clone + Eq + fmt::Display + Into<Type>
     {
         /// Gets the size of the type in bits.
         ///
@@ -169,14 +167,9 @@ pub mod ty
         }
     }
 
-    impl lang::Type for Type { }
-
     macro_rules! impl_type {
         ($ty:ident) => {
-
             impl_into_type!($ty);
-
-            impl ::lang::Type for $ty { }
         }
     }
 

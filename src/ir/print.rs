@@ -231,16 +231,13 @@ pub fn plain_value(value: &Value,
 
 pub mod expression
 {
-    use {Expression,value};
+    use {Expression,Name,value};
     use std::fmt;
-    use lang;
     use super::Printer;
 
     pub fn expression(expr: &Expression,
                       printer: &mut Printer,
                       fmt: &mut fmt::Formatter) -> fmt::Result {
-        use lang::Value;
-
         // simple values are not parenthesised.
         if !expr.is_simple() {
             try!(write!(fmt, "("));
@@ -302,12 +299,12 @@ pub mod expression
         try!(write!(fmt, "%"));
 
         match *reg.name() {
-            lang::Name::Unnamed => {
+            Name::Unnamed => {
                 let number = printer.assign_register(reg);
                 try!(write!(fmt, "{}", number));
             },
             // the register has an explicit name
-            lang::Name::Named(ref name) => {
+            Name::Named(ref name) => {
                 try!(write!(fmt, "{}", name));
             }
         }

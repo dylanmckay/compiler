@@ -10,7 +10,7 @@ impl Metadata for ConstantFolding
     fn name(&self) -> &'static str { "constant folding" }
 }
 
-impl Transform<ir::Value> for ConstantFolding
+impl Transform for ConstantFolding
 {
     fn run_value(&mut self, value: ir::Value) -> ir::Value {
         self::fold::value(value)
@@ -18,9 +18,9 @@ impl Transform<ir::Value> for ConstantFolding
 }
 
 // TODO: blamket impl for all passes
-impl Into<Info<ir::Value>> for Box<ConstantFolding>
+impl Into<Info> for Box<ConstantFolding>
 {
-    fn into(self) -> Info<ir::Value> {
+    fn into(self) -> Info {
         Info::Transform(self)
     }
 }
@@ -54,9 +54,6 @@ pub mod fold
                                   mut f_int: FI) -> Expression
         where I: ir::instruction::Binary,
               FI: FnMut(Integer,Integer) -> Integer {
-
-        use ir::instruction::Binary;
-
         // make sure the values are constants
         let (lhs,rhs) = match inst.operand_expressions() {
             (&Expression::Literal(ref a),&Expression::Literal(ref b)) => (a.clone(),b.clone()),

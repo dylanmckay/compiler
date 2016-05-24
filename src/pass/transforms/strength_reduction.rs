@@ -12,7 +12,7 @@ impl Metadata for StrengthReduction
     fn name(&self) -> &'static str { "strength reduction" }
 }
 
-impl Transform<ir::Value> for StrengthReduction
+impl Transform for StrengthReduction
 {
     fn run_value(&mut self, value: ir::Value) -> ir::Value {
 
@@ -27,9 +27,9 @@ impl Transform<ir::Value> for StrengthReduction
 }
 
 // TODO: blamket impl for all passes
-impl Into<Info<ir::Value>> for Box<StrengthReduction>
+impl Into<Info> for Box<StrengthReduction>
 {
-    fn into(self) -> Info<ir::Value> {
+    fn into(self) -> Info {
         Info::Transform(self)
     }
 }

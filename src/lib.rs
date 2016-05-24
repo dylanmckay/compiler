@@ -8,8 +8,6 @@ extern crate bit_vec;
 
 /// Various utilities.
 pub use self::compiler_util as util;
-/// Language-agnostic types.
-pub use self::compiler_lang as lang;
 /// The intermediate representation.
 pub use self::compiler_ir as ir;
 /// The machine level IR.
@@ -23,7 +21,6 @@ pub use self::compiler_test as test;
 
 #[macro_use]
 pub extern crate compiler_util;
-pub extern crate compiler_lang;
 pub extern crate compiler_ir;
 pub extern crate compiler_mir;
 pub extern crate compiler_target;

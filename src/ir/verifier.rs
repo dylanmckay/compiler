@@ -44,15 +44,12 @@ pub fn verify_function(module: &Module,
 }
 
 /// Verifies that a block is well-formed.
-pub fn verify_block(module: &Module,
+pub fn verify_block(_module: &Module,
                     block: &Block) -> Result {
-
-    use lang::Value;
-
     try!(util::verify_ident(block.name()));
 
     if let Some(value) = block.values().last() {
-        condition!(value.is_terminator(),
+        condition!(value.expression.is_terminator(),
                    "every basic block must end with a terminating instruction");
     } else { // block is empty
         return Err("there must be at least one instruction in a basic block".into());

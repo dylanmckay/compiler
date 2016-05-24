@@ -6,14 +6,13 @@ use std;
 
 /// A module.
 #[derive(Clone,Debug)]
-pub struct Module<V: Value>
+pub struct Module
 {
-    functions: util::List<Function<V>>,
-    globals: util::List<Global<V>>,
+    functions: util::List<Function>,
+    globals: util::List<Global>,
 }
 
-impl<V> Module<V>
-    where V: Value
+impl Module
 {
     /// Creates an empty module.
     pub fn empty() -> Self {
@@ -30,73 +29,73 @@ impl<V> Module<V>
     }
 
     /// Adds a function to the module.
-    pub fn function(mut self, func: Function<V>) -> Self {
+    pub fn function(mut self, func: Function) -> Self {
         self.functions.add(func);
         self
     }
 
     /// Adds a function to the module.
-    pub fn add_function(&mut self, func: Function<V>) {
+    pub fn add_function(&mut self, func: Function) {
         self.functions.add(func);
     }
 
     /// Adda a global to the module.
-    pub fn add_global(&mut self, global: Global<V>) {
+    pub fn add_global(&mut self, global: Global) {
         self.globals.add(global);
     }
 
     /// Adds a global to the module.
-    pub fn global(mut self, global: Global<V>) -> Self {
+    pub fn global(mut self, global: Global) -> Self {
         self.globals.add(global);
         self
     }
 
     /// Finds a global by its ID.
-    pub fn find_global(&self, id: util::Id) -> util::Slot<&Global<V>> {
+    pub fn find_global(&self, id: util::Id) -> util::Slot<&Global> {
         self.globals.lookup(id)
     }
 
     /// Gets a global from its ID, `panic`ing if it does not exist.
-    pub fn get_global(&self, id: util::Id) -> &Global<V> {
+    pub fn get_global(&self, id: util::Id) -> &Global {
         self.find_global(id)
             .expect("no global with that ID exists, or that global is locked")
     }
 
     /// Finds a function by its ID.
-    pub fn find_function(&self, id: util::Id) -> util::Slot<&Function<V>> {
+    pub fn find_function(&self, id: util::Id) -> util::Slot<&Function> {
         self.functions.lookup(id)
     }
 
     /// Gets a function from its ID, `panic`ing if it does not exist.
-    pub fn get_function(&self, id: util::Id) -> &Function<V> {
+    pub fn get_function(&self, id: util::Id) -> &Function {
         self.find_function(id)
             .expect("no function with that ID exists, or that function is locked")
     }
 
     /// Finds a block by its ID.
-    pub fn find_block(&self, id: util::Id) -> Option<&Block<V>> {
+    pub fn find_block(&self, id: util::Id) -> Option<&Block> {
         self.functions().flat_map(|f| f.blocks())
                         .find(|b| b.get_id() == id)
     }
 
     /// Gets a block from its ID, `panic`ing if it does not exist.
-    pub fn get_block(&self, id: util::Id) -> &Block<V> {
+    pub fn get_block(&self, id: util::Id) -> &Block {
         self.find_block(id).expect("no block with that ID exists")
     }
 
     /// Gets the functions that the module contains.
-    pub fn functions(&self) -> std::slice::Iter<Function<V>> {
+    pub fn functions(&self) -> std::slice::Iter<Function> {
         self.functions.iter()
     }
 
     /// Gets the functions that the module contains as mutable.
-    pub fn functions_mut(&mut self) -> std::slice::IterMut<Function<V>> {
+    pub fn functions_mut(&mut self) -> std::slice::IterMut<Function> {
         self.functions.iter_mut()
     }
 
     /// Performs a mapping over the functions that the module contains.
     pub fn map_functions<F>(mut self, mut f: F) -> Self
-        where F: FnMut(Function<V>, &Self) -> Function<V> {
+        where F: FnMut(Function, &Self) -> Function {
 
         // Here we unsafely get a reference to the module so that
         // it persists after we mutably borrow the module while mapping.
@@ -115,18 +114,18 @@ impl<V> Module<V>
     }
 
     /// Gets the globals that the module contains.
-    pub fn globals(&self) -> std::slice::Iter<Global<V>> {
+    pub fn globals(&self) -> std::slice::Iter<Global> {
         self.globals.iter()
     }
 
     /// Gets the globals that the module contains as mutable.
-    pub fn globals_mut(&mut self) -> std::slice::IterMut<Global<V>> {
+    pub fn globals_mut(&mut self) -> std::slice::IterMut<Global> {
         self.globals.iter_mut()
     }
 
     /// Performs a mapping over the global variables that the module contains.
     pub fn map_globals<F>(mut self, f: F) -> Self
-        where F: FnMut(Global<V>) -> Global<V> {
+        where F: FnMut(Global) -> Global {
 
         let globals = self.globals.into_iter().map(f);
         self.globals = globals.collect();
@@ -135,7 +134,7 @@ impl<V> Module<V>
     }
 
     pub fn map_values<F>(mut self, mut f: F) -> Self
-        where F: FnMut(V) -> V {
+        where F: FnMut(Value) -> Value {
 
         self.globals = self.globals.into_iter()
                                    .map(|g| g.map_value(|v| f(v)))
@@ -146,7 +145,7 @@ impl<V> Module<V>
         self
     }
 
-    pub fn values(&self) -> std::vec::IntoIter<&V> {
+    pub fn values(&self) -> std::vec::IntoIter<&Value> {
         // FIXME: use 'impl Iterator' once supported
         let vals: Vec<_> = self.globals.iter()
                                        .map(|g| g.value())
@@ -157,20 +156,18 @@ impl<V> Module<V>
     }
 }
 
-impl<V> Extend<Global<V>> for Module<V>
-    where V: Value
+impl Extend<Global> for Module
 {
     fn extend<I>(&mut self, it: I)
-        where I: IntoIterator<Item=Global<V>> {
+        where I: IntoIterator<Item=Global> {
         self.globals.extend(it)
     }
 }
 
-impl<V> Extend<Function<V>> for Module<V>
-    where V: Value
+impl Extend<Function> for Module
 {
     fn extend<I>(&mut self, it: I)
-        where I: IntoIterator<Item=Function<V>> {
+        where I: IntoIterator<Item=Function> {
         self.functions.extend(it)
     }
 }

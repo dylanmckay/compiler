@@ -1,24 +1,22 @@
-use {Value,Block};
+use {Value,Type,Block};
 use {InlineHint,ComplexityHint,CallingConvention};
 
 use util;
 use std;
 
-
 /// A parameter.
 #[derive(Clone,Debug)]
-pub struct Parameter<V: Value>
+pub struct Parameter
 {
     id: util::Id,
 
-    ty: V::Type,
+    ty: Type,
     name: String,
 }
 
-impl<V> Parameter<V>
-    where V: Value
+impl Parameter
 {
-    pub fn new(name: String, ty: V::Type) -> Self {
+    pub fn new(name: String, ty: Type) -> Self {
         Parameter {
             id: util::Id::next(),
 
@@ -31,12 +29,12 @@ impl<V> Parameter<V>
         &self.name
     }
 
-    pub fn ty(&self) -> &V::Type {
+    pub fn ty(&self) -> &Type {
         &self.ty
     }
 }
 
-impl<V: Value> util::Identifiable for Parameter<V>
+impl util::Identifiable for Parameter
 {
     fn get_id(&self) -> util::Id { self.id }
     fn internal_set_id(&mut self, id: util::Id) {
@@ -44,16 +42,14 @@ impl<V: Value> util::Identifiable for Parameter<V>
     }
 }
 
-impl<V> std::fmt::Display for Parameter<V>
-    where V: Value
+impl std::fmt::Display for Parameter
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         write!(fmt, "{}: {}", self.name, self.ty)
     }
 }
 
-impl<V: Value> std::cmp::PartialEq for Parameter<V>
-    where V::Type: std::cmp::PartialEq
+impl std::cmp::PartialEq for Parameter
 {
     fn eq(&self, other: &Self) -> bool {
         self.ty == other.ty &&
@@ -61,26 +57,23 @@ impl<V: Value> std::cmp::PartialEq for Parameter<V>
     }
 }
 
-impl<V: Value> std::cmp::Eq for Parameter<V>
-    where V::Type: std::cmp::Eq {
-}
+impl std::cmp::Eq for Parameter { }
 
 /// A function signature.
 /// 
 /// Holds the return and parameter types.
 #[derive(Clone,Debug)]
-pub struct Signature<V: Value>
+pub struct Signature
 {
-    params: util::List<Parameter<V>>,
-    return_types: Vec<V::Type>,
+    params: util::List<Parameter>,
+    return_types: Vec<Type>,
 }
 
-impl<V> Signature<V>
-    where V: Value
+impl Signature
 {
     pub fn new<P,R>(params: P, returns: R) -> Self
-        where P: IntoIterator<Item=Parameter<V>>,
-              R: IntoIterator<Item=V::Type> {
+        where P: IntoIterator<Item=Parameter>,
+              R: IntoIterator<Item=Type> {
         Signature {
             params: params.into_iter().collect(),
             return_types: returns.into_iter().collect(),
@@ -96,7 +89,7 @@ impl<V> Signature<V>
     }
 
     /// Appends a return type.
-    pub fn ret(mut self, ty: V::Type) -> Self {
+    pub fn ret(mut self, ty: Type) -> Self {
         self.return_types.push(ty);
         self
     }
@@ -104,13 +97,13 @@ impl<V> Signature<V>
     /// Appends a parameter type.
     pub fn param(mut self,
                  name: String,
-                 ty: V::Type) -> Self {
+                 ty: Type) -> Self {
         self.params.add(Parameter::new(name, ty));
         self
     }
 
     /// Gets the return types.
-    pub fn returns(&self) -> std::slice::Iter<V::Type> {
+    pub fn returns(&self) -> std::slice::Iter<Type> {
         self.return_types.iter()
     }
 
@@ -120,7 +113,7 @@ impl<V> Signature<V>
     }
 
     /// Gets the parameter types.
-    pub fn parameters(&self) -> std::slice::Iter<Parameter<V>> {
+    pub fn parameters(&self) -> std::slice::Iter<Parameter> {
         self.params.iter()
     }
 
@@ -130,20 +123,19 @@ impl<V> Signature<V>
     }
 
     /// Looks up a parameter given its name.
-    pub fn find_parameter(&self, name:&str) -> Option<&Parameter<V>> {
+    pub fn find_parameter(&self, name:&str) -> Option<&Parameter> {
         self.params.iter().find(|param| param.name() == name)
     }
 
     /// Looks up a parameter given its ID.
     pub fn find_parameter_by_id(&self, id: util::Id)
-        -> Option<&Parameter<V>> {
+        -> Option<&Parameter> {
         use util::Identifiable;
         self.params.iter().find(|param| param.get_id() == id)
     }
 }
 
-impl<V: Value> std::cmp::PartialEq for Signature<V>
-    where V::Type: std::cmp::PartialEq
+impl std::cmp::PartialEq for Signature
 {
     fn eq(&self, other: &Self) -> bool {
         self.parameters().zip(other.parameters()).all(|(a,b)| a==b) &&
@@ -151,20 +143,17 @@ impl<V: Value> std::cmp::PartialEq for Signature<V>
     }
 }
 
-impl<V: Value> std::cmp::Eq for Signature<V>
-    where V::Type: std::cmp::Eq
-{
-}
+impl std::cmp::Eq for Signature { }
 
 /// A function.
 #[derive(Clone,Debug)]
-pub struct Function<V: Value>
+pub struct Function
 {
     id: util::Id,
 
     name: String,
-    signature: Signature<V>,
-    blocks: Vec<Block<V>>,
+    signature: Signature,
+    blocks: Vec<Block>,
 
     cc: CallingConvention,
 
@@ -172,13 +161,12 @@ pub struct Function<V: Value>
     complexity_hint: ComplexityHint,
 }
 
-impl<V> Function<V>
-    where V: Value
+impl Function
 {
     /// Creates a new function.
     pub fn new<N>(name: N,
-                  signature: Signature<V>,
-                  blocks: Vec<Block<V>>) -> Self
+                  signature: Signature,
+                  blocks: Vec<Block>) -> Self
         where N: Into<String> {
 
         Function {
@@ -195,13 +183,13 @@ impl<V> Function<V>
     }
 
     /// Creates an empty function.
-    pub fn empty<N>(name: N, sig: Signature<V>) -> Self
+    pub fn empty<N>(name: N, sig: Signature) -> Self
         where N: Into<String> {
         Function::new(name, sig, Vec::new())
     }
 
     /// Appends a block to the function.
-    pub fn append_block(&mut self, block: Block<V>) {
+    pub fn append_block(&mut self, block: Block) {
         self.blocks.push(block);
     }
 
@@ -209,7 +197,7 @@ impl<V> Function<V>
     pub fn name(&self) -> &str { &self.name }
 
     /// Gets the signature of the function.
-    pub fn signature(&self) -> &Signature<V> {
+    pub fn signature(&self) -> &Signature {
         &self.signature
     }
 
@@ -222,18 +210,18 @@ impl<V> Function<V>
     pub fn id(&self) -> util::Id { self.id }
 
     /// Gets the blocks that the function contains.
-    pub fn blocks(&self) -> std::slice::Iter<Block<V>> {
+    pub fn blocks(&self) -> std::slice::Iter<Block> {
         self.blocks.iter()
     }
 
     /// Gets a mutable iterator to the contained blocks.
-    pub fn blocks_mut(&mut self) -> std::slice::IterMut<Block<V>> {
+    pub fn blocks_mut(&mut self) -> std::slice::IterMut<Block> {
         self.blocks.iter_mut()
     }
 
     /// Performs a mapping over the blocks of the function.
     pub fn map_blocks<F>(mut self, f: F) -> Self
-        where F: FnMut(Block<V>) -> Block<V> {
+        where F: FnMut(Block) -> Block {
 
         let blocks = self.blocks.into_iter().map(f);
         self.blocks = blocks.collect();
@@ -243,21 +231,21 @@ impl<V> Function<V>
 
     /// Sets the blocks that the function contains.
     pub fn with_blocks<I>(mut self, blocks: I) -> Self
-        where I: Iterator<Item=Block<V>> {
+        where I: Iterator<Item=Block> {
 
         self.blocks = blocks.collect();
         self
     }
 
     /// Gets the values that the function contains.
-    pub fn values(&self) -> std::vec::IntoIter<&V> {
+    pub fn values(&self) -> std::vec::IntoIter<&Value> {
         // FIXME: return 'impl Iterator' once supported
         let vals: Vec<_> = self.blocks.iter().flat_map(Block::values).collect();
         vals.into_iter()
     }
 
     pub fn map_values<F>(mut self, mut f: F) -> Self
-        where F: FnMut(V) -> V {
+        where F: FnMut(Value) -> Value {
         self.blocks = self.blocks.into_iter()
                                  .map(|b| b.map_values(|a| f(a)))
                                  .collect();
@@ -280,13 +268,13 @@ impl<V> Function<V>
     }
 }
 
-impl<V: Value> util::Identifiable for Function<V>
+impl util::Identifiable for Function
 {
     fn get_id(&self) -> util::Id { self.id }
     fn internal_set_id(&mut self, id: util::Id) { self.id = id; }
 }
 
-impl<V: PartialEq + Value> std::cmp::PartialEq for Function<V>
+impl std::cmp::PartialEq for Function
 {
     fn eq(&self, other: &Self) -> bool {
         self.name == other.name &&
@@ -294,4 +282,4 @@ impl<V: PartialEq + Value> std::cmp::PartialEq for Function<V>
     }
 }
 
-impl<V: Eq + Value> std::cmp::Eq for Function<V> { }
+impl std::cmp::Eq for Function { }

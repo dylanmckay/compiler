@@ -157,39 +157,3 @@ impl Into<Value> for Expression
     }
 }
 
-impl ::lang::Value for Value
-{
-    type Type = Type;
-
-    fn subvalues(&self) -> Vec<&Self> {
-        self.expression.subvalues()
-    }
-
-    fn map_subvalues<F>(mut self, f: F) -> Self
-        where F: FnMut(Self) -> Self {
-        self.expression = self.expression.map_subvalues(f);
-        self
-    }
-
-    fn flatten(mut self, block: &mut Block) -> Self {
-        self.expression = self.expression.flatten(block);
-        self
-    }
-
-    fn is_single_critical(&self) -> bool {
-        self.expression.is_single_critical()
-    }
-
-    fn is_simple(&self) -> bool {
-        self.expression.is_simple()
-    }
-
-    fn ty(&self) -> Type {
-        self.expression.ty()
-    }
-
-    fn is_terminator(&self) -> bool {
-        self.expression.is_terminator()
-    }
-}
-

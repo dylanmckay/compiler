@@ -10,8 +10,6 @@ bit-vec = "*"
 
 [dependencies.compiler_util]
 path = "../util"
-[dependencies.compiler_lang]
-path = "../lang"
 
 [lib]
 name = "compiler_ir"

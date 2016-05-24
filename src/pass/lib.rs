@@ -1,4 +1,3 @@
-
 pub use self::manager::Manager;
 
 /// The pass manager infrastructure.
@@ -10,7 +9,6 @@ pub mod analysis;
 /// The pass registry.
 pub mod registrar;
 
-extern crate compiler_lang as lang;
 extern crate compiler_ir as ir;
 
 extern crate num;
@@ -19,13 +17,13 @@ extern crate num;
 #[derive(Copy,Clone,Debug,PartialEq,Eq)]
 pub struct Id(u32);
 
-pub enum Info<V: lang::Value>
+pub enum Info
 {
-    Analysis(Box<Analysis<V>>),
-    Transform(Box<Transform<V>>),
+    Analysis(Box<Analysis>),
+    Transform(Box<Transform>),
 }
 
-impl<V: lang::Value> Metadata for Info<V>
+impl Metadata for Info
 {
     fn id(&self) -> Id {
         match *self {
@@ -63,12 +61,11 @@ pub trait Metadata
     fn name(&self) -> &'static str;
 }
 
-pub trait Analysis<V> : Metadata
-    where V: lang::Value
+pub trait Analysis : Metadata
 {
     /// Run the pass on an entire module.
     fn run_module(&mut self,
-                  module: &lang::Module<V>) {
+                  module: &ir::Module) {
 
         for global in module.globals() {
             self.run_global(global);
@@ -81,13 +78,13 @@ pub trait Analysis<V> : Metadata
 
     /// Run the pass on a global variable.
     fn run_global(&mut self,
-                  _: &lang::Global<V>) {
+                  _: &ir::Global) {
         // do nothing unless overidden
     }
 
     /// Run the pass on a function.
     fn run_function(&mut self,
-                    function: &lang::Function<V>) {
+                    function: &ir::Function) {
 
         for bb in function.blocks() {
             self.run_block(bb);
@@ -96,7 +93,7 @@ pub trait Analysis<V> : Metadata
 
     /// Run the pass on a basic block.
     fn run_block(&mut self,
-                 block: &lang::Block<V>) {
+                 block: &ir::Block) {
 
         for value in block.values() {
             self.run_value_recursive(&value);
@@ -105,16 +102,16 @@ pub trait Analysis<V> : Metadata
 
     /// Run the pass on a value.
     fn run_value(&mut self,
-                 _: &V) {
+                 _: &ir::Value) {
 
         panic!("the pass is not implemented");
     }
 
     fn run_value_recursive(&mut self,
-                           value: &V) {
+                           value: &ir::Value) {
 
         // Recurse from the deepest node to the root node.
-        for val in value.subvalues() {
+        for val in value.expression.subvalues() {
             self.run_value_recursive(&val);
         }
 
@@ -122,20 +119,19 @@ pub trait Analysis<V> : Metadata
     }
 }
 
-pub trait Transform<V> : Metadata
-    where V: lang::Value
+pub trait Transform : Metadata
 {
     /// Run the pass on an entire module.
     fn run_module(&mut self,
-                  module: lang::Module<V>) -> lang::Module<V> {
+                  module: ir::Module) -> ir::Module {
         module.map_globals(|a| self.run_global(a))
               .map_functions(|a,module| self.run_function(a,module))
     }
 
     /// Run the pass on a global.
     fn run_global(&mut self,
-                  global: lang::Global<V>)
-        -> lang::Global<V> {
+                  global: ir::Global)
+        -> ir::Global {
 
         // do nothing unless overridden
         global
@@ -143,30 +139,30 @@ pub trait Transform<V> : Metadata
 
     /// Run the pass on a function.
     fn run_function(&mut self,
-                    function: lang::Function<V>,
-                    _module: &lang::Module<V>)
-        -> lang::Function<V> {
+                    function: ir::Function,
+                    _module: &ir::Module)
+        -> ir::Function {
 
         function.map_blocks(|a| self.run_block(a))
     }
 
     /// Run the pass on a basic block.
     fn run_block(&mut self,
-                 block: lang::Block<V>)
-        -> lang::Block<V> {
+                 block: ir::Block)
+        -> ir::Block {
 
         block.map_values(|a| self.run_value_recursive(a))
     }
 
     /// Run the pass on a value.
     fn run_value(&mut self,
-                 _: V) -> V {
+                 _: ir::Value) -> ir::Value {
 
         panic!("the {} pass is not implemented", self.name());
     }
 
     fn run_value_recursive(&mut self,
-                           value: V) -> V {
+                           value: ir::Value) -> ir::Value {
 
         // Recurse from the deepest node to the root node.
         let val = value.map_subvalues(|v| self.run_value_recursive(v));

@@ -21,8 +21,6 @@ impl Struct
     }
 
     pub fn ty(&self) -> Type {
-        use lang::Value;
-
         // Create the struct type from the types of the values.
         types::Struct::new(
             self.fields.iter().map(|ref f| f.ty())

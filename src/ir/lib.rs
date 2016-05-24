@@ -2,11 +2,18 @@
 
 pub use self::types::{Type,TypeTrait};
 pub use self::value::{Value,Expression,ExpressionTrait,Register};
-pub use lang::Name;
 pub use self::instruction::{Instruction,InstructionTrait,Unary,Binary};
 pub use self::print::printable;
 pub use self::users::Users;
 pub use self::cond::Condition;
+
+pub use self::module::Module;
+pub use self::global::Global;
+pub use self::function::{Function,Signature,Parameter};
+pub use self::block::Block;
+pub use self::name::Name;
+
+pub use self::attrs::*;
 
 /// Where types are implemented.
 pub mod types;
@@ -25,16 +32,22 @@ pub mod users;
 /// Condition codes.
 pub mod cond;
 
+/// Module stuff.
+pub mod module;
+/// Global variable stuff.
+pub mod global;
+/// Function stuff.
+pub mod function;
+/// Basic block handling.
+pub mod block;
+/// A name.
+pub mod name;
+
+/// Various attributes.
+pub mod attrs;
+
 extern crate compiler_util as util;
-extern crate compiler_lang as lang;
 
 extern crate num;
 extern crate bit_vec;
-
-pub type Module = ::lang::Module<Value>;
-pub type Global = ::lang::Global<Value>;
-pub type Function = ::lang::Function<Value>;
-pub type Block = ::lang::Block<Value>;
-pub type Signature = ::lang::Signature<Value>;
-pub type Parameter = ::lang::Parameter<Value>;
 

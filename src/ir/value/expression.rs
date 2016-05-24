@@ -244,6 +244,9 @@ impl Expression
         }
     }
 
+    /// Checks if the value is simple.
+    ///
+    /// Simple values are printed without parentheses.
     pub fn is_simple(&self) -> bool {
          match *self{
              Expression::Literal(..) => true,
@@ -276,6 +279,14 @@ impl Expression
         }
     }
 
+    /// Flattens the value into registers.
+    /// 
+    /// This takes all subvalues that are not simple and
+    /// hoists them out of the value, into a register which is
+    /// then appended to the block, and then the register reference
+    /// is then used.
+    /// 
+    /// This will convert an SSA value into a non-SSA value.
     pub fn flatten(self, block: &mut Block) -> Self {
         // only instructions need flattening
         if let Expression::Instruction(i) = self {
@@ -293,6 +304,16 @@ impl Expression
         }
     }
 
+    /// Checks if a value is critical.
+    ///
+    /// Recursively checks whether this value is critical.
+    pub fn is_critical(&self) -> bool {
+        let subvalues_critical = self.subvalues().iter().any(|a| a.expression.is_critical());
+
+        self.is_single_critical() || subvalues_critical
+    }
+
+    /// Checks if the value is a terminator.
     pub fn is_terminator(&self) -> bool {
         // only instructions can be terminators
         if let Expression::Instruction(ref inst) = *self {

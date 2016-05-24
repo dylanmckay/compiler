@@ -17,31 +17,27 @@ impl Metadata for DeadCodeElimination
     fn name(&self) -> &'static str { "dead code elimination" }
 }
 
-impl Transform<ir::Value> for DeadCodeElimination
+impl Transform for DeadCodeElimination
 {
-    fn run_block(&mut self, block: ir::Block)
-        -> ir::Block {
-
+    fn run_block(&mut self, block: ir::Block) -> ir::Block {
         self::deadcode::eliminate(block)
     }
 }
 
 // TODO: blamket impl for all passes
-impl Into<Info<ir::Value>> for Box<DeadCodeElimination>
+impl Into<Info> for Box<DeadCodeElimination>
 {
-    fn into(self) -> Info<ir::Value> {
+    fn into(self) -> Info {
         Info::Transform(self)
     }
 }
 
 pub mod deadcode
 {
-    use lang;
+    use ir;
 
     /// Eliminates dead code.
-    pub fn eliminate<V>(block: lang::Block<V>) -> lang::Block<V>
-        where V: lang::Value {
-
-        block.filter(|v| v.is_critical())
+    pub fn eliminate(block: ir::Block) -> ir::Block {
+        block.filter(|v| v.expression.is_critical())
     }
 }

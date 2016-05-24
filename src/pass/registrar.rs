@@ -1,31 +1,29 @@
 use Info;
-use lang;
 
-pub struct Registrar<V: lang::Value>
+pub struct Registrar
 {
-    passes: RegisteredPass<V>,
+    pub passes: RegisteredPass,
 }
 
-pub struct RegisteredPass<V: lang::Value>
+pub struct RegisteredPass
 {
     name: String,
-    create_fn: Box<Fn() -> Info<V>>,
+    create_fn: Box<Fn() -> Info>,
 }
 
-impl<V> RegisteredPass<V>
-    where V: lang::Value
+impl RegisteredPass
 {
     pub fn new<S,F>(name: S,
                     create_fn: F) -> Self
         where S: Into<String>,
-              F: Fn() -> Info<V> + 'static {
+              F: Fn() -> Info + 'static {
         RegisteredPass {
             name: name.into(),
             create_fn: Box::new(create_fn),
         }
     }
 
-    pub fn create(&self) -> Info<V> {
+    pub fn create(&self) -> Info {
         (*self.create_fn)()
     }
 

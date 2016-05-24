@@ -10,7 +10,6 @@ pub struct Div
 impl Div
 {
     pub fn new(lhs: Value, rhs: Value) -> Self {
-        use lang::Value;
         assert!(lhs.ty() == rhs.ty());
 
         Div {

@@ -14,8 +14,6 @@ term = "0.4.4"
 
 [dependencies.compiler_util]
 path = "src/util"
-[dependencies.compiler_lang]
-path = "src/lang"
 [dependencies.compiler_target]
 path = "src/target"
 [dependencies.compiler_ir]

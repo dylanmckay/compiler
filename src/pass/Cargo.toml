@@ -9,8 +9,6 @@ num = "*"
 
 [dependencies.compiler_ir]
 path = "../ir"
-[dependencies.compiler_lang]
-path = "../lang"
 
 [lib]
 name = "compiler_pass"

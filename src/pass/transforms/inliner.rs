@@ -10,7 +10,7 @@ impl Metadata for Inliner
     fn name(&self) -> &'static str { "inliner" }
 }
 
-impl Transform<ir::Value> for Inliner
+impl Transform for Inliner
 {
     fn run_function(&mut self, 
                     func: ir::Function,
@@ -21,9 +21,9 @@ impl Transform<ir::Value> for Inliner
 }
 
 // TODO: blamket impl for all passes
-impl Into<Info<ir::Value>> for Box<Inliner>
+impl Into<Info> for Box<Inliner>
 {
-    fn into(self) -> Info<ir::Value> {
+    fn into(self) -> Info {
         Info::Transform(self)
     }
 }

@@ -1,7 +1,7 @@
 
 extern crate compiler;
 
-use compiler::{ir,lang,pass};
+use compiler::{ir,pass};
 
 fn main() {
     let mut module = self::create_module();
@@ -51,7 +51,7 @@ fn create_module() -> ir::Module {
             block
         };
 
-        let sig = lang::Signature::empty().ret(ir::Type::i32());
+        let sig = ir::Signature::empty().ret(ir::Type::i32());
         let mut f = ir::Function::empty("do_thing", sig);
 
         f.append_block(bb1);
@@ -69,7 +69,7 @@ fn create_module() -> ir::Module {
             block
         };
 
-        let sig = lang::Signature::empty().ret(ir::Type::i32());
+        let sig = ir::Signature::empty().ret(ir::Type::i32());
         let mut f = ir::Function::empty("main", sig);
         f.append_block(bb);
         f
@@ -81,7 +81,7 @@ fn create_module() -> ir::Module {
                        .global(global)
 }
 
-fn create_ir_pass_manager() -> pass::Manager<ir::Value> {
+fn create_ir_pass_manager() -> pass::Manager {
     pass::Manager::empty()
         //.add_pass(pass::transforms::ConstantFolding)
         .add_pass(pass::transforms::StrengthReduction)
