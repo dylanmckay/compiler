@@ -9,7 +9,6 @@ pub use self::cond::Condition;
 
 pub use self::module::Module;
 
-pub use self::item::Item;
 pub use self::span::Spanned;
 pub use self::item::Global;
 pub use self::item::{Function,Signature,Parameter};
