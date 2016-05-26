@@ -5,5 +5,10 @@ rust:
 
 script:
   - cargo build
-  - cargo test
+  - cargo test -p compiler_util
+  - cargo test -p compiler_target
+  - cargo test -p compiler_ir
+  - cargo test -p compiler_mir
+  - cargo test -p compiler_pass
+  - cargo test -p compiler_test
 

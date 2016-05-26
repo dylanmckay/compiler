@@ -625,7 +625,7 @@ pub mod keywords
 mod test
 {
     use super::Parser;
-    use {Value,Function,Signature};
+    use {Value,Expression,Function,Signature};
 
     #[cfg(test)]
     fn parse(text: &str) -> ::Module {
@@ -642,19 +642,19 @@ mod test
                                    .expect("no globals were parsed");
 
                 assert_eq!(global.name(), $name);
-                assert_eq!(global.value(), &$value);
+                assert_eq!(&global.value().node, &$value);
             }
         }
     }
 
     #[test]
     fn globals() {
-        expect_global!("global @ABCD = i32 5" => "ABCD", Value::i32(5));
+        expect_global!("global @ABCD = i32 5" => "ABCD", Expression::i32(5));
 
         expect_global!("global @hello_world = u127 38"
-                       => "hello_world", Value::u(127, 38));
+                       => "hello_world", Expression::u(127, 38));
 
-        expect_global!("global @ewf = i16 52" => "ewf", Value::i(16, 52));
+        expect_global!("global @ewf = i16 52" => "ewf", Expression::i(16, 52));
     }
 }
 

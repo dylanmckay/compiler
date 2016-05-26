@@ -29,9 +29,9 @@ macro_rules! value_mapping_test {
             ];
 
             for &(ref input, ref expected) in cases.iter() {
-                let mapped = $mapper(input.clone());
+                let mapped = $mapper(input.clone().into());
 
-                assert_eq!(&mapped, expected);
+                assert_eq!(mapped, expected.clone().into());
             }
         }
     }
