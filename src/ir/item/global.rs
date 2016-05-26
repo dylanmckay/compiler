@@ -32,7 +32,7 @@ impl Global
     /// Gets the value of the global.
     pub fn value(&self) -> &Value { &self.value }
     /// Gets the type of the value the global contains.
-    pub fn ty(&self) -> Type { self.value.ty() }
+    pub fn ty(&self) -> Type { self.value.node.ty() }
     /// Gets the ID of the global.
     pub fn id(&self) -> util::Id { self.id }
 

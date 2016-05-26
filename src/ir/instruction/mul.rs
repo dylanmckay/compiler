@@ -16,7 +16,7 @@ impl Mul
         }
     }
 
-    pub fn ty(&self) -> Type { self.lhs.ty() }
+    pub fn ty(&self) -> Type { self.lhs.node.ty() }
 }
 
 impl_instruction!(Mul: lhs, rhs);

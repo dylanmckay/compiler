@@ -21,7 +21,7 @@ impl Call
     }
 
     pub fn target_id(&self) -> ::util::Id {
-        if let Expression::FunctionRef(ref r) = self.target().expression {
+        if let Expression::FunctionRef(ref r) = self.target().node {
             r.function_id()
         } else {
             panic!("a call instruction must have a function reference as its target");
@@ -29,7 +29,7 @@ impl Call
     }
 
     pub fn ty(&self) -> Type {
-        self.target.ty()
+        self.target.node.ty()
     }
 }
 

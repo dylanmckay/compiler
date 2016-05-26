@@ -111,7 +111,7 @@ pub trait Analysis : Metadata
                            value: &ir::Value) {
 
         // Recurse from the deepest node to the root node.
-        for val in value.expression.subvalues() {
+        for val in value.node.subvalues() {
             self.run_value_recursive(&val);
         }
 
@@ -164,8 +164,11 @@ pub trait Transform : Metadata
     fn run_value_recursive(&mut self,
                            value: ir::Value) -> ir::Value {
 
-        // Recurse from the deepest node to the root node.
-        let val = value.map_subvalues(|v| self.run_value_recursive(v));
+        let val = ir::Value {
+            // Recurse from the deepest node to the root node.
+            node: value.node.map_subvalues(|v| self.run_value_recursive(v)),
+        };
+
         self.run_value(val)
     }
 }

@@ -35,7 +35,7 @@ pub mod instruction
         // TODO: remove this, it was a stub from when
         // Value and Expression were split up
         fn operand_expression(&self) -> &Expression {
-            &self.operand().expression
+            &self.operand().node
         }
     }
 
@@ -48,7 +48,7 @@ pub mod instruction
 
         fn operand_expressions(&self) -> (&Expression, &Expression) {
             let (lhs_val, rhs_val) = self.operands();
-            (&lhs_val.expression, &rhs_val.expression)
+            (&lhs_val.node, &rhs_val.node)
         }
     }
 
@@ -126,7 +126,7 @@ pub mod instruction
         /// The resulting instruction is returned.
         pub fn flatten(self, block: &mut Block) -> Self {
             self.map_subvalues(|v| {
-                if let Expression::Instruction(mut i) = v.expression {
+                if let Expression::Instruction(mut i) = v.node {
 
                     // Recursively flatten subvalues
                     i = i.flatten(block);
@@ -135,7 +135,7 @@ pub mod instruction
                         i.into()
                     } else { // instruction does not give void
                         let new_reg = value::Register::unnamed(Value::new(i.into()));
-                        let reg_ref = Value::register_ref(&new_reg);
+                        let reg_ref = Value::new(Expression::register_ref(&new_reg));
 
                         block.append_value(Value::new(new_reg.into()));
                         reg_ref

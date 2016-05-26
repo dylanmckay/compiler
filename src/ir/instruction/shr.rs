@@ -10,7 +10,7 @@ pub struct Shr
 impl Shr
 {
     pub fn new(value: Value, amount: Value) -> Self {
-        assert!(value.ty() == amount.ty());
+        assert!(value.node.ty() == amount.node.ty());
 
         Shr {
             value: Box::new(value),
@@ -18,7 +18,7 @@ impl Shr
         }
     }
 
-    pub fn ty(&self) -> Type { self.value.ty() }
+    pub fn ty(&self) -> Type { self.value.node.ty() }
 }
 
 impl_instruction!(Shr: value, amount);

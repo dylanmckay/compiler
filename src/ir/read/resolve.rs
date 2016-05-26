@@ -187,12 +187,14 @@ impl Scope
     }
 
     fn resolve_value(&mut self, value: Value) -> Value {
-        let a = value.map_subvalues(|v| self.resolve_value(v));
+        let a = value.node.map_subvalues(|v| self.resolve_value(v));
 
-        a.map_expression(|expr| match expr {
-            Expression::UnresolvedRef(id) => self.resolve_reference(id),
-            other => other,
-        })
+        Value {
+            node: match a {
+                Expression::UnresolvedRef(id) => self.resolve_reference(id),
+                other => other,
+            },
+        }
     }
 
     fn resolve_reference(&self, id: Id) -> Expression {

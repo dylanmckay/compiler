@@ -308,7 +308,7 @@ impl Expression
     ///
     /// Recursively checks whether this value is critical.
     pub fn is_critical(&self) -> bool {
-        let subvalues_critical = self.subvalues().iter().any(|a| a.expression.is_critical());
+        let subvalues_critical = self.subvalues().iter().any(|a| a.node.is_critical());
 
         self.is_single_critical() || subvalues_critical
     }

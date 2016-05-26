@@ -49,7 +49,7 @@ pub fn verify_block(_module: &Module,
     try!(util::verify_ident(block.name()));
 
     if let Some(value) = block.values().last() {
-        condition!(value.expression.is_terminator(),
+        condition!(value.node.is_terminator(),
                    "every basic block must end with a terminating instruction");
     } else { // block is empty
         return Err("there must be at least one instruction in a basic block".into());
@@ -61,7 +61,7 @@ pub fn verify_block(_module: &Module,
 /// Verifies that a value is well-formed.
 pub fn verify_value(module: &Module,
                     value: &Value) -> Result {
-    verify_expression(module, &value.expression)
+    verify_expression(module, &value.node)
 }
 
 /// Verifies that an expression is well-formed.
@@ -107,7 +107,7 @@ mod values
         pub fn call(_module: &Module,
                     inst: &instruction::Call) -> Result {
 
-            condition!(inst.target().expression.is_function_ref(),
+            condition!(inst.target().node.is_function_ref(),
                        "call instructions must refer to functions");
 
 
@@ -119,7 +119,7 @@ mod values
         pub fn br(_module: &Module,
                   inst: &instruction::Break) -> Result {
 
-            condition!(inst.target().expression.is_block_ref(),
+            condition!(inst.target().node.is_block_ref(),
                        "break instructions must refer to basic blocks");
 
             Ok(())
@@ -138,7 +138,7 @@ mod values
 
             let (lhs,rhs) = inst.operands();
 
-            condition!(lhs.ty() == rhs.ty(),
+            condition!(lhs.node.ty() == rhs.node.ty(),
                        format!("binary arithmetic operations must have operands of the same type"));
             Ok(())
         }

@@ -10,7 +10,7 @@ pub struct Add
 impl Add
 {
     pub fn new(lhs: Value, rhs: Value) -> Self {
-        assert!(lhs.ty() == rhs.ty());
+        assert!(lhs.node.ty() == rhs.node.ty());
 
         Add {
             lhs: Box::new(lhs),
@@ -19,7 +19,7 @@ impl Add
     }
 
     pub fn ty(&self) -> Type {
-        self.lhs.ty()
+        self.lhs.node.ty()
     }
 }
 

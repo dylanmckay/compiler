@@ -38,6 +38,6 @@ pub mod deadcode
 
     /// Eliminates dead code.
     pub fn eliminate(block: ir::Block) -> ir::Block {
-        block.filter(|v| v.expression.is_critical())
+        block.filter(|v| v.node.is_critical())
     }
 }

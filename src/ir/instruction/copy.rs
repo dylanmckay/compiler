@@ -10,7 +10,7 @@ pub struct Copy
 impl Copy
 {
     pub fn new(dst: Value, src: Value) -> Self {
-        assert!(dst.ty() == src.ty());
+        assert!(dst.node.ty() == src.node.ty());
 
         Copy {
             dst: Box::new(dst),
@@ -19,7 +19,7 @@ impl Copy
     }
 
     pub fn ty(&self) -> Type {
-        self.dst.ty()
+        self.dst.node.ty()
     }
 }
 

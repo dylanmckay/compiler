@@ -14,7 +14,7 @@ impl Value
     pub fn from_ir(value: &ir::Value) -> Self {
         use num::traits::ToPrimitive;
 
-        match value.expression {
+        match value.node {
             ir::Expression::Literal(ref literal) => {
                 match *literal {
                     ir::value::Literal::Integer(ref i) => {

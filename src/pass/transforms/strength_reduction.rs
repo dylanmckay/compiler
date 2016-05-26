@@ -17,7 +17,7 @@ impl Transform for StrengthReduction
     fn run_value(&mut self, value: ir::Value) -> ir::Value {
 
         // check if the value is an instruction
-        let inst = match value.expression {
+        let inst = match value.node {
             ir::Expression::Instruction(i) => i,
             e => return ir::Value::new(e),
         };
@@ -60,7 +60,7 @@ pub mod reduce
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
-        match maybe_shift_expressions(lhs.expression.clone(),rhs.expression.clone()) {
+        match maybe_shift_expressions(lhs.node.clone(), rhs.node.clone()) {
             Some((value,amount)) => Instruction::shl(value,amount).into(),
             None => inst.clone().into(),
         }
@@ -71,7 +71,7 @@ pub mod reduce
         use ir::instruction::Binary;
 
         let (lhs,rhs) = inst.operands();
-        match maybe_shift_expressions(lhs.expression.clone(),rhs.expression.clone()) {
+        match maybe_shift_expressions(lhs.node.clone(), rhs.node.clone()) {
             Some((value,amount)) => Instruction::shr(value,amount).into(),
             None => inst.clone().into(),
         }

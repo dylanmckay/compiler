@@ -10,7 +10,7 @@ pub struct Div
 impl Div
 {
     pub fn new(lhs: Value, rhs: Value) -> Self {
-        assert!(lhs.ty() == rhs.ty());
+        assert!(lhs.node.ty() == rhs.node.ty());
 
         Div {
             lhs: Box::new(lhs),
@@ -18,7 +18,7 @@ impl Div
         }
     }
 
-    pub fn ty(&self) -> Type { self.lhs.ty() }
+    pub fn ty(&self) -> Type { self.lhs.node.ty() }
 }
 
 impl_instruction!(Div: lhs, rhs);

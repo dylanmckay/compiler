@@ -49,7 +49,7 @@ impl Block
         };
 
         for value in self.body {
-            let new_value = value.expression.flatten(&mut block);
+            let new_value = value.node.flatten(&mut block);
             block.append_value(new_value);
         }
 
@@ -61,7 +61,7 @@ impl Block
     pub fn terminator(&self) -> &Value {
         let last = self.body.last().expect("the basic block is empty");
 
-        assert!(last.expression.is_terminator(), "the basic block is not terminated");
+        assert!(last.node.is_terminator(), "the basic block is not terminated");
         last
     }
 

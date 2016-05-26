@@ -4,11 +4,11 @@ use ir;
 pub fn from_block(block: &ir::Block) -> Dag<Value> {
     let nodes: Vec<Node<_>> = block.values().map(|value| {
 
-        if let ir::Expression::Instruction(ref i) = value.expression {
+        if let ir::Expression::Instruction(ref i) = value.node {
             self::value_from_instruction(i)
         } else {
             panic!("all block-level values should be instructions: \
-                   expected instruction but got: {:?}", value.expression);
+                   expected instruction but got: {:?}", value.node);
         }
     }).collect();
 
