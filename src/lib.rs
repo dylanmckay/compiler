@@ -1,8 +1,3 @@
-#![feature(plugin)]
-#![feature(associated_consts)]
-
-#![plugin(clippy)]
-
 extern crate num;
 extern crate bit_vec;
 
