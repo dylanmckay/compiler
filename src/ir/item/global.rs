@@ -1,5 +1,4 @@
-use Value;
-use Type;
+use {Item,ItemTrait,Value,Type};
 use util;
 
 use std;
@@ -56,5 +55,12 @@ impl std::fmt::Display for Global
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         self.name.fmt(fmt)
     }
+}
+
+impl ItemTrait for Global { }
+
+impl Into<Item> for Global
+{
+    fn into(self) -> Item { Item::Global(self) }
 }
 

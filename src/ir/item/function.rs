@@ -1,4 +1,4 @@
-use {Value,Type,Block};
+use {Item,ItemTrait,Value,Type,Block};
 use {InlineHint,ComplexityHint,CallingConvention};
 
 use util;
@@ -282,4 +282,12 @@ impl std::cmp::PartialEq for Function
     }
 }
 
+impl ItemTrait for Function { }
+
 impl std::cmp::Eq for Function { }
+
+impl Into<Item> for Function
+{
+    fn into(self) -> Item { Item::Function(self) }
+}
+

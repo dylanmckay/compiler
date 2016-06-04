@@ -11,7 +11,7 @@ pub use self::module::Module;
 
 pub use self::span::Spanned;
 pub use self::item::Global;
-pub use self::item::{Function,Signature,Parameter};
+pub use self::item::{Item,ItemTrait,Function,Signature,Parameter};
 
 pub use self::block::Block;
 pub use self::name::Name;
