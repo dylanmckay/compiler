@@ -1,4 +1,4 @@
-use {Value,Function,Global,Block};
+use {Value, Function, Global, Block, Users, Item};
 use util::Identifiable;
 use util;
 
@@ -26,6 +26,11 @@ impl Module
     /// SSA-form (if it was already).
     pub fn flatten(self) -> Self {
         self.map_functions(|f,_| f.flatten())
+    }
+
+    /// Gets all of the users of an item.
+    pub fn users_of(&self, item: &Item) -> Users {
+        Users::of(item, self)
     }
 
     /// Adds a function to the module.

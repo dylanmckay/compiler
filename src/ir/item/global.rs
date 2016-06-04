@@ -9,9 +9,9 @@ pub struct Global
 {
     id: util::Id,
     /// The name of the global.
-    name: String,
+    pub name: String,
     /// The variable value.
-    value: Value,
+    pub value: Value,
 }
 
 impl Global

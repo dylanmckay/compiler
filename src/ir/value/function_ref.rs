@@ -7,10 +7,10 @@ use util;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct FunctionRef
 {
-    func_id: util::Id,
+    pub func_id: util::Id,
 
-    name: String,
-    ty: types::Function,
+    pub name: String,
+    pub ty: types::Function,
 }
 
 impl FunctionRef

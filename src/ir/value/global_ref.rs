@@ -4,8 +4,8 @@ use util;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct GlobalRef
 {
-    global_id: util::Id,
-    ty: Type,
+    pub global_id: util::Id,
+    pub ty: Type,
 }
 
 impl GlobalRef
