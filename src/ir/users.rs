@@ -1,4 +1,4 @@
-use {Value, Expression, Item, Module, Function, Global, Block};
+use {Value, Expression, Item, ItemTrait, Module, Function, Global, Block};
 use util::Identifiable;
 
 /// Stores the users of a value.
@@ -16,7 +16,7 @@ impl<'a> Users<'a>
     }
 
     /// Gets all of the users of an item in a module.
-    pub fn of(item: &Item, module: &'a Module) -> Self {
+    pub fn of(item: &ItemTrait, module: &'a Module) -> Self {
         let mut users = Vec::new();
 
         for f in module.functions() {
@@ -39,13 +39,13 @@ impl<'a> Users<'a>
     }
 }
 
-fn users_in_global<'a>(item: &Item,
+fn users_in_global<'a>(item: &ItemTrait,
                        g: &'a Global,
                        users: &mut Vec<&'a Value>) {
     users_in_value(item, &g.value, users);
 }
 
-fn users_in_function<'a>(item: &Item,
+fn users_in_function<'a>(item: &ItemTrait,
                          f: &'a Function,
                          users: &mut Vec<&'a Value>) {
     for block in f.blocks() {
@@ -53,7 +53,7 @@ fn users_in_function<'a>(item: &Item,
     }
 }
 
-fn users_in_block<'a>(item: &Item,
+fn users_in_block<'a>(item: &ItemTrait,
                       block: &'a Block,
                       users: &mut Vec<&'a Value>) {
     for value in block.values() {
@@ -61,7 +61,7 @@ fn users_in_block<'a>(item: &Item,
     }
 }
 
-fn users_in_value<'a>(item: &Item,
+fn users_in_value<'a>(item: &ItemTrait,
                       value: &'a Value,
                       users: &mut Vec<&'a Value>) {
     match value.node {

@@ -10,8 +10,8 @@ pub struct Parameter
 {
     id: util::Id,
 
-    ty: Type,
-    name: String,
+    pub ty: Type,
+    pub name: String,
 }
 
 impl Parameter
@@ -65,8 +65,8 @@ impl std::cmp::Eq for Parameter { }
 #[derive(Clone,Debug)]
 pub struct Signature
 {
-    params: util::List<Parameter>,
-    return_types: Vec<Type>,
+    pub params: util::List<Parameter>,
+    pub return_types: Vec<Type>,
 }
 
 impl Signature
@@ -151,14 +151,14 @@ pub struct Function
 {
     id: util::Id,
 
-    name: String,
-    signature: Signature,
-    blocks: Vec<Block>,
+    pub name: String,
+    pub signature: Signature,
+    pub blocks: Vec<Block>,
 
-    cc: CallingConvention,
+    pub cc: CallingConvention,
 
-    inline_hint: InlineHint,
-    complexity_hint: ComplexityHint,
+    pub inline_hint: InlineHint,
+    pub complexity_hint: ComplexityHint,
 }
 
 impl Function

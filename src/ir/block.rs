@@ -6,10 +6,10 @@ use util;
 #[derive(Clone,Debug)]
 pub struct Block
 {
-    id: util::Id,
+    pub id: util::Id,
 
-    name: String,
-    body: Vec<Value>,
+    pub name: String,
+    pub body: Vec<Value>,
 }
 
 impl Block

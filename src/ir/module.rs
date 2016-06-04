@@ -1,4 +1,4 @@
-use {Value, Function, Global, Block, Users, Item};
+use {Value, Function, Global, Block, Users, ItemTrait};
 use util::Identifiable;
 use util;
 
@@ -8,8 +8,8 @@ use std;
 #[derive(Clone,Debug)]
 pub struct Module
 {
-    functions: util::List<Function>,
-    globals: util::List<Global>,
+    pub functions: util::List<Function>,
+    pub globals: util::List<Global>,
 }
 
 impl Module
@@ -29,7 +29,7 @@ impl Module
     }
 
     /// Gets all of the users of an item.
-    pub fn users_of(&self, item: &Item) -> Users {
+    pub fn users_of(&self, item: &ItemTrait) -> Users {
         Users::of(item, self)
     }
 

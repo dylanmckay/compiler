@@ -10,6 +10,9 @@ num = "*"
 [dependencies.compiler_ir]
 path = "../ir"
 
+[dependencies.compiler_util]
+path = "../util"
+
 [lib]
 name = "compiler_pass"
 path = "lib.rs"

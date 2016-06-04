@@ -292,7 +292,10 @@ pub mod instruction
                 pub fn map_subvalues<F>(mut self, mut f: F) -> Self
                     where F: FnMut(::Value) -> ::Value {
 
-                    $(*self.$val_name = f(*self.$val_name.clone()));*;
+                    $(
+                        *self.$val_name = f(*self.$val_name.clone());
+                    )*
+
                     self.into()
                 }
             }
