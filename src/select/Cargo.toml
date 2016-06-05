@@ -1,0 +1,13 @@
+[package]
+
+name = "compiler_select"
+version = "0.0.1"
+authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+
+[dependencies.compiler_mir]
+path = "../mir"
+
+[lib]
+name = "compiler_select"
+path = "lib.rs"
+

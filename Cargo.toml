@@ -21,6 +21,8 @@ path = "src/ir"
 path = "src/mir"
 [dependencies.compiler_pass]
 path = "src/pass"
+[dependencies.compiler_select]
+path = "src/select"
 [dependencies.compiler_test]
 path = "src/test"
 

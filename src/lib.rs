@@ -11,6 +11,8 @@ pub use self::compiler_mir as mir;
 pub use self::compiler_target as target;
 /// The pass infrastructure.
 pub use self::compiler_pass as pass;
+/// The instruction selector.
+pub use self::compiler_select as select;
 /// The integrated tester.
 pub use self::compiler_test as test;
 
@@ -20,4 +22,5 @@ pub extern crate compiler_ir;
 pub extern crate compiler_mir;
 pub extern crate compiler_target;
 pub extern crate compiler_pass;
+pub extern crate compiler_select;
 pub extern crate compiler_test;
