@@ -4,24 +4,21 @@ use ir;
 use build;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
-pub struct Dag<V>
+pub struct Dag
 {
-    nodes: Vec<Node<V>>,
+    pub nodes: Vec<Node>,
 }
 
-impl<V> Dag<V>
+impl Dag
 {
     pub fn new<I>(nodes: I) -> Self
-        where I: IntoIterator<Item=Node<V>> {
+        where I: IntoIterator<Item=Node> {
         Dag {
             nodes: nodes.into_iter().collect(),
         }
     }
-}
 
-impl Dag<Value>
-{
-    pub fn from_block(block: &ir::Block) -> Dag<Value> {
+    pub fn from_block(block: &ir::Block) -> Dag {
         build::from_block(block)
     }
 }

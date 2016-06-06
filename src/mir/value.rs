@@ -1,8 +1,17 @@
+use Type;
 use ir;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub enum Value
 {
+    Local {
+        number: u32,
+        ty: Type,
+    },
+    Argument {
+        number: u32,
+        ty: Type,
+    },
     Integer {
         bit_width: u16,
         value: i64,
@@ -11,22 +20,13 @@ pub enum Value
 
 impl Value
 {
-    pub fn from_ir(value: &ir::Value) -> Self {
-        use num::traits::ToPrimitive;
-
-        match value.node {
-            ir::Expression::Literal(ref literal) => {
-                match *literal {
-                    ir::value::Literal::Integer(ref i) => {
-                        Value::Integer {
-                            bit_width: i.integer_ty().width(),
-                            value: i.value().to_i64().unwrap(),
-                        }
-                    },
-                    _ => unimplemented!(),
-                }
+    pub fn ty(&self) -> Type {
+        match *self {
+            Value::Local { ref ty, .. } => ty.clone(),
+            Value::Argument { ref ty, .. } => ty.clone(),
+            Value::Integer { bit_width, .. } => {
+                Type::Integer { bit_width: bit_width }
             },
-            _ => unimplemented!(),
         }
     }
 }

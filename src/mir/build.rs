@@ -1,8 +1,8 @@
 use {Value,Node,Dag,OpCode};
 use ir;
 
-pub fn from_block(block: &ir::Block) -> Dag<Value> {
-    let nodes: Vec<Node<_>> = block.values().map(|value| {
+pub fn from_block(block: &ir::Block) -> Dag {
+    let nodes: Vec<Node> = block.values().map(|value| {
 
         if let ir::Expression::Instruction(ref i) = value.node {
             self::value_from_instruction(i)
@@ -15,7 +15,7 @@ pub fn from_block(block: &ir::Block) -> Dag<Value> {
     Dag::new(nodes)
 }
 
-pub fn value_from_instruction(inst: &ir::Instruction) -> Node<Value> {
+pub fn value_from_instruction(inst: &ir::Instruction) -> Node {
     use ir::Instruction;
     use ir::Binary;
 
@@ -23,55 +23,55 @@ pub fn value_from_instruction(inst: &ir::Instruction) -> Node<Value> {
         Instruction::Add(ref i) => {
             let (lhs, rhs) = i.operands();
 
-            Node::new(
+            Node::branch(
                 OpCode::Add,
-                (vec![Value::from_ir(lhs), Value::from_ir(rhs)].into_iter()),
+                (vec![Node::from_ir(lhs), Node::from_ir(rhs)].into_iter()),
             )
         },
         Instruction::Sub(ref i) => {
             let (lhs, rhs) = i.operands();
 
-            Node::new(
+            Node::branch(
                 OpCode::Sub,
-                vec![Value::from_ir(lhs), Value::from_ir(rhs)].into_iter(),
+                vec![Node::from_ir(lhs), Node::from_ir(rhs)].into_iter(),
             )
         },
         Instruction::Mul(ref i) => {
             let (lhs, rhs) = i.operands();
 
-            Node::new(
+            Node::branch(
                 OpCode::Mul,
-                vec![Value::from_ir(lhs), Value::from_ir(rhs)].into_iter(),
+                vec![Node::from_ir(lhs), Node::from_ir(rhs)].into_iter(),
             )
         },
         Instruction::Div(ref i) => {
             let (lhs, rhs) = i.operands();
 
-            Node::new(
+            Node::branch(
                 OpCode::Div,
-                vec![Value::from_ir(lhs), Value::from_ir(rhs)].into_iter(),
+                vec![Node::from_ir(lhs), Node::from_ir(rhs)].into_iter(),
             )
         },
         Instruction::Shl(ref i) => {
             let (lhs, rhs) = i.operands();
 
-            Node::new(
+            Node::branch(
                 OpCode::Shl,
-                vec![Value::from_ir(lhs), Value::from_ir(rhs)].into_iter(),
+                vec![Node::from_ir(lhs), Node::from_ir(rhs)].into_iter(),
             )
         },
         Instruction::Shr(ref i) => {
             let (lhs, rhs) = i.operands();
 
-            Node::new(
+            Node::branch(
                 OpCode::Shr,
-                vec![Value::from_ir(lhs), Value::from_ir(rhs)].into_iter(),
+                vec![Node::from_ir(lhs), Node::from_ir(rhs)].into_iter(),
             )
         },
         Instruction::Return(ref i) => {
             match i.subvalue() {
-                Some(value) => Node::new(OpCode::Ret, vec![Value::from_ir(value)].into_iter()),
-                None => Node::new(OpCode::Ret, vec![])
+                Some(value) => Node::branch(OpCode::Ret, vec![Node::from_ir(value)].into_iter()),
+                None => Node::branch(OpCode::Ret, vec![])
             }
         },
         _ => unimplemented!(),
