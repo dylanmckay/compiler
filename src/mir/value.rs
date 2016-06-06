@@ -1,5 +1,4 @@
 use Type;
-use ir;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub enum Value
@@ -12,8 +11,8 @@ pub enum Value
         number: u32,
         ty: Type,
     },
-    Integer {
-        bit_width: u16,
+    ConstantInteger {
+        bit_width: u32,
         value: i64,
     },
 }
@@ -24,9 +23,24 @@ impl Value
         match *self {
             Value::Local { ref ty, .. } => ty.clone(),
             Value::Argument { ref ty, .. } => ty.clone(),
-            Value::Integer { bit_width, .. } => {
+            Value::ConstantInteger { bit_width, .. } => {
                 Type::Integer { bit_width: bit_width }
             },
+        }
+    }
+
+    pub fn i(width: u32, value: i64) -> Self {
+        Value::ConstantInteger {
+            bit_width: width,
+            value: value,
+        }
+    }
+
+    pub fn expect_constant_integer(&self) -> i64 {
+        if let Value::ConstantInteger { value, .. } = *self {
+            value
+        } else {
+            panic!("expected a constant integer");
         }
     }
 }

@@ -8,5 +8,11 @@ pub enum OpCode
     Shl,
     Shr,
     Ret,
+    /// Signed extension,
+    /// `(sext 16 %value)`
+    Sext,
+    /// Zero extension.
+    /// `(sext 16 %value)`
+    Zext,
 }
 

@@ -31,15 +31,23 @@ pub fn expand(_context: &Legalizer, _node: mir::Node) -> mir::Node
     unimplemented!();
 }
 
-pub fn promote(_context: &Legalizer, node: mir::Node) -> mir::Node
+pub fn promote(context: &Legalizer, node: mir::Node) -> mir::Node
 {
-    match node {
-        mir::Node::Branch { opcode, operands } => {
+    match node.ty() {
+        mir::Type::Integer { bit_width } => {
+            // Add a byte to the size, trimming it down so we have
+            // an exact multiple of the byte width.
+            let byte_count = (bit_width + context.byte_width) /
+                context.byte_width;
 
-        },
-        mir::Node::Leaf => {
+            let bit_size = byte_count * context.byte_width;
 
+            // Zero extend the value.
+            mir::Node::zext(bit_size, node)
         },
+        _ => {
+            unimplemented!();
+        }
     }
 }
 

@@ -1,4 +1,4 @@
-use {Value,Node,Dag,OpCode};
+use {Node,Dag,OpCode};
 use ir;
 
 pub fn from_block(block: &ir::Block) -> Dag {
