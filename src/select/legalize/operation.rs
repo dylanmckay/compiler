@@ -1,4 +1,4 @@
-use Action;
+use legalize::Action;
 
 use mir;
 

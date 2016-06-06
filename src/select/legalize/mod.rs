@@ -1,20 +1,23 @@
-use {Operation, Action};
-use legalize;
+pub use self::action::Action;
+pub use self::operation::Operation;
+
+pub mod action;
+pub mod operation;
 
 use mir;
 
 /// A selection context.
-pub struct Context
+pub struct Legalizer
 {
     operations: Vec<Operation>,
     /// The width of a byte on the target.
     pub byte_width: u32,
 }
 
-impl Context
+impl Legalizer
 {
     pub fn new(byte_width: u32) -> Self {
-        Context {
+        Legalizer {
             operations: Vec::new(),
             byte_width: byte_width,
         }
@@ -44,11 +47,7 @@ impl Context
                     operands: operands,
                 };
 
-                match self.legalization_action(&node) {
-                    Action::Legal => node,
-                    Action::Expand => legalize::expand(self, node),
-                    Action::Promote => legalize::promote(self, node),
-                }
+                self.legalization_action(&node).perform_on(node, self)
             },
             mir::Node::Leaf { value } => {
                 mir::Node::Leaf { value: value }
@@ -78,4 +77,12 @@ impl Context
     }
 }
 
+#[cfg(test)]
+mod test
+{
+    use super::*;
+
+    pub mod legalization {
+    }
+}
 

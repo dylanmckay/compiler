@@ -1,10 +1,4 @@
-pub use self::action::Action;
-pub use self::operation::Operation;
-pub use self::context::Context;
-
-pub mod action;
-pub mod operation;
-pub mod context;
+pub use self::legalize::Legalizer;
 
 pub mod legalize;
 
