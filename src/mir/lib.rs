@@ -12,6 +12,7 @@ pub mod ty;
 pub mod build;
 
 pub mod utils;
+pub mod verifier;
 
 extern crate num;
 extern crate compiler_ir as ir;

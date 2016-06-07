@@ -2,6 +2,7 @@ use Node;
 use ir;
 
 use build;
+use verifier;
 use util;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -44,6 +45,10 @@ impl Dag
 
     pub fn from_block(block: &ir::Block) -> Dag {
         build::from_block(block)
+    }
+
+    pub fn validate(&self) -> verifier::Result {
+        verifier::verify_dag(self)
     }
 }
 
