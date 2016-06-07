@@ -1,16 +1,17 @@
-use OpCode;
-use Value;
-use Type;
+use {OpCode, Value, Type, Register};
 
 use ir;
+use utils;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub enum Node
 {
+    /// A branch node contains an opcode and several operands.
     Branch {
         opcode: OpCode,
         operands: Vec<Node>,
     },
+    /// A leaf node contains a plain value with no children.
     Leaf {
         value: Value,
     },
@@ -18,6 +19,7 @@ pub enum Node
 
 impl Node
 {
+    /// Creates a new branch node.
     pub fn branch<I>(opcode: OpCode,
                      operands: I) -> Self
         where I: IntoIterator<Item=Self> {
@@ -27,22 +29,36 @@ impl Node
         }
     }
 
+    /// Creates a new leaf node.
     pub fn leaf(value: Value) -> Self {
         Node::Leaf {
             value: value,
         }
     }
 
+    /// Creates a new constant integer.
     pub fn i(width: u32, value: i64) -> Self {
         Self::leaf(Value::i(width, value))
     }
 
+    /// Creates a sign extended value.
     pub fn sext(bit_width: u32, value: Self) -> Self {
         Self::branch(OpCode::Sext, vec![Self::i(32, bit_width as _), value])
     }
 
+    /// Creates a zero extended value.
     pub fn zext(bit_width: u32, value: Self) -> Self {
         Self::branch(OpCode::Zext, vec![Self::i(32, bit_width as _), value])
+    }
+
+    /// Creates an sum of values node.
+    pub fn add(addends: &[Self]) -> Self {
+        Self::branch(OpCode::Add, addends.to_owned())
+    }
+
+    /// Creates a difference between values.
+    pub fn sub(addends: &[Self]) -> Self {
+        Self::branch(OpCode::Sub, addends.to_owned())
     }
 
     pub fn from_ir(value: &ir::Value) -> Self {
@@ -89,6 +105,11 @@ impl Node
             },
             Node::Leaf { ref value } => vec![value.ty()]
         }.into_iter()
+    }
+
+    /// Splits an operand out of this branch into a new register.
+    pub fn split_operand(&mut self, operand_number: u32) -> Register {
+        utils::split_node(self, operand_number)
     }
 
     // FIXME: get rid of this so we can support multiple

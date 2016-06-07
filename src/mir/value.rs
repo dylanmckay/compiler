@@ -1,4 +1,7 @@
 use Type;
+use Register;
+
+use util;
 
 /// A register.
 /// Stores the zero-based index of the node in the
@@ -7,7 +10,7 @@ use Type;
 pub struct RegisterRef {
     /// The number of the node that is referred to.
     /// Zero based.
-    pub node_number: u32,
+    pub register_id: util::Id,
     /// The number of the result from the node.
     pub result_number: u32,
     /// The type.
@@ -53,12 +56,16 @@ impl Value
     }
 
     /// Creates a new register reference.
-    pub fn register_ref(node_number: u32, result_number: u32, ty: Type) -> Self {
+    pub fn register_ref(register_id: util::Id, result_number: u32, ty: Type) -> Self {
         Value::RegisterRef(RegisterRef {
-            node_number: node_number,
+            register_id: register_id,
             result_number: result_number,
             ty: ty,
         })
+    }
+
+    pub fn reference_register(register: &Register, result_number: u32) -> Self {
+        Self::register_ref(register.id, result_number, register.value.ty())
     }
 
     pub fn expect_constant_integer(&self) -> i64 {
