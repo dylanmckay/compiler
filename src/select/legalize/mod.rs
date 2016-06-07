@@ -33,7 +33,9 @@ impl Legalizer
 
     pub fn legalize(&self, dag: mir::Dag) -> mir::Dag {
         mir::Dag {
-            nodes: dag.nodes.into_iter().map(|node| self.legalize_node(node)).collect(),
+            registers: dag.registers.into_iter().map(|register| {
+                register.map(|node| self.legalize_node(node))
+            }).collect()
         }
     }
 

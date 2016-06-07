@@ -13,4 +13,5 @@ pub mod build;
 
 extern crate num;
 extern crate compiler_ir as ir;
+extern crate compiler_util as util;
 

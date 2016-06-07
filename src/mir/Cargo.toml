@@ -6,6 +6,8 @@ authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
 [dependencies.compiler_ir]
 path = "../ir"
+[dependencies.compiler_util]
+path = "../util"
 
 [dependencies]
 num = "*"
