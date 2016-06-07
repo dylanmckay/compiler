@@ -7,9 +7,9 @@ use Type;
 pub struct Register {
     /// The number of the node that is referred to.
     /// Zero based.
-    pub number: u32,
+    pub node_number: u32,
     /// The number of the result from the node.
-    pub value_number: u32,
+    pub result_number: u32,
     /// The type.
     pub ty: Type,
 }
@@ -50,6 +50,15 @@ impl Value
             bit_width: width,
             value: value,
         }
+    }
+
+    /// Creates a new register reference.
+    pub fn register(node_number: u32, result_number: u32, ty: Type) -> Self {
+        Value::Register(Register {
+            node_number: node_number,
+            result_number: result_number,
+            ty: ty,
+        })
     }
 
     pub fn expect_constant_integer(&self) -> i64 {

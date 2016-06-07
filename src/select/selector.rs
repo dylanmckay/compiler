@@ -23,5 +23,33 @@ impl<Out> Selector<Out>
     pub fn select_node(node: mir::Node) -> Vec<Out> {
         unimplemented!();
     }
+
+    pub fn split_node(parent: mir::Node, argument_num: u32)
+        -> mir::Node {
+        let (opcode, operands) = match parent {
+            mir::Node::Branch { opcode, operands } => (opcode, operands),
+            _ => panic!("only branches can be split"),
+        };
+
+        let operands = operands.into_iter().enumerate().map(|(i, operand)| {
+            if i == argument_num as _ {
+                let result_number = 0;
+
+                // Replace the child node with a register.
+                mir::Node::leaf(mir::Value::register(
+                    0, // node number
+                    result_number, // value number
+                    operand.result_types().nth(result_number as _).unwrap(),
+                ))
+            } else {
+                operand
+            }
+        }).collect();
+
+        mir::Node::Branch {
+            opcode: opcode,
+            operands: operands,
+        }
+    }
 }
 
