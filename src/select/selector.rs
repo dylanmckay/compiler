@@ -36,7 +36,7 @@ impl<Out> Selector<Out>
                 let result_number = 0;
 
                 // Replace the child node with a register.
-                mir::Node::leaf(mir::Value::register(
+                mir::Node::leaf(mir::Value::register_ref(
                     0, // node number
                     result_number, // value number
                     operand.result_types().nth(result_number as _).unwrap(),

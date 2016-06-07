@@ -4,7 +4,7 @@ use Type;
 /// Stores the zero-based index of the node in the
 /// DAG that is referred to.
 #[derive(Clone,Debug,PartialEq,Eq)]
-pub struct Register {
+pub struct RegisterRef {
     /// The number of the node that is referred to.
     /// Zero based.
     pub node_number: u32,
@@ -28,7 +28,7 @@ pub enum Value
         value: i64,
     },
     /// A register.
-    Register(Register),
+    RegisterRef(RegisterRef),
 }
 
 impl Value
@@ -40,7 +40,7 @@ impl Value
             Value::ConstantInteger { bit_width, .. } => {
                 Type::Integer { bit_width: bit_width }
             },
-            Value::Register(ref reg)  => reg.ty.clone(),
+            Value::RegisterRef(ref reg)  => reg.ty.clone(),
         }
     }
 
@@ -53,8 +53,8 @@ impl Value
     }
 
     /// Creates a new register reference.
-    pub fn register(node_number: u32, result_number: u32, ty: Type) -> Self {
-        Value::Register(Register {
+    pub fn register_ref(node_number: u32, result_number: u32, ty: Type) -> Self {
+        Value::RegisterRef(RegisterRef {
             node_number: node_number,
             result_number: result_number,
             ty: ty,
