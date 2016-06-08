@@ -6,6 +6,10 @@ authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
 [dependencies.compiler_ir]
 path = "../ir"
+[dependencies.compiler_mir]
+path = "../mir"
+[dependencies.compiler_select]
+path = "../select"
 
 [lib]
 name = "compiler_target"

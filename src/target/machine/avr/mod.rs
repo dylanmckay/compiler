@@ -5,4 +5,4 @@ pub mod opcode;
 pub mod target;
 
 pub mod registers;
-
+pub mod legalize;
