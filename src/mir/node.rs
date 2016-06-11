@@ -88,7 +88,8 @@ impl Node
                 OpCode::Div |
                 OpCode::Shl |
                 OpCode::Shr => {
-                    unimplemented!();
+                    // FIXME: check that all types are the same.
+                    vec![branch.operands[0].ty()]
                 },
                 OpCode::Ret => {
                     vec![Type::Nothing]
@@ -111,12 +112,26 @@ impl Node
         utils::split_node(self, operand_number)
     }
 
+    pub fn promote_to_register(&mut self) -> Register {
+        let reg = Register::new(self.clone());
+        *self = Self::leaf(Value::reference_register(&reg, 0));
+        reg
+    }
+
     // FIXME: get rid of this so we can support multiple
     // results
     pub fn ty(&self) -> Type {
         let mut result_types = self.result_types();
         let first_result = result_types.next().unwrap();
         first_result
+    }
+
+    pub fn expect_branch(&self) -> &Branch {
+        if let Node::Branch(ref branch) = *self {
+            branch
+        } else {
+            panic!("expected a branch but got {:?}", self);
+        }
     }
 
     pub fn expect_leaf(&self) -> &Value {

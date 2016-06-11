@@ -70,7 +70,7 @@ impl Legalizer
                 if let Some(operation) = predefined_action {
                     operation.action
                 } else {
-                    unimplemented!(); // no action for this operation
+                    panic!("no action for {:#?}", branch);
                 }
             },
             mir::Node::Leaf(..) => {

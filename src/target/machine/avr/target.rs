@@ -28,6 +28,10 @@ impl Target for AVR
     fn create_legalizer(&self) -> select::Legalizer {
         avr::legalize::legalizer()
     }
+
+    fn create_selector(&self) -> select::Selector<()> {
+        avr::select::selector()
+    }
 }
 
 impl machine::MachineTarget for AVR

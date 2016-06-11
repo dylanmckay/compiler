@@ -6,3 +6,5 @@ pub mod target;
 
 pub mod registers;
 pub mod legalize;
+pub mod select;
+

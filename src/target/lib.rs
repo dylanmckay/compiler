@@ -1,6 +1,6 @@
 pub use self::target::Target;
 
-pub use self::machine::avr;
+pub use self::machine::avr::{self, AVR};
 
 pub mod target;
 pub mod machine;
