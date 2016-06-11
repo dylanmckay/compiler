@@ -1,6 +1,6 @@
 pub use self::opcodes::OpCode;
 pub use self::value::Value;
-pub use self::node::Node;
+pub use self::node::{Node, Branch};
 pub use self::dag::{Dag, Register};
 pub use self::ty::Type;
 

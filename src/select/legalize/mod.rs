@@ -42,27 +42,28 @@ impl Legalizer
 
     fn legalize_node(&self, node: mir::Node) -> mir::Node {
         match node {
-            mir::Node::Branch { opcode, operands } => {
-                let operands = operands.into_iter().map(|operand| self.legalize_node(operand)).collect();
+            mir::Node::Branch(branch) => {
+                let operands = branch.operands.into_iter().
+                    map(|operand| self.legalize_node(operand)).collect();
 
-                let node = mir::Node::Branch {
-                    opcode: opcode,
+                let node = mir::Node::Branch(mir::Branch {
+                    opcode: branch.opcode,
                     operands: operands,
-                };
+                });
 
                 self.legalization_action(&node).perform_on(node, self)
             },
-            mir::Node::Leaf { value } => {
-                mir::Node::Leaf { value: value }
+            mir::Node::Leaf(value) => {
+                mir::Node::Leaf(value)
             },
         }
     }
 
     fn legalization_action(&self, node: &mir::Node) -> Action {
         match *node {
-            mir::Node::Branch { opcode, .. } => {
+            mir::Node::Branch(ref branch) => {
                 let predefined_action = self.operations.iter().find(|op| {
-                    op.opcode == opcode &&
+                    op.opcode == branch.opcode &&
                         op.result_types.iter().cloned().eq(node.result_types())
                 });
 
@@ -72,7 +73,7 @@ impl Legalizer
                     unimplemented!(); // no action for this operation
                 }
             },
-            mir::Node::Leaf { .. } => {
+            mir::Node::Leaf(..) => {
                 // FIXME: not all values are legal
                 Action::Legal
             },

@@ -5,8 +5,8 @@ use {Node, Register, Value};
 pub fn split_node(parent: &mut Node, operand_num: u32) -> Register {
     match parent {
         // We can only split branches
-        &mut Node::Branch { ref mut operands, .. } => {
-            let old_operand = operands[operand_num as usize].clone();
+        &mut Node::Branch(ref mut branch) => {
+            let old_operand = branch.operands[operand_num as usize].clone();
 
             // At this point, if the old operand had several return
             // values, they should already be in separate registers.
@@ -16,7 +16,7 @@ pub fn split_node(parent: &mut Node, operand_num: u32) -> Register {
             let new_register = Register::new(old_operand);
 
             // Replace the old operand with a reference to the register.
-            operands[operand_num as usize] = Node::leaf(Value::reference_register(
+            branch.operands[operand_num as usize] = Node::leaf(Value::reference_register(
                 &new_register,
                 0, // Result number
             ));
@@ -41,11 +41,11 @@ mod test
         let new_register = split_node(&mut parent, 1);
         assert_eq!(new_register.value, child);
 
-        if let Node::Branch { opcode, operands } = parent {
-            assert_eq!(opcode, OpCode::Add);
+        if let Node::Branch(branch) = parent {
+            assert_eq!(branch.opcode, OpCode::Add);
 
             assert_eq!(
-                operands[1],
+                branch.operands[1],
                 Node::leaf(Value::reference_register(&new_register, 0))
             );
         } else {

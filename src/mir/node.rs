@@ -4,17 +4,18 @@ use ir;
 use utils;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
+pub struct Branch {
+    pub opcode: OpCode,
+    pub operands: Vec<Node>,
+}
+
+#[derive(Clone,Debug,PartialEq,Eq)]
 pub enum Node
 {
     /// A branch node contains an opcode and several operands.
-    Branch {
-        opcode: OpCode,
-        operands: Vec<Node>,
-    },
+    Branch(Branch),
     /// A leaf node contains a plain value with no children.
-    Leaf {
-        value: Value,
-    },
+    Leaf(Value),
 }
 
 impl Node
@@ -23,17 +24,15 @@ impl Node
     pub fn branch<I>(opcode: OpCode,
                      operands: I) -> Self
         where I: IntoIterator<Item=Self> {
-        Node::Branch {
+        Node::Branch(Branch {
             opcode: opcode,
             operands: operands.into_iter().collect(),
-        }
+        })
     }
 
     /// Creates a new leaf node.
     pub fn leaf(value: Value) -> Self {
-        Node::Leaf {
-            value: value,
-        }
+        Node::Leaf(value)
     }
 
     /// Creates a new constant integer.
@@ -82,7 +81,7 @@ impl Node
 
     pub fn result_types(&self) -> ::std::vec::IntoIter<Type> {
         match *self {
-            Node::Branch { opcode, ref operands } => match opcode {
+            Node::Branch(ref branch) => match branch.opcode {
                 OpCode::Add |
                 OpCode::Sub |
                 OpCode::Mul |
@@ -96,14 +95,14 @@ impl Node
                 }
                 OpCode::Sext |
                 OpCode::Zext => {
-                    assert_eq!(operands.len(), 2);
-                    let bit_width = operands.first().unwrap().expect_leaf().
+                    assert_eq!(branch.operands.len(), 2);
+                    let bit_width = branch.operands.first().unwrap().expect_leaf().
                         expect_constant_integer();
 
                     vec![Type::Integer { bit_width: bit_width as _ }]
                 },
             },
-            Node::Leaf { ref value } => vec![value.ty()]
+            Node::Leaf(ref value) => vec![value.ty()]
         }.into_iter()
     }
 
@@ -121,7 +120,7 @@ impl Node
     }
 
     pub fn expect_leaf(&self) -> &Value {
-        if let Node::Leaf { ref value } = *self {
+        if let Node::Leaf(ref value) = *self {
             value
         } else {
             panic!("expected a leaf but got {:?}", self);
