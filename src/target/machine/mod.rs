@@ -42,3 +42,4 @@ pub struct RegisterClass
     pub name: &'static str,
     pub registers: &'static [&'static Register],
 }
+

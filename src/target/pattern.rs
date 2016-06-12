@@ -1,5 +1,4 @@
 use mir;
-use std;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct PatternNode

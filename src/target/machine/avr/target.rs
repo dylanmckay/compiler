@@ -1,4 +1,5 @@
 use Target;
+use Pattern;
 use machine;
 use select;
 
@@ -33,7 +34,7 @@ impl Target for AVR
         avr::select::selector()
     }
 
-    fn selection_patterns(&self) -> Vec<select::Pattern> {
+    fn selection_patterns(&self) -> Vec<Pattern> {
         avr::patterns::patterns()
     }
 }

@@ -1,13 +1,14 @@
-use select;
+use {Pattern, PatternNode, PatternOperand};
+
 use mir;
 
 macro_rules! pattern {
-    ($node:expr) => { select::Pattern { root: $node } }
+    ($node:expr) => { Pattern { root: $node } }
 }
 
 macro_rules! node {
     ($opcode:ident, $operands:expr) => {
-        select::PatternNode {
+        PatternNode {
             opcode: mir::OpCode::$opcode,
             operands: $operands,
         }
@@ -25,12 +26,12 @@ macro_rules! operands {
     }
 }
 
-pub fn patterns() -> Vec<select::Pattern> {
+pub fn patterns() -> Vec<Pattern> {
     vec![
         pattern! {
             node!(Add,
                   operands!(
-                      select::PatternOperand::Immediate { width: 8 }
+                      PatternOperand::Immediate { width: 8 }
                   )
             )
         },
