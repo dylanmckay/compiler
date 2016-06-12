@@ -29,7 +29,7 @@ impl Target for AVR
         avr::legalize::legalizer()
     }
 
-    fn create_selector(&self) -> select::Selector<()> {
+    fn create_selector(&self) -> select::Selector<Box<machine::Instruction>> {
         avr::select::selector()
     }
 }

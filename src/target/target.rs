@@ -1,3 +1,4 @@
+use machine;
 use select;
 use mir;
 
@@ -7,7 +8,7 @@ pub trait Target
     fn name(&self) -> &'static str;
 
     fn create_legalizer(&self) -> select::Legalizer;
-    fn create_selector(&self) -> select::Selector<()>;
+    fn create_selector(&self) -> select::Selector<Box<machine::Instruction>>;
 }
 
 // TODO: this doesn't belong here, but it's good for testing.
