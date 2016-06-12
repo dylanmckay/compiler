@@ -9,3 +9,5 @@ extern crate compiler_ir as ir;
 extern crate compiler_mir as mir;
 extern crate compiler_select as select;
 
+extern crate bit_vec;
+

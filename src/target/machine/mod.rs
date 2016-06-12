@@ -1,9 +1,11 @@
 use Target;
 
 pub use self::instruction::Instruction;
+pub use self::encoded_instruction::EncodedInstruction;
 pub use self::operand::Operand;
 
 pub mod instruction;
+pub mod encoded_instruction;
 pub mod operand;
 
 pub mod avr;

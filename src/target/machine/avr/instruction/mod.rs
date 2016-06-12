@@ -1,3 +1,4 @@
-pub use self::ret::RET;
+pub use self::returns::{RET, RETI};
 
-pub mod ret;
+pub mod returns;
+

@@ -17,8 +17,12 @@ pub fn assemble(target: &Target, dag: mir::Dag) {
     let mut selector = target.create_selector();
 
     let dag = legalizer.legalize(dag);
-    let dag = selector.select(dag);
+    let instructions = selector.select(dag);
 
-    println!("{:#?}", dag);
+    println!("{:#?}", instructions);
+
+    let encoded_instructions: Vec<_> = instructions.iter().map(|i| i.encode()).collect();
+
+    println!("{:#?}", encoded_instructions);
 }
 
