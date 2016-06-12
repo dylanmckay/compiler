@@ -7,8 +7,8 @@ pub struct Register
 {
     id: util::Id,
 
-    name: Name,
-    value: Box<Value>,
+    pub name: Name,
+    pub value: Box<Value>,
 }
 
 impl Register

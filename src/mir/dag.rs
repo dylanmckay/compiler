@@ -36,15 +36,15 @@ pub struct Dag
 
 impl Dag
 {
-    pub fn new<I>(nodes: I) -> Self
-        where I: IntoIterator<Item=Node> {
+    pub fn new<I>(registers: I) -> Self
+        where I: IntoIterator<Item=Register> {
         Dag {
-            registers: nodes.into_iter().map(Register::new).collect(),
+            registers: registers.into_iter().collect(),
         }
     }
 
-    pub fn from_block(block: &ir::Block) -> Dag {
-        build::from_block(block)
+    pub fn from_function(function: &ir::Function) -> Vec<Dag> {
+        build::from_function(function)
     }
 
     pub fn validate(&self) -> verifier::Result {

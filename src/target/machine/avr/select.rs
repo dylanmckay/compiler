@@ -13,6 +13,9 @@ pub fn select_node(node: &mir::Node) -> Option<Box<machine::Instruction>> {
 
     match branch.opcode {
         mir::OpCode::Ret => Some(Box::new(instruction::RET)),
+        mir::OpCode::Add => {
+            unimplemented!();
+        },
         _ => unimplemented!(),
     }
 }

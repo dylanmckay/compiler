@@ -322,6 +322,14 @@ impl Expression
             false
         }
     }
+
+    pub fn expect_instruction(&self) -> &Instruction {
+        if let Expression::Instruction(ref i) = *self {
+            i
+        } else {
+            panic!("expected an instruction")
+        }
+    }
 }
 
 impl ExpressionTrait for Expression { }

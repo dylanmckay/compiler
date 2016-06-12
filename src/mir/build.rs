@@ -1,18 +1,37 @@
-use {Node,Dag,OpCode};
+use {Node,Dag,OpCode,Register};
 use ir;
+use util::{self, Identifiable};
 
-pub fn from_block(block: &ir::Block) -> Dag {
-    let nodes: Vec<Node> = block.values().map(|value| {
+use std::collections::HashMap;
 
-        if let ir::Expression::Instruction(ref i) = value.node {
-            self::value_from_instruction(i)
-        } else {
-            panic!("all block-level values should be instructions: \
-                   expected instruction but got: {:?}", value.node);
-        }
-    }).collect();
+pub fn from_function(func: &ir::Function) -> Vec<Dag> {
+    let mut register_map: HashMap<util::Id, util::Id> = HashMap::new();
 
-    Dag::new(nodes)
+    func.blocks().map(|block| {
+        let registers: Vec<Register> = block.values().map(|value| {
+
+            match value.node {
+                ir::Expression::Instruction(ref i) => {
+                    Register::new(self::value_from_instruction(i))
+                },
+                ir::Expression::Register(ref r) => {
+                    let old_id = r.get_id();
+                    let value = self::value_from_instruction(r.value.node.expect_instruction());
+                    let new_register = Register::new(value);
+
+                    register_map.insert(old_id, new_register.id);
+
+                    new_register
+                },
+                _ => {
+                    panic!("all block-level values should be instructions: \
+                           expected instruction but got: {:?}", value.node);
+                },
+            }
+        }).collect();
+
+        Dag::new(registers)
+    }).collect()
 }
 
 pub fn value_from_instruction(inst: &ir::Instruction) -> Node {

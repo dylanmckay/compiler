@@ -69,9 +69,10 @@ fn assemble(file_name: &str) {
     let module = parse_module(&file_name);
 
     for func in module.functions() {
-        for block in func.blocks() {
-            let target = target::AVR::new();
-            let dag = mir::Dag::from_block(block);
+        let target = target::AVR::new();
+        let dags = mir::Dag::from_function(func);
+
+        for dag in dags {
             target::target::assemble(&target, dag);
         }
     }
