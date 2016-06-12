@@ -1,4 +1,5 @@
 use {Pattern, PatternNode, PatternOperand};
+use machine::avr::registers;
 
 use mir;
 
@@ -31,7 +32,8 @@ pub fn patterns() -> Vec<Pattern> {
         pattern! {
             node!(Add,
                   operands!(
-                      PatternOperand::Immediate { width: 8 }
+                      PatternOperand::Register(&registers::GPR8),
+                      PatternOperand::Register(&registers::GPR8)
                   )
             )
         },

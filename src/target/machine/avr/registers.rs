@@ -24,7 +24,7 @@ impl machine::RegisterInfo for Info
 
 macro_rules! define_gpr {
     ($ident:ident, $name:expr, $number: expr) => {
-        pub const $ident: Register = Register {
+        pub static $ident: Register = Register {
             name: $name,
             number: $number,
         };
@@ -64,7 +64,7 @@ define_gpr!(R29, "r29", 29);
 define_gpr!(R30, "r30", 30);
 define_gpr!(R31, "r31", 31);
 
-pub const GPR8: RegisterClass = RegisterClass {
+pub static GPR8: RegisterClass = RegisterClass {
     name: "GPR8",
     registers: &[
         &R0,
@@ -102,6 +102,7 @@ pub const GPR8: RegisterClass = RegisterClass {
     ],
 };
 
-pub const CLASSES: &'static [&'static RegisterClass] = &[
+pub static CLASSES: &'static [&'static RegisterClass] = &[
     &GPR8,
 ];
+
