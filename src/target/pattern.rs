@@ -47,7 +47,7 @@ impl std::fmt::Debug for PatternOperand
             PatternOperand::Register(class) => {
                 write!(fmt, "{}", class.name)
             },
-            PatternOperand::Node(ref node) => {
+            PatternOperand::Node(ref _node) => {
                 unimplemented!();
             },
         }

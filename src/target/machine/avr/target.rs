@@ -33,10 +33,6 @@ impl Target for AVR
     fn create_selector(&self) -> select::Selector<Box<machine::Instruction>> {
         avr::select::selector()
     }
-
-    fn selection_patterns(&self) -> Vec<Pattern> {
-        avr::patterns::patterns()
-    }
 }
 
 impl machine::MachineTarget for AVR

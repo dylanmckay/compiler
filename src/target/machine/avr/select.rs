@@ -1,22 +1,49 @@
-use select;
+use {Pattern, PatternNode, PatternOperand};
+use machine::avr::registers;
 use machine;
+
 use mir;
+use select;
 
-use machine::avr::instruction;
-
-pub fn selector() -> select::Selector<Box<machine::Instruction>> {
-    select::Selector::new(Box::new(select_node))
+macro_rules! pattern {
+    ($node:expr) => { Pattern { root: $node } }
 }
 
-pub fn select_node(node: &mir::Node) -> Option<Box<machine::Instruction>> {
-    let branch = node.expect_branch();
+macro_rules! node {
+    ($opcode:ident, $operands:expr) => {
+        PatternNode {
+            opcode: mir::OpCode::$opcode,
+            operands: $operands,
+        }
+    };
 
-    match branch.opcode {
-        mir::OpCode::Ret => Some(Box::new(instruction::RET)),
-        mir::OpCode::Add => {
-            unimplemented!();
-        },
-        _ => unimplemented!(),
+    ($opcode:ident) => {
+        node!($opcode, vec![])
     }
+
+}
+
+macro_rules! operands {
+    ($($operand:expr),*) => {
+        vec![$( $operand ),+]
+    }
+}
+
+pub fn selector() -> select::Selector<Box<machine::Instruction>> {
+    unimplemented!();
+}
+
+pub fn patterns() -> Vec<Pattern> {
+    vec![
+        pattern! {
+            node!(Add,
+                  operands!(
+                      PatternOperand::Register(&registers::GPR8),
+                      PatternOperand::Register(&registers::GPR8)
+                  )
+            )
+        },
+        pattern! { node!(Ret) },
+    ]
 }
 
