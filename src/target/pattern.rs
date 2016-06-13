@@ -1,19 +1,10 @@
 use mir;
 use machine;
+use select;
 use std;
 
-#[derive(Clone)]
-pub struct Pattern
-{
-    pub root: PatternNode,
-}
-
-#[derive(Clone,PartialEq,Eq)]
-pub struct PatternNode
-{
-    pub opcode: mir::OpCode,
-    pub operands: Vec<PatternOperand>,
-}
+pub type Pattern = select::Pattern<PatternOperand>;
+pub type PatternNode = select::PatternNode<PatternOperand>;
 
 #[derive(Clone,PartialEq,Eq)]
 pub enum PatternOperand
@@ -23,19 +14,7 @@ pub enum PatternOperand
     Node(Box<PatternNode>),
 }
 
-impl std::fmt::Debug for Pattern
-{
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        std::fmt::Debug::fmt(&self.root, fmt)
-    }
-}
-
-impl std::fmt::Debug for PatternNode
-{
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(fmt, "({:?} {:?})", self.opcode, self.operands)
-    }
-}
+impl select::PatternValue for PatternOperand { }
 
 impl std::fmt::Debug for PatternOperand
 {
@@ -53,3 +32,4 @@ impl std::fmt::Debug for PatternOperand
         }
     }
 }
+
