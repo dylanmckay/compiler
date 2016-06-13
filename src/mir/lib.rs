@@ -1,5 +1,5 @@
 pub use self::opcodes::OpCode;
-pub use self::value::Value;
+pub use self::value::{Value, RegisterRef};
 pub use self::node::{Node, Branch};
 pub use self::dag::{Dag, Register};
 pub use self::ty::Type;

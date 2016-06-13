@@ -4,7 +4,7 @@ use mir;
 /// Selects instructions.
 pub struct Selector<V: PatternValue>
 {
-    patterns: Vec<Pattern<V>>,
+    pub patterns: Vec<Pattern<V>>,
 }
 
 impl<V> Selector<V>
@@ -23,7 +23,7 @@ impl<V> Selector<V>
 
             match self::find_optimal_match(&matches) {
                 Some(pattern) => pattern.clone(),
-                None => panic!("no patterns matching for this node"),
+                None => panic!("no patterns matching for this node: {:#?}", register.value),
             }
         }).collect()
     }

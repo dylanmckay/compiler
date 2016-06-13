@@ -13,7 +13,7 @@ pub enum Info
         ty: Type,
     },
     Register {
-        ty: Type,
+        inner_ty: Type,
     },
     Block,
 }
@@ -60,7 +60,7 @@ impl Resolvable for Register {
 
     fn info(&self) -> Info {
         Info::Register {
-            ty: self.ty(),
+            inner_ty: self.value.node.ty(),
         }
     }
 }
@@ -286,10 +286,10 @@ impl Item
                     ty.clone(),
                 ).into())
             },
-            Info::Register { ref ty } => {
+            Info::Register { ref inner_ty } => {
                 Some(RegisterRef::new(
                     self.id,
-                    ty.clone(),
+                    inner_ty.clone(),
                 ).into())
             },
             Info::Block => {

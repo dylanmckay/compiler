@@ -1,6 +1,7 @@
 ; RUN: asm @file
 
-fn @main(%a: i8) {
-  %a = add %a, i8 5
+fn @main(%foo: i8) {
+  %a = add i8 5, i8 10
+  %b = add %foo, %a
   ret
 }

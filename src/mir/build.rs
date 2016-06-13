@@ -1,4 +1,4 @@
-use {Node,Value,Dag,OpCode,Register,Type};
+use {Node,Value,Dag,OpCode,Register,Type,RegisterRef};
 use ir;
 use util::{self, Identifiable};
 
@@ -23,7 +23,7 @@ impl Context
 
     fn put_register(&mut self, register: &ir::Register) -> Register {
         let old_id = register.get_id();
-        let value = self::node_from_instruction(self, register.value.node.expect_instruction());
+        let value = self::node_from_value(self, &register.value);
         let new_register = Register::new(value);
 
         self.register_map.insert(old_id, new_register.id);
@@ -40,6 +40,10 @@ impl Context
 
     fn map_parameter_id(&self, id: util::Id) -> util::Id {
         self.parameter_map.get(&id).expect("this parameter can not be found").clone()
+    }
+
+    fn map_register_id(&self, id: util::Id) -> util::Id {
+        self.register_map.get(&id).expect("this register can not be found").clone()
     }
 }
 
@@ -86,11 +90,16 @@ fn node_from_value(context: &mut Context, value: &ir::Value) -> Node {
         ir::Expression::ArgumentRef(ref r) => {
             let id = context.map_parameter_id(r.param_id);
             let ty = self::convert_type(&r.ty).unwrap();
-
-            Node::leaf(Value::ArgumentRef {
-                id: id,
+            Node::leaf(Value::ArgumentRef { id: id, ty: ty, })
+        },
+        ir::Expression::RegisterRef(ref r) => {
+            let id = context.map_register_id(r.register_id);
+            let ty = self::convert_type(&r.ty).unwrap();
+            Node::leaf(Value::RegisterRef(RegisterRef {
+                register_id: id,
+                result_number: 0,
                 ty: ty,
-            })
+            }))
         },
         _ => {
             panic!("do not know how to handle this IR value: {:#?}", value.node);
