@@ -1,9 +1,9 @@
 use {Pattern, PatternNode, PatternOperand};
 use machine::avr::registers;
+
 use machine;
 
 use mir;
-use select;
 
 macro_rules! pattern {
     ($node:expr) => { Pattern { root: $node } }
@@ -29,8 +29,8 @@ macro_rules! operands {
     }
 }
 
-pub fn selector() -> select::Selector<Box<machine::Instruction>> {
-    unimplemented!();
+pub fn selector() -> machine::Selector {
+    machine::Selector::new(self::patterns())
 }
 
 pub fn patterns() -> Vec<Pattern> {

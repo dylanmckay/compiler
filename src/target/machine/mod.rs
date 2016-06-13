@@ -1,4 +1,5 @@
 use Target;
+use select;
 
 pub use self::instruction::Instruction;
 pub use self::encoded_instruction::EncodedInstruction;
@@ -42,4 +43,6 @@ pub struct RegisterClass
     pub name: &'static str,
     pub registers: &'static [&'static Register],
 }
+
+pub type Selector = select::Selector<::PatternOperand>;
 
