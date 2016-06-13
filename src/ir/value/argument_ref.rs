@@ -4,8 +4,8 @@ use util;
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct ArgumentRef
 {
-    param_id: util::Id,
-    ty: Type,
+    pub param_id: util::Id,
+    pub ty: Type,
 }
 
 impl ArgumentRef

@@ -1,6 +1,5 @@
 use {OpCode, Value, Type, Register};
 
-use ir;
 use utils;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -58,25 +57,6 @@ impl Node
     /// Creates a difference between values.
     pub fn sub(addends: &[Self]) -> Self {
         Self::branch(OpCode::Sub, addends.to_owned())
-    }
-
-    pub fn from_ir(value: &ir::Value) -> Self {
-        use num::traits::ToPrimitive;
-
-        match value.node {
-            ir::Expression::Literal(ref literal) => {
-                match *literal {
-                    ir::value::Literal::Integer(ref i) => {
-                        Node::leaf(Value::ConstantInteger {
-                            bit_width: i.integer_ty().width() as _,
-                            value: i.value().to_i64().unwrap(),
-                        })
-                    },
-                    _ => unimplemented!(),
-                }
-            },
-            _ => unimplemented!(),
-        }
     }
 
     pub fn result_types(&self) -> ::std::vec::IntoIter<Type> {

@@ -6,8 +6,8 @@ use std::fmt;
 #[derive(Copy,Clone,Eq,PartialEq,Debug)]
 pub struct Integer
 {
-    kind: IntegerKind,
-    bit_width: u16,
+    pub kind: IntegerKind,
+    pub bit_width: u16,
 }
 
 impl Integer

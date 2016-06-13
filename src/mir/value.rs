@@ -21,8 +21,8 @@ pub struct RegisterRef {
 pub enum Value
 {
     /// An argument to the function.
-    Argument {
-        number: u32,
+    ArgumentRef {
+        id: util::Id,
         ty: Type,
     },
     /// A constant integer.
@@ -39,7 +39,7 @@ impl Value
     /// Gets the type of the value.
     pub fn ty(&self) -> Type {
         match *self {
-            Value::Argument { ref ty, .. } => ty.clone(),
+            Value::ArgumentRef { ref ty, .. } => ty.clone(),
             Value::ConstantInteger { bit_width, .. } => {
                 Type::Integer { bit_width: bit_width }
             },
