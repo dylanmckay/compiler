@@ -66,6 +66,7 @@ define_gpr!(R31, "r31", 31);
 
 pub static GPR8: RegisterClass = RegisterClass {
     name: "GPR8",
+    bit_width: 8,
     registers: &[
         &R0,
         &R1,

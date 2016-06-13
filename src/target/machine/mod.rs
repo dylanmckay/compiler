@@ -41,6 +41,7 @@ pub struct Register
 pub struct RegisterClass
 {
     pub name: &'static str,
+    pub bit_width: u32,
     pub registers: &'static [&'static Register],
 }
 

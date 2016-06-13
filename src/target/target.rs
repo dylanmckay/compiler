@@ -17,6 +17,8 @@ pub fn assemble(target: &Target, dag: mir::Dag) {
     let mut selector = target.create_selector();
 
     let dag = legalizer.legalize(dag);
+    let patterns = selector.select(dag);
+    println!("{:#?}", patterns);
     // let instructions = selector.select(dag);
     //
     // println!("{:#?}", instructions);

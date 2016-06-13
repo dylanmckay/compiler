@@ -11,10 +11,23 @@ pub enum PatternOperand
 {
     Immediate { width: u32 },
     Register(&'static machine::RegisterClass),
-    Node(Box<PatternNode>),
 }
 
-impl select::PatternValue for PatternOperand { }
+impl select::PatternValue for PatternOperand {
+    fn matches(&self, value: &mir::Value) -> bool {
+        match *self {
+            PatternOperand::Immediate { width } => {
+                match *value {
+                    mir::Value::ConstantInteger { bit_width, .. } => bit_width <= width,
+                    _ => false,
+                }
+            },
+            PatternOperand::Register(class) => {
+                value.ty().bit_width() <= class.bit_width
+            },
+        }
+    }
+}
 
 impl std::fmt::Debug for PatternOperand
 {
@@ -25,9 +38,6 @@ impl std::fmt::Debug for PatternOperand
             },
             PatternOperand::Register(class) => {
                 write!(fmt, "{}", class.name)
-            },
-            PatternOperand::Node(ref _node) => {
-                unimplemented!();
             },
         }
     }

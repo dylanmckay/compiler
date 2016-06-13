@@ -1,13 +1,14 @@
-use Pattern;
+use {Pattern, PatternNode, PatternValue};
 use mir;
 
 /// Selects instructions.
-pub struct Selector<V>
+pub struct Selector<V: PatternValue>
 {
     patterns: Vec<Pattern<V>>,
 }
 
 impl<V> Selector<V>
+    where V: PatternValue
 {
     /// Creates a new instruction selector.
     pub fn new(patterns: Vec<Pattern<V>>) -> Self {
@@ -16,43 +17,26 @@ impl<V> Selector<V>
         }
     }
 
-    pub fn select(&mut self, dag: mir::Dag) {
-        unimplemented!();
+    pub fn select(&mut self, dag: mir::Dag) -> Vec<Pattern<V>> {
+        dag.registers.iter().map(|register| {
+            let matches = self.find_matches(&register.value);
+
+            match self::find_optimal_match(&matches) {
+                Some(pattern) => pattern.clone(),
+                None => panic!("no patterns matching for this node"),
+            }
+        }).collect()
     }
 
-    fn select_register(&mut self, register: mir::Register) {
-        let node = register.value;
-        //
-        // // check if the node can be directly selected.
-        // if let Some(result) = (self.f)(&node) {
-        //     vec![Item::Processed(result)]
-        // } else {
-        //     match node {
-        //         mir::Node::Branch(branch) => {
-        //             let mut new_registers: Vec<mir::Register> = Vec::new();
-        //
-        //             let new_operands: Vec<_> = branch.operands.into_iter().map(|mut op| {
-        //                 let promoted_register = op.promote_to_register();
-        //                 new_registers.push(promoted_register);
-        //                 op
-        //             }).collect();
-        //
-        //             let node = mir::Node::Branch(mir::Branch {
-        //                 operands: new_operands,
-        //                 ..branch
-        //             });
-        //
-        //             let register = mir::Register {
-        //                 value: node,
-        //                 ..register
-        //             };
-        //
-        //             vec![Item::Unprocessed(register)]
-        //         },
-        //         _ => panic!("can't select this node"),
-        // }
-        // }
-        unimplemented!();
+    fn find_matches(&mut self, node: &mir::Node) -> Vec<Pattern<V>> {
+        self.patterns.iter().filter(|pattern| pattern.matches(node)).cloned().collect()
     }
+}
+
+fn find_optimal_match<V>(patterns: &[Pattern<V>]) -> Option<&Pattern<V>>
+    where V: PatternValue {
+    // In most cases, the pattern with the least amount of nodes will
+    // be the most optimal.
+    patterns.iter().min_by_key(|pattern| pattern.root.area())
 }
 
