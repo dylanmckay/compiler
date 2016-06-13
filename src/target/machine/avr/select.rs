@@ -30,20 +30,27 @@ macro_rules! operands {
     }
 }
 
+macro_rules! inst_rdrr {
+    ($opcode:ident) => {
+        pattern! {
+            node!($opcode,
+                  operands!(
+                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
+                  )
+            )
+        }
+    }
+}
+
 pub fn selector() -> machine::Selector {
     machine::Selector::new(self::patterns())
 }
 
 pub fn patterns() -> Vec<Pattern> {
     vec![
-        pattern! {
-            node!(Add,
-                  operands!(
-                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
-                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
-                  )
-            )
-        },
+        inst_rdrr!(Add),
+        inst_rdrr!(Sub),
         pattern! { node!(Ret) },
     ]
 }

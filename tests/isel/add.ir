@@ -3,5 +3,6 @@
 fn @main(%foo: i8) {
   %a = add i8 5, i8 10
   %b = add %foo, %a
+  %c = sub %foo, i8 5
   ret
 }
