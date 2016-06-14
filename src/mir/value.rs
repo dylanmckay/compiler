@@ -1,6 +1,7 @@
 use Type;
 
 use util;
+use std;
 
 /// A register.
 /// Stores the zero-based index of the node in the
@@ -16,7 +17,7 @@ pub struct RegisterRef {
     pub ty: Type,
 }
 
-#[derive(Clone,Debug,PartialEq,Eq)]
+#[derive(Clone,PartialEq,Eq)]
 pub enum Value
 {
     /// An argument to the function.
@@ -79,3 +80,17 @@ impl Value
         }
     }
 }
+
+impl std::fmt::Debug for Value
+{
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match *self {
+            Value::ConstantInteger { bit_width, value } => {
+                write!(fmt, "i{} {}", bit_width, value)
+            },
+            Value::RegisterRef(ref reg) => write!(fmt, "%<reg:{}>", reg.register_id),
+            Value::ArgumentRef { id, .. } => write!(fmt, "%<arg:{}>", id),
+        }
+    }
+}
+

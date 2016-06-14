@@ -1,12 +1,13 @@
 use {OpCode, Value, Type};
+use std;
 
-#[derive(Clone,Debug,PartialEq,Eq)]
+#[derive(Clone,PartialEq,Eq)]
 pub struct Branch {
     pub opcode: OpCode,
     pub operands: Vec<Node>,
 }
 
-#[derive(Clone,Debug,PartialEq,Eq)]
+#[derive(Clone,PartialEq,Eq)]
 pub enum Node
 {
     /// A branch node contains an opcode and several operands.
@@ -112,6 +113,25 @@ impl Node
         } else {
             panic!("expected a leaf but got {:?}", self);
         }
+    }
+}
+
+impl std::fmt::Debug for Node
+{
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match *self {
+            Node::Branch(ref b) => write!(fmt, "({:?})", b),
+            Node::Leaf(ref v)   => std::fmt::Debug::fmt(v, fmt),
+        }
+    }
+}
+
+impl std::fmt::Debug for Branch
+{
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        let mut operands: Vec<_> = self.operands.iter().map(|op| format!("{:?}", op)).collect();
+
+        write!(fmt, "{} {}", self.opcode.mnemonic(), operands.join(", "))
     }
 }
 
