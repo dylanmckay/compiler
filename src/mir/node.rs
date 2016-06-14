@@ -1,4 +1,6 @@
 use {OpCode, Value, Type};
+
+use util;
 use std;
 
 #[derive(Clone,PartialEq,Eq)]
@@ -62,6 +64,10 @@ impl Node
         Self::branch(OpCode::Sub, addends.to_owned())
     }
 
+    pub fn new_register_ref(ty: Type) -> Self {
+        Self::leaf(Value::register_ref(util::Id::next(), 0, ty))
+    }
+
     pub fn result_types(&self) -> ::std::vec::IntoIter<Type> {
         match *self {
             Node::Branch(ref branch) => match branch.opcode {
@@ -97,6 +103,23 @@ impl Node
         let mut result_types = self.result_types();
         let first_result = result_types.next().unwrap();
         first_result
+    }
+
+    /// Recursively map this node and all child nodes.
+    pub fn recursive_map<F>(mut self, f: &mut F) -> Self
+        where F: FnMut(Self) -> Self {
+        self = f(self);
+
+        match self {
+            Node::Branch(mut branch) => {
+                branch.operands = branch.operands.into_iter().map(|operand| {
+                    operand.recursive_map(f)
+                }).collect();
+
+                Node::Branch(branch)
+            },
+            Node::Leaf(value) => Node::Leaf(value),
+        }
     }
 
     pub fn expect_branch(&self) -> &Branch {
