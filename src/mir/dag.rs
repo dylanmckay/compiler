@@ -43,6 +43,12 @@ impl Dag
         expand::dag(self)
     }
 
+    pub fn filter_nodes<F>(mut self, f: F) -> Self
+        where F: FnMut(&Node) -> bool {
+        self.nodes = self.nodes.into_iter().filter(f).collect();
+        self
+    }
+
     pub fn validate(&self) -> verifier::Result {
         verifier::verify_dag(self)
     }

@@ -129,7 +129,7 @@ impl std::fmt::Debug for Node
 impl std::fmt::Debug for Branch
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        let mut operands: Vec<_> = self.operands.iter().map(|op| format!("{:?}", op)).collect();
+        let operands: Vec<_> = self.operands.iter().map(|op| format!("{:?}", op)).collect();
 
         write!(fmt, "{} {}", self.opcode.mnemonic(), operands.join(", "))
     }
