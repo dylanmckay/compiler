@@ -25,6 +25,14 @@ pub enum PatternOperand<V: PatternValue>
     Value(V),
 }
 
+#[derive(Clone,PartialEq,Eq)]
+pub enum MatchResult<Adjustment>
+{
+    Perfect,
+    Almost(Vec<Adjustment>),
+    None,
+}
+
 impl<V: PatternValue> Pattern<V>
 {
     pub fn matches(&self, node: &mir::Node) -> bool {
@@ -91,6 +99,8 @@ impl<V: PatternValue> PatternOperand<V>
 /// A value.
 pub trait PatternValue : Sized + Clone + std::fmt::Debug
 {
+    type Adjustment;
+
     fn matches(&self, value: &mir::Value) -> bool;
 }
 
