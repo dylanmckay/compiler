@@ -3,6 +3,7 @@ use ir;
 
 use build;
 use verifier;
+use expand;
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Dag
@@ -21,6 +22,25 @@ impl Dag
 
     pub fn from_function(function: &ir::Function) -> Vec<Dag> {
         build::from_function(function)
+    }
+
+    /// Expands this DAG from a flat structure into a tree structure
+    /// where possible.
+    ///
+    /// Take a DAG like so:
+    ///
+    /// ```
+    /// (set %a, (add i32 5, i32 10)
+    /// (add %a, i32 15)
+    /// ```
+    ///
+    /// This will turn this into a tree.
+    ///
+    /// ```
+    /// (add (add i32 5, i32 10), i32 15)
+    /// ```
+    pub fn expand(self) -> Self {
+        expand::dag(self)
     }
 
     pub fn validate(&self) -> verifier::Result {

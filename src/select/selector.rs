@@ -18,6 +18,8 @@ impl<V> Selector<V>
     }
 
     pub fn select(&mut self, dag: mir::Dag) -> Vec<Pattern<V>> {
+        let dag = dag.expand();
+
         dag.nodes.iter().map(|node| {
             let matches = self.find_matches(node);
 

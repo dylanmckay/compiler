@@ -70,4 +70,12 @@ impl Value
             panic!("expected a constant integer");
         }
     }
+
+    pub fn expect_register_ref(&self) -> &RegisterRef {
+        if let Value::RegisterRef(ref r) = *self {
+            r
+        } else {
+            panic!("expected a register reference");
+        }
+    }
 }
