@@ -1,6 +1,4 @@
-use {OpCode, Value, Type, Register};
-
-use utils;
+use {OpCode, Value, Type};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Branch {
@@ -49,6 +47,10 @@ impl Node
         Self::branch(OpCode::Zext, vec![Self::i(32, bit_width as _), value])
     }
 
+    pub fn set(register_ref: Self, value: Self) -> Self {
+        Self::branch(OpCode::Set, vec![register_ref, value])
+    }
+
     /// Creates an sum of values node.
     pub fn add(addends: &[Self]) -> Self {
         Self::branch(OpCode::Add, addends.to_owned())
@@ -71,7 +73,8 @@ impl Node
                     // FIXME: check that all types are the same.
                     vec![branch.operands[0].ty()]
                 },
-                OpCode::Ret => {
+                OpCode::Ret |
+                OpCode::Set => {
                     vec![Type::Nothing]
                 }
                 OpCode::Sext |
@@ -85,17 +88,6 @@ impl Node
             },
             Node::Leaf(ref value) => vec![value.ty()]
         }.into_iter()
-    }
-
-    /// Splits an operand out of this branch into a new register.
-    pub fn split_operand(&mut self, operand_number: u32) -> Register {
-        utils::split_node(self, operand_number)
-    }
-
-    pub fn promote_to_register(&mut self) -> Register {
-        let reg = Register::new(self.clone());
-        *self = Self::leaf(Value::reference_register(&reg, 0));
-        reg
     }
 
     // FIXME: get rid of this so we can support multiple

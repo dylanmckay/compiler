@@ -14,5 +14,15 @@ pub enum OpCode
     /// Zero extension.
     /// `(sext 16 %value)`
     Zext,
+    /// Set a register.
+    /// `(set %reg, %value)`
+    Set,
+}
+
+impl OpCode
+{
+    pub fn mnemonic(&self) -> String {
+        format!("{:?}", self).to_lowercase()
+    }
 }
 

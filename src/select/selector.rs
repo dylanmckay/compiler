@@ -18,12 +18,12 @@ impl<V> Selector<V>
     }
 
     pub fn select(&mut self, dag: mir::Dag) -> Vec<Pattern<V>> {
-        dag.registers.iter().map(|register| {
-            let matches = self.find_matches(&register.value);
+        dag.nodes.iter().map(|node| {
+            let matches = self.find_matches(node);
 
             match self::find_optimal_match(&matches) {
                 Some(pattern) => pattern.clone(),
-                None => panic!("no patterns matching for this node: {:#?}", register.value),
+                None => panic!("no patterns matching for this node: {:#?}", node),
             }
         }).collect()
     }

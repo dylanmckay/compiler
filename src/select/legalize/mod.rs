@@ -34,8 +34,8 @@ impl Legalizer
 
     pub fn legalize(&self, dag: mir::Dag) -> mir::Dag {
         mir::Dag {
-            registers: dag.registers.into_iter().map(|register| {
-                register.map(|node| self.legalize_node(node))
+            nodes: dag.nodes.into_iter().map(|node| {
+                self.legalize_node(node)
             }).collect()
         }
     }
@@ -62,6 +62,8 @@ impl Legalizer
     fn legalization_action(&self, node: &mir::Node) -> Action {
         match *node {
             mir::Node::Branch(ref branch) => {
+                if branch.opcode == mir::OpCode::Set { return Action::Legal };
+
                 let predefined_action = self.operations.iter().find(|op| {
                     op.opcode == branch.opcode &&
                         op.result_types.iter().cloned().eq(node.result_types())

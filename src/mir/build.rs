@@ -1,4 +1,4 @@
-use {Node,Value,Dag,OpCode,Register,Type,RegisterRef};
+use {Node,Value,Dag,OpCode,Type,RegisterRef};
 use ir;
 use util::{self, Identifiable};
 
@@ -21,14 +21,14 @@ impl Context
         }
     }
 
-    fn put_register(&mut self, register: &ir::Register) -> Register {
+    fn put_register(&mut self, register: &ir::Register) -> Value {
         let old_id = register.get_id();
-        let value = self::node_from_value(self, &register.value);
-        let new_register = Register::new(value);
+        let new_id = util::Id::next();
+        let ty = self::convert_type(&register.value.node.ty()).unwrap();
 
-        self.register_map.insert(old_id, new_register.id);
+        self.register_map.insert(old_id, new_id);
 
-        new_register
+        Value::register_ref(new_id, 0, ty)
     }
 
     fn put_parameter_id(&mut self, id: util::Id) {
@@ -55,19 +55,12 @@ pub fn from_function(func: &ir::Function) -> Vec<Dag> {
     }
 
     func.blocks().map(|block| {
-        let registers: Vec<Register> = block.values().map(|value| {
-            self::register_from_value(&mut context, value)
+        let nodes: Vec<_> = block.values().map(|value| {
+            self::node_from_value(&mut context, value)
         }).collect();
 
-        Dag::new(registers)
+        Dag::new(nodes)
     }).collect()
-}
-
-fn register_from_value(context: &mut Context, value: &ir::Value) -> Register {
-    match value.node {
-        ir::Expression::Register(ref r) => context.put_register(r),
-        _ => Register::new(self::node_from_value(context, value)),
-    }
 }
 
 fn node_from_value(context: &mut Context, value: &ir::Value) -> Node {
@@ -75,7 +68,10 @@ fn node_from_value(context: &mut Context, value: &ir::Value) -> Node {
 
     match value.node {
         ir::Expression::Instruction(ref i) => self::node_from_instruction(context, i),
-        ir::Expression::Register(ref r) => panic!("registers can only be used at the top level"),
+        ir::Expression::Register(ref r) => {
+            let register_ref = Node::leaf(context.put_register(r));
+            Node::set(register_ref, node_from_value(context, &r.value))
+        },
         ir::Expression::Literal(ref literal) => {
             match *literal {
                 ir::value::Literal::Integer(ref i) => {

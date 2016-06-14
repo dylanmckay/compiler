@@ -34,11 +34,16 @@ macro_rules! operands {
 macro_rules! inst_rdrr {
     ($opcode:ident) => {
         pattern! {
-            node!($opcode,
-                  operands!(
-                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
-                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
-                  )
+            node!(Set,
+                operands!(
+                    select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                    select::PatternOperand::Node(Box::new(node!($opcode,
+                        operands!(
+                            select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                            select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
+                        )
+                    )))
+                )
             )
         }
     }
@@ -48,11 +53,16 @@ macro_rules! inst_rdrr {
 macro_rules! inst_rdi {
     ($opcode:ident) => {
         pattern! {
-            node!($opcode,
-                  operands!(
-                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
-                      select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
-                  )
+            node!(Set,
+                operands!(
+                    select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                    select::PatternOperand::Node(Box::new(node!($opcode,
+                          operands!(
+                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                              select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
+                          )
+                    )))
+                )
             )
         }
     }

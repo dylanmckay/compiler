@@ -104,7 +104,7 @@ impl<V: PatternValue> std::fmt::Debug for Pattern<V>
 impl<V: PatternValue> std::fmt::Debug for PatternNode<V>
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        write!(fmt, "({:?} {:?})", self.opcode, self.operands)
+        write!(fmt, "({} {:?})", self.opcode.mnemonic(), self.operands)
     }
 }
 

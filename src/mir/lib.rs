@@ -1,7 +1,7 @@
 pub use self::opcodes::OpCode;
 pub use self::value::{Value, RegisterRef};
 pub use self::node::{Node, Branch};
-pub use self::dag::{Dag, Register};
+pub use self::dag::Dag;
 pub use self::ty::Type;
 
 pub mod opcodes;
@@ -11,7 +11,6 @@ pub mod dag;
 pub mod ty;
 pub mod build;
 
-pub mod utils;
 pub mod verifier;
 
 extern crate num;

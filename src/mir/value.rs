@@ -1,5 +1,4 @@
 use Type;
-use Register;
 
 use util;
 
@@ -62,10 +61,6 @@ impl Value
             result_number: result_number,
             ty: ty,
         })
-    }
-
-    pub fn reference_register(register: &Register, result_number: u32) -> Self {
-        Self::register_ref(register.id, result_number, register.value.ty())
     }
 
     pub fn expect_constant_integer(&self) -> i64 {
