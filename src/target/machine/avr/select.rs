@@ -68,7 +68,22 @@ pub fn patterns() -> Vec<Pattern> {
 
         inst_rdrr!(Add), // ADDRdRr
         inst_rdrr!(Sub), // SUBRdRr
+
         pattern! { node!(Ret) },
+
+        pattern! {
+            node!(Ret,
+                  operands!(
+                      select::PatternOperand::Node(Box::new(node!(Add,
+                          operands!(
+                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
+                          )
+                      )))
+                  )
+            )
+        }
+
     ]
 }
 
