@@ -1,4 +1,4 @@
-use {Instruction, Operand, EncodedInstruction, SideEffects};
+use {Instruction, Operand, OperandInfo, EncodedInstruction, SideEffects};
 use avr::registers::GPR8;
 use mir;
 use std;
@@ -31,8 +31,11 @@ impl MOVRdRr
 impl Instruction for MOVRdRr
 {
     fn mnemonic(&self) -> String { "mov".to_owned() }
-    fn operands(&self) -> Vec<Operand> {
-        vec![self.rd.clone(), self.rr.clone()]
+    fn operands(&self) -> Vec<OperandInfo> {
+        vec![
+            OperandInfo { value: self.rd.clone() },
+            OperandInfo { value: self.rr.clone() },
+        ]
     }
 
     fn side_effects(&self) -> SideEffects {

@@ -2,6 +2,13 @@ use {RegisterClass, Register};
 use util;
 use std;
 
+/// Info about an operand.
+#[derive(Clone,PartialEq,Eq)]
+pub struct OperandInfo
+{
+    pub value: Operand,
+}
+
 /// A machine operand.
 #[derive(Clone,PartialEq,Eq)]
 pub enum Operand
@@ -17,6 +24,13 @@ pub enum Operand
         id: util::Id,
         class: &'static RegisterClass,
     },
+}
+
+impl std::fmt::Debug for OperandInfo
+{
+    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+        std::fmt::Debug::fmt(&self.value, fmt)
+    }
 }
 
 impl std::fmt::Debug for Operand

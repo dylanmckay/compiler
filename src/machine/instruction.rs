@@ -1,4 +1,4 @@
-use {Operand, EncodedInstruction, Register};
+use {OperandInfo, EncodedInstruction, Register};
 use std;
 
 /// A generic machine instruction.
@@ -6,7 +6,7 @@ pub trait Instruction : std::fmt::Debug
 {
     /// Gets the mnemonic of the instruction.
     fn mnemonic(&self) -> String;
-    fn operands(&self) -> Vec<Operand>;
+    fn operands(&self) -> Vec<OperandInfo>;
 
     /// Gets the side effects of the instruction.
     fn side_effects(&self) -> SideEffects;
