@@ -1,5 +1,6 @@
-use Target;
-use machine;
+use {MachineTarget, RegisterInfo, Selector};
+
+use target;
 use select;
 
 use avr::registers;
@@ -21,27 +22,27 @@ impl AVR
     }
 }
 
-impl Target for AVR
+impl target::Target for AVR
 {
     fn name(&self) -> &'static str { "AVR" }
-
-    fn create_legalizer(&self) -> select::Legalizer {
-        avr::legalize::legalizer()
-    }
-
-    fn create_selector(&self) -> machine::Selector {
-        avr::select::selector()
-    }
 }
 
-impl machine::MachineTarget for AVR
+impl MachineTarget for AVR
 {
     type OpCode = OpCode;
 
     fn pointer_width(&self) -> u16 { 16 }
 
-    fn register_info(&self) -> &machine::RegisterInfo {
+    fn register_info(&self) -> &RegisterInfo {
         &self.register_info
+    }
+
+    fn create_legalizer(&self) -> select::Legalizer {
+        avr::legalize::legalizer()
+    }
+
+    fn create_selector(&self) -> Selector {
+        avr::select::selector()
     }
 }
 

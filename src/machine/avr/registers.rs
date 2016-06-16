@@ -1,4 +1,4 @@
-use machine::{self,Register,RegisterClass};
+use {Register, RegisterClass, RegisterInfo};
 
 pub struct Info
 {
@@ -14,7 +14,7 @@ impl Info
     }
 }
 
-impl machine::RegisterInfo for Info
+impl RegisterInfo for Info
 {
     fn classes(&self)
         -> &'static [&'static RegisterClass] {

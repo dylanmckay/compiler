@@ -1,6 +1,7 @@
+use RegisterClass;
 use mir;
-use machine;
 use select;
+
 use std;
 
 pub type Pattern = select::Pattern<PatternOperand>;
@@ -12,7 +13,7 @@ pub type MatchResult = select::MatchResult<PatternOperand>;
 pub enum PatternOperand
 {
     Immediate { width: u32 },
-    Register(&'static machine::RegisterClass),
+    Register(&'static RegisterClass),
 }
 
 pub type Adjustment = ();

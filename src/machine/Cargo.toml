@@ -1,0 +1,20 @@
+[package]
+
+name = "compiler_machine"
+version = "0.0.1"
+authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+
+[dependencies]
+bit-vec = "*"
+
+[dependencies.compiler_mir]
+path = "../mir"
+[dependencies.compiler_select]
+path = "../select"
+[dependencies.compiler_target]
+path = "../target"
+
+[lib]
+name = "compiler_machine"
+path = "lib.rs"
+

@@ -3,7 +3,7 @@
 extern crate compiler;
 extern crate argparse;
 
-use compiler::{ir,mir,target};
+use compiler::{ir,mir,machine};
 use std::error::Error;
 use std::io::{Read,Write};
 
@@ -69,11 +69,11 @@ fn assemble(file_name: &str) {
     let module = parse_module(&file_name);
 
     for func in module.functions() {
-        let target = target::AVR::new();
+        let target = machine::AVR::new();
         let dags = mir::Dag::from_function(func);
 
         for dag in dags {
-            target::target::assemble(&target, dag);
+            machine::assemble(&target, dag);
         }
     }
 }

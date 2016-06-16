@@ -1,7 +1,6 @@
-use machine::{Pattern, PatternNode, PatternOperand};
-use machine::avr::registers;
+use {Pattern, PatternNode, PatternOperand, Selector};
+use avr::registers;
 
-use machine;
 use select;
 
 use mir;
@@ -68,8 +67,8 @@ macro_rules! inst_rdi {
     }
 }
 
-pub fn selector() -> machine::Selector {
-    machine::Selector::new(self::patterns())
+pub fn selector() -> Selector {
+    Selector::new(self::patterns())
 }
 
 pub fn patterns() -> Vec<Pattern> {

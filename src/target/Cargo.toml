@@ -4,16 +4,7 @@ name = "compiler_target"
 version = "0.0.1"
 authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
-[dependencies]
-bit-vec = "*"
-
-[dependencies.compiler_ir]
-path = "../ir"
-[dependencies.compiler_mir]
-path = "../mir"
-[dependencies.compiler_select]
-path = "../select"
-
 [lib]
 name = "compiler_target"
 path = "lib.rs"
+
