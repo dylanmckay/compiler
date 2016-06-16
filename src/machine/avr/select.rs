@@ -83,15 +83,15 @@ pub fn selector() -> Selector {
 
 pub fn patterns() -> Vec<Pattern> {
     vec![
-        // inst_rdi!(ADD, Add),  // ADDRdK
+        inst_rdi!(ADIWRdK, Add),
+        inst_rdi!(SUBIRdK, Sub),
 
-        inst_rdrr!(ADDRdRr, Add), // ADDRdRr
-        inst_rdrr!(ADDRdRr, Sub), // SUBRdRr
+        inst_rdrr!(ADDRdRr, Add),
+        inst_rdrr!(SUBRdRr, Sub),
 
         pattern!(RET, { node!(Ret) }),
 
-        // LDI Rd, K
-        pattern!(ADDRdRr, {
+        pattern!(LDIRdK, {
             node!(Set,
                   operands!(
                       select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),

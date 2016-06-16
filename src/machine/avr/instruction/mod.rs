@@ -1,6 +1,8 @@
-pub use self::add::ADDRdRr;
-pub use self::returns::{RET, RETI};
+pub use self::rdrr::*;
+pub use self::rdi::*;
+pub use self::simple::*;
 
-pub mod add;
-pub mod returns;
+pub mod rdrr;
+pub mod rdi;
+pub mod simple;
 
