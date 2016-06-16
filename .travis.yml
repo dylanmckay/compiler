@@ -11,4 +11,5 @@ script:
   - cargo test -p compiler_mir
   - cargo test -p compiler_pass
   - cargo test -p compiler_test
+  - cargo --bin test tests
 
