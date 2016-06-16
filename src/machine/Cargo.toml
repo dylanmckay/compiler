@@ -9,6 +9,8 @@ bit-vec = "*"
 
 [dependencies.compiler_mir]
 path = "../mir"
+[dependencies.compiler_regalloc]
+path = "../regalloc"
 [dependencies.compiler_select]
 path = "../select"
 [dependencies.compiler_target]

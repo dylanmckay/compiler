@@ -1,7 +1,7 @@
 use {Register, RegisterClass};
 use std;
 
-pub trait Instruction : Clone + std::fmt::Debug
+pub trait Instruction : std::fmt::Debug
 {
     type Operand: Operand;
     type RegisterClass: RegisterClass;

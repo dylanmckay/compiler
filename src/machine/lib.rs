@@ -4,15 +4,18 @@ pub use self::instruction::{Instruction, SideEffects};
 pub use self::encoded_instruction::EncodedInstruction;
 pub use self::operand::{OperandInfo, Operand, Direction};
 pub use self::pattern::{Pattern, PatternNode, PatternOperand};
+pub use self::register::{RegisterInfo, Register, RegisterClass};
 
 pub mod instruction;
 pub mod encoded_instruction;
 pub mod operand;
 pub mod pattern;
+pub mod register;
 
 pub mod avr;
 
 extern crate compiler_mir as mir;
+extern crate compiler_regalloc as regalloc;
 extern crate compiler_select as select;
 extern crate compiler_target as target;
 extern crate compiler_util as util;
@@ -32,39 +35,23 @@ pub trait MachineTarget : target::Target
     fn create_selector(&self) -> Selector;
 }
 
-pub trait RegisterInfo
-{
-    /// Gets the register classes the target supports.
-    fn classes(&self)
-        -> &'static [&'static RegisterClass];
-}
-
-#[derive(Clone,Debug,PartialEq,Eq)]
-pub struct Register
-{
-    pub name: &'static str,
-    pub number: u32,
-}
-
-#[derive(Clone,Debug,PartialEq,Eq)]
-pub struct RegisterClass
-{
-    pub name: &'static str,
-    pub bit_width: u32,
-    pub registers: &'static [&'static Register],
-}
-
 pub type Selector = select::Selector<Box<Instruction>, PatternOperand>;
 
 // TODO: this doesn't belong here, but it's good for testing.
 pub fn assemble<T>(target: &T, dag: mir::Dag)
     where T: MachineTarget {
+    use regalloc;
+
     let legalizer = target.create_legalizer();
     let mut selector = target.create_selector();
 
     let dag = legalizer.legalize(dag);
-    let patterns = selector.select(dag);
+    let instructions = selector.select(dag);
 
-    println!("Instruction_selection: {:#?}", patterns);
+    println!("Instruction selection: {:#?}", instructions);
+
+    let instructions = regalloc::allocate(instructions);
+
+    println!("Register allocation: {:#?}", instructions);
 }
 

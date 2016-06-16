@@ -1,4 +1,6 @@
 use {RegisterClass, Register};
+
+use regalloc;
 use util;
 use std;
 
@@ -60,6 +62,13 @@ impl std::fmt::Debug for OperandInfo
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         std::fmt::Debug::fmt(&self.value, fmt)
+    }
+}
+
+impl regalloc::Operand for Operand
+{
+    fn is_virtual(&self) -> bool {
+        if let Operand::VirtualRegister { .. } = *self { true } else { false }
     }
 }
 
