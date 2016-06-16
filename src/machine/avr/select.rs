@@ -4,9 +4,19 @@ use avr::registers;
 use select;
 
 use mir;
+use std;
+
+fn bar(node: &mir::Node) -> mir::Node {
+    node.clone()
+}
 
 macro_rules! pattern {
-    ($node:expr) => { Pattern { root: $node } }
+    ($node:expr) => {
+        Pattern {
+            root: $node,
+            factory: unsafe { std::mem::transmute(&bar) },
+        }
+    }
 }
 
 macro_rules! node {

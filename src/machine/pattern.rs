@@ -1,10 +1,11 @@
 use RegisterClass;
+use Instruction;
 use mir;
 use select;
 
 use std;
 
-pub type Pattern = select::Pattern<PatternOperand>;
+pub type Pattern = select::Pattern<Box<Instruction>, PatternOperand>;
 pub type PatternNode = select::PatternNode<PatternOperand>;
 pub type MatchResult = select::MatchResult<PatternOperand>;
 
@@ -46,6 +47,11 @@ impl select::PatternValue for PatternOperand {
             },
         }
     }
+}
+
+impl select::Selectable for Box<Instruction>
+{
+
 }
 
 impl std::fmt::Debug for PatternOperand

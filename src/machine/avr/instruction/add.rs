@@ -1,6 +1,6 @@
 use machine::{self, Operand};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct ADD
 {
     lhs: Operand,

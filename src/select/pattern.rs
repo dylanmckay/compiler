@@ -1,13 +1,24 @@
 use Adjustment;
+use Selectable;
 
 use mir;
 use std;
 
 /// A pattern.
-#[derive(Clone)]
-pub struct Pattern<V: PatternValue>
+pub struct Pattern<S: Selectable + 'static, V: PatternValue>
 {
     pub root: PatternNode<V>,
+    pub factory: &'static fn(node: &mir::Node) -> S,
+}
+
+impl<S: Selectable + 'static, V: PatternValue> Clone for Pattern<S, V>
+{
+    fn clone(&self) -> Self {
+        Pattern {
+            root: self.root.clone(),
+            factory: self.factory,
+        }
+    }
 }
 
 /// A node in the pattern tree.
@@ -75,7 +86,7 @@ impl<V: PatternValue> std::ops::Add for MatchResult<V>
     }
 }
 
-impl<V: PatternValue> Pattern<V>
+impl<S: Selectable, V: PatternValue> Pattern<S, V>
 {
     pub fn matches(&self, node: &mir::Node) -> MatchResult<V> {
         if let mir::Node::Branch(ref branch) = *node {
@@ -157,7 +168,7 @@ impl PatternValue for DummyPatternValue {
     fn matches(&self, _value: &mir::Value) -> MatchResult<Self> { unreachable!() }
 }
 
-impl<V: PatternValue> std::fmt::Debug for Pattern<V>
+impl<S: Selectable, V: PatternValue> std::fmt::Debug for Pattern<S, V>
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         std::fmt::Debug::fmt(&self.root, fmt)

@@ -1,5 +1,5 @@
 pub use self::legalize::Legalizer;
-pub use self::selector::Selector;
+pub use self::selector::{Selector, Selectable};
 pub use self::pattern::{Pattern, PatternNode, PatternOperand, PatternValue, MatchResult};
 pub use self::adjustment::Adjustment;
 

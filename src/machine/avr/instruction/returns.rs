@@ -1,9 +1,9 @@
 use {Instruction, Operand, EncodedInstruction};
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RET;
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct RETI;
 
 impl Instruction for RET

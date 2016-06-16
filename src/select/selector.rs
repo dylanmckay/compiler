@@ -1,17 +1,21 @@
 use {Pattern, PatternValue, MatchResult, Adjustment};
 use mir;
 
-/// Selects instructions.
-pub struct Selector<V: PatternValue>
+pub trait Selectable
 {
-    pub patterns: Vec<Pattern<V>>,
+}
+
+/// Selects instructions.
+pub struct Selector<S: Selectable + 'static, V: PatternValue>
+{
+    pub patterns: Vec<Pattern<S, V>>,
 }
 
 /// A pattern that matched with a node.
-pub struct MatchedPattern<V: PatternValue>
+pub struct MatchedPattern<S: Selectable + 'static, V: PatternValue>
 {
     pub node: mir::Node,
-    pub pattern: Pattern<V>,
+    pub pattern: Pattern<S, V>,
     pub result: MatchResult<V>,
 }
 
@@ -25,17 +29,17 @@ pub struct MatchedPattern<V: PatternValue>
 /// We can see all the matching permutations for nodes and decide which
 /// is the most optimal.
 #[derive(Debug,Clone)]
-pub struct Permutation<V: PatternValue>
+pub struct Permutation<S: Selectable + 'static, V: PatternValue>
 {
     pub nodes: Vec<mir::Node>,
-    pub pattern: Pattern<V>,
+    pub pattern: Pattern<S, V>,
 }
 
-impl<V> Selector<V>
+impl<S: Selectable, V> Selector<S, V>
     where V: PatternValue
 {
     /// Creates a new instruction selector.
-    pub fn new(patterns: Vec<Pattern<V>>) -> Self {
+    pub fn new(patterns: Vec<Pattern<S, V>>) -> Self {
         Selector {
             patterns: patterns,
         }
@@ -52,7 +56,6 @@ impl<V> Selector<V>
     }
 
     pub fn select_node(&mut self, node: &mir::Node) -> Vec<mir::Node> {
-        println!("selecting node: {:?}", node);
         let permutations = self.find_matching_permutations(node);
 
         match self::find_optimal_permutation(&permutations) {
@@ -61,7 +64,7 @@ impl<V> Selector<V>
         }
     }
 
-    fn find_matching_permutations(&mut self, node: &mir::Node) -> Vec<Permutation<V>> {
+    fn find_matching_permutations(&mut self, node: &mir::Node) -> Vec<Permutation<S, V>> {
         let similar_matches = self.find_similar_matches(node);
 
         similar_matches.into_iter().filter_map(|pat_match| {
@@ -90,7 +93,7 @@ impl<V> Selector<V>
         }).collect()
     }
 
-    fn find_similar_matches(&mut self, node: &mir::Node) -> Vec<MatchedPattern<V>> {
+    fn find_similar_matches(&mut self, node: &mir::Node) -> Vec<MatchedPattern<S, V>> {
         self.patterns.iter().cloned().filter_map(|pattern| {
             let pat_match = MatchedPattern { node: node.clone(), result: pattern.matches(node), pattern: pattern };
 
@@ -99,8 +102,8 @@ impl<V> Selector<V>
     }
 }
 
-fn find_optimal_permutation<V>(permutations: &[Permutation<V>]) -> Option<&Permutation<V>>
-    where V: PatternValue {
+fn find_optimal_permutation<S, V>(permutations: &[Permutation<S, V>]) -> Option<&Permutation<S, V>>
+    where S: Selectable, V: PatternValue {
     permutations.iter().min_by_key(|permutation| permutation.pattern.root.area())
 }
 

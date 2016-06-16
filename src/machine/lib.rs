@@ -55,7 +55,7 @@ pub struct RegisterClass
     pub registers: &'static [&'static Register],
 }
 
-pub type Selector = select::Selector<PatternOperand>;
+pub type Selector = select::Selector<Box<Instruction>, PatternOperand>;
 
 // TODO: this doesn't belong here, but it's good for testing.
 pub fn assemble<T>(target: &T, dag: mir::Dag)
