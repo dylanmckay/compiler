@@ -22,12 +22,12 @@ pub struct RegisterClass
     pub registers: &'static [&'static Register],
 }
 
-impl regalloc::Register for Register
+impl regalloc::Register for &'static Register
 {
 
 }
 
-impl regalloc::RegisterClass for RegisterClass
+impl regalloc::RegisterClass for &'static RegisterClass
 {
 
 }

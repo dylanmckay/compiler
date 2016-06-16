@@ -49,8 +49,8 @@ impl SideEffects
 impl regalloc::Instruction for Box<Instruction>
 {
     type Operand = Operand;
-    type RegisterClass = RegisterClass;
-    type Register = Register;
+    type RegisterClass = &'static RegisterClass;
+    type Register = &'static Register;
 
     fn operands_mut(&mut self) -> Vec<Box<regalloc::Operand>> {
         unimplemented!();

@@ -1,5 +1,6 @@
 pub use self::rdrr::*;
 pub use self::rdi::*;
+pub use self::rd::*;
 pub use self::simple::*;
 
 pub use self::ldi::LDIRdK;
@@ -24,6 +25,7 @@ macro_rules! impl_debug_for_instruction {
 // Instruction families.
 pub mod rdrr;
 pub mod rdi;
+pub mod rd;
 pub mod simple;
 
 // Individual instructions.
