@@ -31,10 +31,6 @@ impl<I: Instruction> Program<I>
         }
     }
 
-    pub fn allocate(self) -> Self {
-        self
-    }
-
     pub fn into_instructions(self) -> Vec<I> {
         self.items.into_iter().map(|item| item.instruction).collect()
     }

@@ -1,10 +1,12 @@
-use {Program, Instruction};
+use {Program, Instruction, Algorithm};
+use algorithm;
 
 /// Allocates registers for a set of instructions.
 pub fn allocate<I>(instructions: Vec<I>) -> Vec<I>
     where I: Instruction {
-    Program::build(instructions.into_iter()).
-        allocate().
-        into_instructions()
+    let mut algo = algorithm::default();
+
+    let program = algo.allocate(Program::build(instructions.into_iter()));
+    program.into_instructions()
 }
 
