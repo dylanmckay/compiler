@@ -67,5 +67,4 @@ define_rdrr!(EORRdRr,  "eor");
 define_rdrr!(CPSERdRr, "cpse");
 define_rdrr!(CPRdRr,   "cp");
 define_rdrr!(CPCRdRr,  "cpc");
-define_rdrr!(MOVRdRr,  "mov");
 
