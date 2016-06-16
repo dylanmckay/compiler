@@ -11,22 +11,24 @@ argparse = "0.2.1"
 walkdir = "0.1.5"
 term = "0.4.4"
 
-[dependencies.compiler_util]
-path = "src/util"
-[dependencies.compiler_target]
-path = "src/target"
-[dependencies.compiler_machine]
-path = "src/machine"
 [dependencies.compiler_ir]
 path = "src/ir"
+[dependencies.compiler_machine]
+path = "src/machine"
 [dependencies.compiler_mir]
 path = "src/mir"
 [dependencies.compiler_pass]
 path = "src/pass"
+[dependencies.compiler_regalloc]
+path = "src/regalloc"
 [dependencies.compiler_select]
 path = "src/select"
+[dependencies.compiler_target]
+path = "src/target"
 [dependencies.compiler_test]
 path = "src/test"
+[dependencies.compiler_util]
+path = "src/util"
 
 [lib]
 name = "compiler"
