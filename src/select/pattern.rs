@@ -154,7 +154,7 @@ pub struct DummyPatternValue;
 
 impl PatternValue for DummyPatternValue {
     type Adjustment = ();
-    fn matches(&self, value: &mir::Value) -> MatchResult<Self> { unreachable!() }
+    fn matches(&self, _value: &mir::Value) -> MatchResult<Self> { unreachable!() }
 }
 
 impl<V: PatternValue> std::fmt::Debug for Pattern<V>

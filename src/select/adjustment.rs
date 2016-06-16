@@ -107,7 +107,7 @@ impl<V: PatternValue> Adjustment<V>
 
                 AdjustmentApplication { preceding_nodes: preceding_nodes, adjusted_node: adjusted_node }
             },
-            Adjustment::Target(ref adjustment) => {
+            Adjustment::Target(ref _adjustment) => {
                 unimplemented!();
             },
         }

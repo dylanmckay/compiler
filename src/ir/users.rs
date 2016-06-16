@@ -1,5 +1,4 @@
-use {Value, Expression, Item, ItemTrait, Module, Function, Global, Block};
-use util::Identifiable;
+use {Value, Expression, ItemTrait, Module, Function, Global, Block};
 
 /// Stores the users of a value.
 pub struct Users<'a>

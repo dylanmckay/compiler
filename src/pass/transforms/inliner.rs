@@ -45,7 +45,7 @@ impl Transform for Inliner
         // Because at this point the IR is in SSA form, we need to inspect the basic block
         // and look at the subvalues of the top level values to inline.
 
-        module.map_functions(|f, module| {
+        module.map_functions(|f, _module| {
             f.map_blocks(|block| {
                 let values = block.body.into_iter().flat_map(|value| {
                     println!("handling value: {:#?}", value);
@@ -55,7 +55,7 @@ impl Transform for Inliner
                             ir::Instruction::Call(call_inst) => {
                                 println!("call_inst_id: {}, func_ids: {:#?}", call_inst.target_id(), function_ids_to_inline);
 
-                                if let Some(func_id) = function_ids_to_inline.iter().find(|&id| *id == call_inst.target_id()) {
+                                if let Some(_func_id) = function_ids_to_inline.iter().find(|&id| *id == call_inst.target_id()) {
                                     // module.get_function(function_id);
                                     unimplemented!();
                                 } else {

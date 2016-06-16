@@ -1,4 +1,4 @@
-use {Pattern, PatternNode, PatternValue, MatchResult, Adjustment};
+use {Pattern, PatternValue, MatchResult, Adjustment};
 use mir;
 
 /// Selects instructions.

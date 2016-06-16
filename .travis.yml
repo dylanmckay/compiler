@@ -5,11 +5,17 @@ rust:
 
 script:
   - cargo build
-  - cargo test -p compiler_util
-  - cargo test -p compiler_target
+
+  # Run tests for individual crates
   - cargo test -p compiler_ir
+  - cargo test -p compiler_machine
   - cargo test -p compiler_mir
   - cargo test -p compiler_pass
+  - cargo test -p compiler_select
+  - cargo test -p compiler_target
   - cargo test -p compiler_test
-  - cargo --bin test tests
+  - cargo test -p compiler_util
+
+  # Run test suite
+  - cargo run --bin test tests
 
