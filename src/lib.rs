@@ -16,7 +16,6 @@ pub use self::compiler_select as select;
 /// The integrated tester.
 pub use self::compiler_test as test;
 
-#[macro_use]
 pub extern crate compiler_util;
 pub extern crate compiler_ir;
 pub extern crate compiler_mir;

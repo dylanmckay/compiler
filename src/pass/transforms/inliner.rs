@@ -34,9 +34,6 @@ impl Transform for Inliner
         let function_ids_to_inline: Vec<_> = module.functions().filter_map(|function| {
             let weight = inlining_weight(function, &module);
 
-            debug_log!("inline", format!("function '{}': weight: {:?}",
-                                         function.name, weight));
-
             if weight.should_inline() {
                 Some(function.get_id())
             } else {
@@ -59,7 +56,6 @@ impl Transform for Inliner
                                 println!("call_inst_id: {}, func_ids: {:#?}", call_inst.target_id(), function_ids_to_inline);
 
                                 if let Some(func_id) = function_ids_to_inline.iter().find(|&id| *id == call_inst.target_id()) {
-                                    debug_log!("inline", format!("inlining function '{}'", func_id));
                                     // module.get_function(function_id);
                                     unimplemented!();
                                 } else {

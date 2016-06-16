@@ -9,8 +9,6 @@ pub mod architecture;
 pub mod id;
 pub mod list;
 pub mod set;
-#[macro_use]
-pub mod debug;
 
 pub mod os;
 

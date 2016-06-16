@@ -36,8 +36,6 @@ impl Manager
         for pass_id in pass_list {
             let pass = self::lookup_pass_mut(pass_id, &mut self.passes).unwrap();
 
-            debug_log!("pass", format!("running pass: '{}'", pass.name()));
-
             match *pass {
                 Info::Analysis(ref mut p) => p.run_module(&module),
                 Info::Transform(ref mut p) => module = p.run_module(module),
