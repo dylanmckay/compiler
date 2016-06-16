@@ -4,7 +4,6 @@ use target;
 use select;
 
 use avr::registers;
-use avr::OpCode;
 use avr;
 
 /// The AVR target.
@@ -29,8 +28,6 @@ impl target::Target for AVR
 
 impl MachineTarget for AVR
 {
-    type OpCode = OpCode;
-
     fn pointer_width(&self) -> u16 { 16 }
 
     fn register_info(&self) -> &RegisterInfo {

@@ -21,8 +21,6 @@ extern crate bit_vec;
 /// A target.
 pub trait MachineTarget : target::Target
 {
-    type OpCode;
-
     /// Gets the width of a pointer.
     fn pointer_width(&self) -> u16;
 

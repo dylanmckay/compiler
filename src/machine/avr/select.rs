@@ -1,14 +1,8 @@
-use {Pattern, PatternNode, PatternOperand, Selector, Instruction};
+use {Pattern, PatternNode, PatternOperand, Selector};
 use avr::{registers, instruction};
 
 use select;
-
 use mir;
-use std;
-
-fn bar(node: &mir::Node) -> Box<Instruction> {
-    Box::new(instruction::RET)
-}
 
 macro_rules! pattern {
     ($ty:ident, $node:expr) => {
