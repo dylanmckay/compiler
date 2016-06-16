@@ -16,14 +16,14 @@ use mir;
 ///
 /// Take the case where we have
 ///
-/// ```
+/// ```ignore
 /// (add %a, (add %foo, %bar))
 /// ```
 ///
 /// This will likely have to have an adjustment to demote the
 /// nested addition to a register, so that the code becomes.
 ///
-/// ```
+/// ```ignore
 /// %tmp = (add %foo, %bar)
 /// (add %a, %tmp)
 /// ```
@@ -126,22 +126,20 @@ mod test
         fn demote_to_register() {
             let register_ref = mir::Node::new_register_ref(mir::Type::i8());
             let example_node = mir::Node::set(register_ref.clone(), mir::Node::i(8, 2));
-            println!("example: {:#?}", example_node);
 
             let adjustment: Adjustment<DummyPatternValue> = Adjustment::DemoteToRegister {
                 demotee: mir::Node::i(8, 2)
             };
 
-            let result_nodes = adjustment.apply_to(example_node);
-            println!("result: {:#?}", result_nodes);
+            let application = adjustment.apply_to(example_node);
 
-            assert_eq!(result_nodes.len(), 2);
+            assert_eq!(application.preceding_nodes.len(), 1);
 
-            let new_set_node = result_nodes[0].expect_branch();
+            let new_set_node = application.preceding_nodes[0].expect_branch();
             let new_register_ref = new_set_node.operands[0].clone();
             assert_eq!(new_set_node.operands[1], mir::Node::i(8, 2));
 
-            let permuted_node = result_nodes[1].expect_branch();
+            let permuted_node = application.adjusted_node.expect_branch();
             assert_eq!(permuted_node.operands[1], new_register_ref);
         }
     }

@@ -29,14 +29,14 @@ impl Dag
     ///
     /// Take a DAG like so:
     ///
-    /// ```
+    /// ```ignore
     /// (set %a, (add i32 5, i32 10)
     /// (add %a, i32 15)
     /// ```
     ///
     /// This will turn this into a tree.
     ///
-    /// ```
+    /// ```ignore
     /// (add (add i32 5, i32 10), i32 15)
     /// ```
     pub fn expand(self) -> Self {

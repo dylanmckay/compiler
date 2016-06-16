@@ -149,7 +149,7 @@ impl Context
     ///
     /// When we get
     ///
-    /// ```
+    /// ```ignore
     /// (set %foo, <val>)
     /// (set %bar, %foo)
     /// ```
@@ -159,7 +159,7 @@ impl Context
     ///
     /// i.e. after expansion, this becomes.
     ///
-    /// ```
+    /// ```ignore
     /// (set %foo, <val>)
     /// (set %bar, <val>)
     /// ```
