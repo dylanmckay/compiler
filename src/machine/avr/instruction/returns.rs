@@ -1,10 +1,18 @@
 use {Instruction, Operand, EncodedInstruction};
+use mir;
 
 #[derive(Clone, Debug)]
 pub struct RET;
 
 #[derive(Clone, Debug)]
 pub struct RETI;
+
+impl RET
+{
+    pub fn from_pattern(node: &mir::Node) -> Box<Instruction> {
+        Box::new(RET)
+    }
+}
 
 impl Instruction for RET
 {

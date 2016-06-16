@@ -1,20 +1,20 @@
-use {Pattern, PatternNode, PatternOperand, Selector};
-use avr::registers;
+use {Pattern, PatternNode, PatternOperand, Selector, Instruction};
+use avr::{registers, instruction};
 
 use select;
 
 use mir;
 use std;
 
-fn bar(node: &mir::Node) -> mir::Node {
-    node.clone()
+fn bar(node: &mir::Node) -> Box<Instruction> {
+    Box::new(instruction::RET)
 }
 
 macro_rules! pattern {
-    ($node:expr) => {
+    ($ty:ident, $node:expr) => {
         Pattern {
             root: $node,
-            factory: unsafe { std::mem::transmute(&bar) },
+            factory: instruction::$ty::from_pattern,
         }
     }
 }
@@ -41,27 +41,27 @@ macro_rules! operands {
 
 /// An instruction which takes a destination and source GPR8.
 macro_rules! inst_rdrr {
-    ($opcode:ident) => {
-        pattern! {
+    ($ty:ident, $opcode:ident) => {
+        pattern!($ty, {
             node!(Set,
-                operands!(
-                    select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
-                    select::PatternOperand::Node(Box::new(node!($opcode,
-                        operands!(
-                            select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
-                            select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
-                        )
-                    )))
-                )
+                  operands!(
+                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                      select::PatternOperand::Node(Box::new(node!($opcode,
+                          operands!(
+                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
+                          )
+                      )))
+                  )
             )
-        }
+        })
     }
 }
 
 /// An instruction which takes a GPR8 and an 8-bit immediate.
 macro_rules! inst_rdi {
-    ($opcode:ident) => {
-        pattern! {
+    ($ty:ident, $opcode:ident) => {
+        pattern!($ty, {
             node!(Set,
                 operands!(
                     select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
@@ -73,7 +73,7 @@ macro_rules! inst_rdi {
                     )))
                 )
             )
-        }
+        })
     }
 }
 
@@ -83,24 +83,24 @@ pub fn selector() -> Selector {
 
 pub fn patterns() -> Vec<Pattern> {
     vec![
-        inst_rdi!(Add),  // ADDRdK
+        // inst_rdi!(ADD, Add),  // ADDRdK
 
-        inst_rdrr!(Add), // ADDRdRr
-        inst_rdrr!(Sub), // SUBRdRr
+        inst_rdrr!(ADDRdRr, Add), // ADDRdRr
+        inst_rdrr!(ADDRdRr, Sub), // SUBRdRr
 
-        pattern! { node!(Ret) },
+        pattern!(RET, { node!(Ret) }),
 
         // LDI Rd, K
-        pattern! {
+        pattern!(ADDRdRr, {
             node!(Set,
                   operands!(
                       select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
                       select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
                   )
             )
-        },
+        }),
 
-        pattern! {
+        pattern!(RET, {
             node!(Ret,
                   operands!(
                       select::PatternOperand::Node(Box::new(node!(Add,
@@ -111,7 +111,7 @@ pub fn patterns() -> Vec<Pattern> {
                       )))
                   )
             )
-        }
+        })
 
     ]
 }

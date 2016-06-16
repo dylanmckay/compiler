@@ -1,7 +1,7 @@
 use {Pattern, PatternValue, MatchResult, Adjustment};
 use mir;
 
-pub trait Selectable
+pub trait Selectable : ::std::fmt::Debug
 {
 }
 
@@ -12,6 +12,7 @@ pub struct Selector<S: Selectable + 'static, V: PatternValue>
 }
 
 /// A pattern that matched with a node.
+#[derive(Debug)]
 pub struct MatchedPattern<S: Selectable + 'static, V: PatternValue>
 {
     pub node: mir::Node,
@@ -45,14 +46,16 @@ impl<S: Selectable, V> Selector<S, V>
         }
     }
 
-    pub fn select(&mut self, dag: mir::Dag) -> Vec<mir::Node> {
+    pub fn select(&mut self, dag: mir::Dag) -> Vec<S> {
         dag.expect_valid();
 
         println!("initial dag: {:#?}", dag);
         let dag = dag.expand();
         println!("expanded dag: {:#?}", dag);
 
-        dag.nodes.iter().flat_map(|node| self.select_node(node)).collect()
+        let nodes: Vec<_> = dag.nodes.iter().flat_map(|node| self.select_node(node)).collect();
+
+        nodes.iter().map(|node| self.select_legal_node(&node)).collect()
     }
 
     pub fn select_node(&mut self, node: &mir::Node) -> Vec<mir::Node> {
@@ -99,6 +102,18 @@ impl<S: Selectable, V> Selector<S, V>
 
             if pat_match.result.is_similar() { Some(pat_match) } else { None }
         }).collect()
+    }
+
+    /// Selects a node, under the guarantee that the node is already legal.
+    fn select_legal_node(&mut self, node: &mir::Node) -> S {
+        let matches: Vec<_> = self.find_similar_matches(node).into_iter().filter(|pat_match| {
+            pat_match.result.is_perfect()
+        }).collect();
+
+        assert_eq!(matches.len(), 1);
+
+        let ref pat_match = matches[0];
+        (pat_match.pattern.factory)(node)
     }
 }
 

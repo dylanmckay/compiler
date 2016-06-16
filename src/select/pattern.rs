@@ -8,7 +8,7 @@ use std;
 pub struct Pattern<S: Selectable + 'static, V: PatternValue>
 {
     pub root: PatternNode<V>,
-    pub factory: &'static fn(node: &mir::Node) -> S,
+    pub factory: fn(&mir::Node) -> S,
 }
 
 impl<S: Selectable + 'static, V: PatternValue> Clone for Pattern<S, V>
@@ -100,7 +100,7 @@ impl<S: Selectable, V: PatternValue> Pattern<S, V>
 impl<V: PatternValue> PatternNode<V>
 {
     pub fn matches(&self, branch: &mir::Branch) -> MatchResult<V> {
-        if self.opcode == branch.opcode {
+        if self.opcode == branch.opcode && self.operands.len() == branch.operands.len() {
             self.operands.iter().zip(branch.operands.iter()).
                 fold(MatchResult::Perfect, |result, (pat_op, mir_op)| result + pat_op.matches(mir_op))
         } else {

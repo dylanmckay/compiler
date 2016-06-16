@@ -1,27 +1,35 @@
-use machine::{self, Operand};
+use {Instruction, Operand, EncodedInstruction};
+use mir;
 
 #[derive(Clone, Debug)]
-pub struct ADD
+pub struct ADDRdRr
 {
     lhs: Operand,
     rhs: Operand,
 }
 
-impl ADD
+impl ADDRdRr
 {
-    fn new(lhs: Operand, rhs: Operand) -> Self {
-        ADD { lhs: lhs, rhs: rhs }
+    pub fn new(lhs: Operand, rhs: Operand) -> Self {
+        ADDRdRr { lhs: lhs, rhs: rhs }
+    }
+
+    pub fn from_pattern(node: &mir::Node) -> Box<Instruction> {
+        let _branch = node.expect_branch();
+        let rd = Operand::Register(0);
+        let rr = Operand::Register(0);
+        Box::new(Self::new(rd, rr))
     }
 }
 
-impl machine::Instruction for ADD
+impl Instruction for ADDRdRr
 {
     fn mnemonic(&self) -> String { "add".to_owned() }
     fn operands(&self) -> Vec<Operand> {
         vec![self.lhs.clone(), self.rhs.clone()]
     }
 
-    fn encode(&self) -> machine::EncodedInstruction {
+    fn encode(&self) -> EncodedInstruction {
         unimplemented!();
     }
 }
