@@ -1,13 +1,16 @@
+use {Register, RegisterClass};
 use std;
 
 pub trait Instruction : Clone + std::fmt::Debug
 {
-    type Slot: Slot;
+    type Operand: Operand;
+    type RegisterClass: RegisterClass;
+    type Register: Register;
 
-    fn slots_mut(&mut self) -> Vec<Box<Slot>>;
+    fn operands_mut(&mut self) -> Vec<Box<Operand>>;
 }
 
-pub trait Slot : std::fmt::Debug
+pub trait Operand : std::fmt::Debug
 {
     fn is_virtual(&self) -> bool;
 }
