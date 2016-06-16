@@ -1,4 +1,5 @@
 use {Instruction, Operand, EncodedInstruction};
+use avr::registers::GPR8;
 use mir;
 use std;
 
@@ -18,9 +19,14 @@ macro_rules! define_rdrr {
             }
 
             pub fn from_pattern(node: &mir::Node) -> Box<Instruction> {
-                let _branch = node.expect_branch();
-                let rd = Operand::Register(0);
-                let rr = Operand::Register(0);
+                let set = node.expect_branch();
+                let dest_reg = set.operands[0].expect_leaf().expect_register_ref();
+                let value = set.operands[1].expect_branch();
+                let source_reg = value.operands[1].expect_leaf().expect_register_ref();
+
+                let rd = Operand::VirtualRegister { id: dest_reg.register_id, class: &GPR8 };
+                let rr = Operand::VirtualRegister { id: source_reg.register_id, class: &GPR8 };
+
                 Box::new(Self::new(rd, rr))
             }
         }

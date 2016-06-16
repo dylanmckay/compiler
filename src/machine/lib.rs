@@ -62,18 +62,9 @@ pub fn assemble<T>(target: &T, dag: mir::Dag)
     let legalizer = target.create_legalizer();
     let mut selector = target.create_selector();
 
-    println!("All patterns: {:#?}", selector.patterns);
-
     let dag = legalizer.legalize(dag);
     let patterns = selector.select(dag);
 
     println!("Instruction_selection: {:#?}", patterns);
-    // let instructions = selector.select(dag);
-    //
-    // println!("{:#?}", instructions);
-    //
-    // let encoded_instructions: Vec<_> = instructions.iter().map(|i| i.encode()).collect();
-    //
-    // println!("{:#?}", encoded_instructions);
 }
 
