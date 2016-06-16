@@ -46,14 +46,16 @@ impl<V> Selector<V>
         let dag = dag.expand();
         println!("expanded dag: {:#?}", dag);
 
-        dag.nodes.iter().flat_map(|node| {
-            let permutations = self.find_matching_permutations(node);
+        dag.nodes.iter().flat_map(|node| self.select_node(node)).collect()
+    }
 
-            match self::find_optimal_permutation(&permutations) {
-                Some(permutation) => permutation.clone().nodes.into_iter(),
-                None => panic!("no patterns matching for this node: {:#?}", node),
-            }
-        }).collect()
+    pub fn select_node(&mut self, node: &mir::Node) -> Vec<mir::Node> {
+        let permutations = self.find_matching_permutations(node);
+
+        match self::find_optimal_permutation(&permutations) {
+            Some(permutation) => permutation.nodes.clone(),
+            None => panic!("no patterns matching for this node: {:#?}", node),
+        }
     }
 
     fn find_matching_permutations(&mut self, node: &mir::Node) -> Vec<Permutation<V>> {

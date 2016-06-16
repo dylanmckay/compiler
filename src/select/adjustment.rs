@@ -39,6 +39,12 @@ pub enum Adjustment<V: PatternValue>
 
 impl<V: PatternValue> Adjustment<V>
 {
+    pub fn demote_to_register(node: &mir::Node) -> Self {
+        Adjustment::DemoteToRegister {
+            demotee: node.clone(),
+        }
+    }
+
     pub fn apply_several_to(original_root_node: mir::Node, adjustments: &[Self]) -> Vec<mir::Node> {
         let mut result = Vec::new();
         result.push(original_root_node.clone());

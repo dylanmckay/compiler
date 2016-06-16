@@ -32,7 +32,11 @@ impl select::PatternValue for PatternOperand {
             },
             PatternOperand::Register(class) => {
                 if value.ty().bit_width() <= class.bit_width {
-                    select::MatchResult::Perfect
+                    if value.is_register_ref() {
+                        select::MatchResult::Perfect
+                    } else {
+                        select::MatchResult::adjust(select::Adjustment::demote_to_register(&mir::Node::Leaf(value.clone())))
+                    }
                 } else {
                     select::MatchResult::None
                 }

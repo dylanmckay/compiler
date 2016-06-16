@@ -127,9 +127,7 @@ impl<V: PatternValue> PatternOperand<V>
                 if let mir::Node::Leaf(ref mir_val) = *node {
                     pat_val.matches(mir_val)
                 } else {
-                    MatchResult::adjust(Adjustment::DemoteToRegister{
-                        demotee: node.clone(),
-                    })
+                    MatchResult::adjust(Adjustment::demote_to_register(node))
                 }
             },
             PatternOperand::Node(ref pat_node) => {
