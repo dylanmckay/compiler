@@ -67,10 +67,13 @@ impl<V> Selector<V>
                     Some(Permutation { nodes: vec![node.clone()], pattern: pat_match.pattern.clone() })
                 },
                 MatchResult::Partial(ref adjustments) => {
-                    let nodes = Adjustment::apply_several_to(node.clone(), adjustments);
+                    let application = Adjustment::apply_several_to(node.clone(), adjustments);
 
-                    if pat_match.pattern.matches(nodes.last().unwrap()).is_perfect() {
-                        Some(Permutation { nodes: nodes, pattern: pat_match.pattern.clone() })
+                    if pat_match.pattern.matches(&application.adjusted_node).is_perfect() {
+                        Some(Permutation {
+                            nodes: application.nodes(),
+                            pattern: pat_match.pattern.clone(),
+                        })
                     } else {
                         None
                     }
