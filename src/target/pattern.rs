@@ -5,7 +5,9 @@ use std;
 
 pub type Pattern = select::Pattern<PatternOperand>;
 pub type PatternNode = select::PatternNode<PatternOperand>;
+pub type MatchResult = select::MatchResult<PatternOperand>;
 
+/// A pattern operand.
 #[derive(Clone,PartialEq,Eq)]
 pub enum PatternOperand
 {
@@ -13,17 +15,33 @@ pub enum PatternOperand
     Register(&'static machine::RegisterClass),
 }
 
+pub type Adjustment = ();
+
 impl select::PatternValue for PatternOperand {
-    fn matches(&self, value: &mir::Value) -> bool {
+    type Adjustment = Adjustment;
+
+    fn matches(&self, value: &mir::Value) -> MatchResult {
         match *self {
             PatternOperand::Immediate { width } => {
                 match *value {
-                    mir::Value::ConstantInteger { bit_width, .. } => bit_width <= width,
-                    _ => false,
+                    mir::Value::ConstantInteger { bit_width, .. } => {
+                        if bit_width <= width { select::MatchResult::Perfect } else { select::MatchResult::None }
+                    },
+                    _ => select::MatchResult::None,
                 }
             },
             PatternOperand::Register(class) => {
-                value.ty().bit_width() <= class.bit_width
+                if value.ty().bit_width() <= class.bit_width {
+                    // If the value is already stored in a register.
+                    if self::is_value_stored_in_register(value) {
+                        select::MatchResult::Perfect
+                    } else {
+                        // We have to demote it into a register.
+                        select::MatchResult::adjust(select::Adjustment::demote_to_register(&mir::Node::Leaf(value.clone())))
+                    }
+                } else {
+                    select::MatchResult::None
+                }
             },
         }
     }
@@ -40,6 +58,14 @@ impl std::fmt::Debug for PatternOperand
                 write!(fmt, "{}", class.name)
             },
         }
+    }
+}
+
+fn is_value_stored_in_register(value: &mir::Value) -> bool {
+    match *value {
+        mir::Value::RegisterRef(..) => true,
+        mir::Value::ArgumentRef { .. } => true,
+        mir::Value::ConstantInteger { .. } => false,
     }
 }
 

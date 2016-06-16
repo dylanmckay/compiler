@@ -1,3 +1,5 @@
+use Adjustment;
+
 use mir;
 use std;
 
@@ -25,23 +27,74 @@ pub enum PatternOperand<V: PatternValue>
     Value(V),
 }
 
+#[derive(Clone,Debug,PartialEq,Eq)]
+pub enum MatchResult<V: PatternValue>
+{
+    Perfect,
+    Partial(Vec<Adjustment<V>>),
+    None,
+}
+
+impl<V: PatternValue> MatchResult<V>
+{
+    pub fn adjust(adjustment: Adjustment<V>) -> Self {
+        MatchResult::Partial(vec![adjustment])
+    }
+
+    pub fn is_perfect(&self) -> bool {
+        if let MatchResult::Perfect = *self { true } else { false }
+    }
+
+    pub fn is_similar(&self) -> bool {
+        match *self {
+            MatchResult::Perfect |
+                MatchResult::Partial(..) => true,
+            MatchResult::None => false,
+        }
+    }
+}
+
+impl<V: PatternValue> std::ops::Add for MatchResult<V>
+{
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self {
+        use MatchResult::*;
+        match (self, rhs) {
+            // If something can't match, the entire pattern can't.
+            (None, _) |
+            (_, None) => MatchResult::None,
+            (Partial(mut a1), Partial(a2)) => {
+                a1.extend(a2.into_iter());
+                Partial(a1)
+            },
+            (Perfect, Partial(a)) |
+            (Partial(a), Perfect) => Partial(a),
+            (Perfect, Perfect) => MatchResult::Perfect,
+        }
+    }
+}
+
 impl<V: PatternValue> Pattern<V>
 {
-    pub fn matches(&self, node: &mir::Node) -> bool {
+    pub fn matches(&self, node: &mir::Node) -> MatchResult<V> {
         if let mir::Node::Branch(ref branch) = *node {
             self.root.matches(branch)
         } else {
-            false
+            MatchResult::None
         }
     }
 }
 
 impl<V: PatternValue> PatternNode<V>
 {
-    pub fn matches(&self, branch: &mir::Branch) -> bool {
-        self.opcode == branch.opcode &&
+    pub fn matches(&self, branch: &mir::Branch) -> MatchResult<V> {
+        if self.opcode == branch.opcode {
             self.operands.iter().zip(branch.operands.iter()).
-                all(|(pat_op, mir_op)| pat_op.matches(mir_op))
+                fold(MatchResult::Perfect, |result, (pat_op, mir_op)| result + pat_op.matches(mir_op))
+        } else {
+            MatchResult::None
+        }
     }
 
     /// Gets the total area coverted by the tree.
@@ -68,20 +121,20 @@ impl<V: PatternValue> PatternNode<V>
 
 impl<V: PatternValue> PatternOperand<V>
 {
-    pub fn matches(&self, node: &mir::Node) -> bool {
+    pub fn matches(&self, node: &mir::Node) -> MatchResult<V> {
         match *self {
             PatternOperand::Value(ref pat_val) => {
                 if let mir::Node::Leaf(ref mir_val) = *node {
                     pat_val.matches(mir_val)
                 } else {
-                    false
+                    MatchResult::adjust(Adjustment::demote_to_register(node))
                 }
             },
             PatternOperand::Node(ref pat_node) => {
                 if let mir::Node::Branch(ref mir_branch) = *node {
                     pat_node.matches(mir_branch)
                 } else {
-                    false
+                    MatchResult::None
                 }
             },
         }
@@ -91,7 +144,17 @@ impl<V: PatternValue> PatternOperand<V>
 /// A value.
 pub trait PatternValue : Sized + Clone + std::fmt::Debug
 {
-    fn matches(&self, value: &mir::Value) -> bool;
+    type Adjustment: Clone + PartialEq + Eq + std::fmt::Debug;
+
+    fn matches(&self, value: &mir::Value) -> MatchResult<Self>;
+}
+
+#[derive(Clone,Debug,PartialEq,Eq)]
+pub struct DummyPatternValue;
+
+impl PatternValue for DummyPatternValue {
+    type Adjustment = ();
+    fn matches(&self, value: &mir::Value) -> MatchResult<Self> { unreachable!() }
 }
 
 impl<V: PatternValue> std::fmt::Debug for Pattern<V>

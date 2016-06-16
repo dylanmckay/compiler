@@ -64,6 +64,10 @@ impl Value
         })
     }
 
+    pub fn is_register_ref(&self) -> bool {
+        if let Value::RegisterRef(..) = *self { true } else { false}
+    }
+
     pub fn expect_constant_integer(&self) -> i64 {
         if let Value::ConstantInteger { value, .. } = *self {
             value
