@@ -50,6 +50,7 @@ impl<V> Selector<V>
     }
 
     pub fn select_node(&mut self, node: &mir::Node) -> Vec<mir::Node> {
+        println!("selecting node: {:?}", node);
         let permutations = self.find_matching_permutations(node);
 
         match self::find_optimal_permutation(&permutations) {
@@ -67,9 +68,13 @@ impl<V> Selector<V>
                     Some(Permutation { nodes: vec![node.clone()], pattern: pat_match.pattern.clone() })
                 },
                 MatchResult::Partial(ref adjustments) => {
-                    let application = Adjustment::apply_several_to(node.clone(), adjustments);
+                    let mut application = Adjustment::apply_several_to(node.clone(), adjustments);
 
                     if pat_match.pattern.matches(&application.adjusted_node).is_perfect() {
+                        application.preceding_nodes = application.preceding_nodes.into_iter().flat_map(|preceding_node| {
+                            self.select_node(&preceding_node)
+                        }).collect();
+
                         Some(Permutation {
                             nodes: application.nodes(),
                             pattern: pat_match.pattern.clone(),

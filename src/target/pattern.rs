@@ -32,9 +32,11 @@ impl select::PatternValue for PatternOperand {
             },
             PatternOperand::Register(class) => {
                 if value.ty().bit_width() <= class.bit_width {
-                    if value.is_register_ref() {
+                    // If the value is already stored in a register.
+                    if self::is_value_stored_in_register(value) {
                         select::MatchResult::Perfect
                     } else {
+                        // We have to demote it into a register.
                         select::MatchResult::adjust(select::Adjustment::demote_to_register(&mir::Node::Leaf(value.clone())))
                     }
                 } else {
@@ -56,6 +58,14 @@ impl std::fmt::Debug for PatternOperand
                 write!(fmt, "{}", class.name)
             },
         }
+    }
+}
+
+fn is_value_stored_in_register(value: &mir::Value) -> bool {
+    match *value {
+        mir::Value::RegisterRef(..) => true,
+        mir::Value::ArgumentRef { .. } => true,
+        mir::Value::ConstantInteger { .. } => false,
     }
 }
 

@@ -81,6 +81,16 @@ pub fn patterns() -> Vec<Pattern> {
 
         pattern! { node!(Ret) },
 
+        // LDI Rd, K
+        pattern! {
+            node!(Set,
+                  operands!(
+                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                      select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
+                  )
+            )
+        },
+
         pattern! {
             node!(Ret,
                   operands!(
