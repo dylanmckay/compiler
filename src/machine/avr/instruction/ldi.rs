@@ -40,8 +40,8 @@ impl Instruction for LDIRdK
     fn mnemonic(&self) -> String { "ldi".to_owned() }
     fn operands(&self) -> Vec<OperandInfo> {
         vec![
-            OperandInfo { value: self.rd.clone() },
-            OperandInfo { value: self.i.clone()  },
+            OperandInfo::output(self.rd.clone()),
+            OperandInfo::input(self.i.clone()),
         ]
     }
 
@@ -54,14 +54,5 @@ impl Instruction for LDIRdK
     }
 }
 
-impl std::fmt::Debug for LDIRdK {
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        try!(write!(fmt, "{} ", self.mnemonic()));
-
-        let operands: Vec<_> = self.operands().iter().map(|op| format!("{:?}", op)).collect();
-        try!(write!(fmt, "{}", operands.join(", ")));
-
-        Ok(())
-    }
-}
+impl_debug_for_instruction!(LDIRdK);
 

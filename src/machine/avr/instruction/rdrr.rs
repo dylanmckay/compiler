@@ -3,8 +3,8 @@ use avr::registers::GPR8;
 use mir;
 use std;
 
-macro_rules! define_rdrr {
-    ($name:ident, $mnemonic:expr) => {
+macro_rules! define_rdrr_struct {
+    ($name:ident) => {
         #[derive(Clone)]
         pub struct $name
         {
@@ -30,14 +30,20 @@ macro_rules! define_rdrr {
                 Box::new(Self::new(rd, rr))
             }
         }
+    }
+}
+
+macro_rules! define_rdrr {
+    ($name:ident, $mnemonic:expr) => {
+        define_rdrr_struct!($name);
 
         impl Instruction for $name
         {
             fn mnemonic(&self) -> String { $mnemonic.to_owned() }
             fn operands(&self) -> Vec<OperandInfo> {
                 vec![
-                    OperandInfo { value: self.lhs.clone() },
-                    OperandInfo { value: self.rhs.clone() },
+                    OperandInfo::input_output(self.lhs.clone()),
+                    OperandInfo::input(self.rhs.clone()),
                 ]
             }
 
@@ -50,16 +56,35 @@ macro_rules! define_rdrr {
             }
         }
 
-        impl std::fmt::Debug for $name {
-            fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-                try!(write!(fmt, "{} ", self.mnemonic()));
+        impl_debug_for_instruction!($name);
+    }
+}
 
-                let operands: Vec<_> = self.operands().iter().map(|op| format!("{:?}", op)).collect();
-                try!(write!(fmt, "{}", operands.join(", ")));
+/// Defines an RDRR instruction which doesn't modify and registers.
+macro_rules! define_pure_rdrr {
+    ($name:ident, $mnemonic:expr) => {
+        define_rdrr_struct!($name);
 
-                Ok(())
+        impl Instruction for $name
+        {
+            fn mnemonic(&self) -> String { $mnemonic.to_owned() }
+            fn operands(&self) -> Vec<OperandInfo> {
+                vec![
+                    OperandInfo::input(self.lhs.clone()),
+                    OperandInfo::input(self.rhs.clone()),
+                ]
+            }
+
+            fn side_effects(&self) -> SideEffects {
+                SideEffects::none()
+            }
+
+            fn encode(&self) -> EncodedInstruction {
+                unimplemented!();
             }
         }
+
+        impl_debug_for_instruction!($name);
     }
 }
 
@@ -67,11 +92,11 @@ define_rdrr!(ADDRdRr,  "add");
 define_rdrr!(ADCRdRr,  "adc");
 define_rdrr!(SUBRdRr,  "sub");
 define_rdrr!(SBCRdRr,  "sbc");
-define_rdrr!(MULRdRr,  "mul");
+define_rdrr!(MULRdRr,  "mul"); // FIXME: this actually writes result to r0
 define_rdrr!(ANDRdRr,  "and");
 define_rdrr!(ORRdRr,   "or");
 define_rdrr!(EORRdRr,  "eor");
-define_rdrr!(CPSERdRr, "cpse");
-define_rdrr!(CPRdRr,   "cp");
-define_rdrr!(CPCRdRr,  "cpc");
+define_pure_rdrr!(CPSERdRr, "cpse");
+define_pure_rdrr!(CPRdRr,   "cp");
+define_pure_rdrr!(CPCRdRr,  "cpc");
 
