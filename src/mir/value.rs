@@ -17,6 +17,13 @@ pub struct RegisterRef {
     pub ty: Type,
 }
 
+/// A constant integer.
+#[derive(Clone,Debug,PartialEq,Eq)]
+pub struct ConstantInteger {
+    pub bit_width: u32,
+    pub value: i64,
+}
+
 #[derive(Clone,PartialEq,Eq)]
 pub enum Value
 {
@@ -26,10 +33,7 @@ pub enum Value
         ty: Type,
     },
     /// A constant integer.
-    ConstantInteger {
-        bit_width: u32,
-        value: i64,
-    },
+    ConstantInteger(ConstantInteger),
     /// A register.
     RegisterRef(RegisterRef),
 }
@@ -40,19 +44,17 @@ impl Value
     pub fn ty(&self) -> Type {
         match *self {
             Value::ArgumentRef { ref ty, .. } => ty.clone(),
-            Value::ConstantInteger { bit_width, .. } => {
-                Type::Integer { bit_width: bit_width }
-            },
+            Value::ConstantInteger(ref c) => Type::Integer { bit_width: c.bit_width },
             Value::RegisterRef(ref reg)  => reg.ty.clone(),
         }
     }
 
     /// Creates a new n-bit constant integer.
     pub fn i(width: u32, value: i64) -> Self {
-        Value::ConstantInteger {
+        Value::ConstantInteger(ConstantInteger {
             bit_width: width,
             value: value,
-        }
+        })
     }
 
     /// Creates a new register reference.
@@ -68,9 +70,9 @@ impl Value
         if let Value::RegisterRef(..) = *self { true } else { false}
     }
 
-    pub fn expect_constant_integer(&self) -> i64 {
-        if let Value::ConstantInteger { value, .. } = *self {
-            value
+    pub fn expect_constant_integer(&self) -> &ConstantInteger {
+        if let Value::ConstantInteger(ref c) = *self {
+            c
         } else {
             panic!("expected a constant integer");
         }
@@ -89,8 +91,8 @@ impl std::fmt::Debug for Value
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
-            Value::ConstantInteger { bit_width, value } => {
-                write!(fmt, "i{} {}", bit_width, value)
+            Value::ConstantInteger(ref c) => {
+                write!(fmt, "i{} {}", c.bit_width, c.value)
             },
             Value::RegisterRef(ref reg) => write!(fmt, "%<reg:{}>", reg.register_id),
             Value::ArgumentRef { id, .. } => write!(fmt, "%<arg:{}>", id),

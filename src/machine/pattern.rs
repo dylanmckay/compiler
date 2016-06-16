@@ -26,8 +26,8 @@ impl select::PatternValue for PatternOperand {
         match *self {
             PatternOperand::Immediate { width } => {
                 match *value {
-                    mir::Value::ConstantInteger { bit_width, .. } => {
-                        if bit_width <= width { select::MatchResult::Perfect } else { select::MatchResult::None }
+                    mir::Value::ConstantInteger(ref c) => {
+                        if c.bit_width <= width { select::MatchResult::Perfect } else { select::MatchResult::None }
                     },
                     _ => select::MatchResult::None,
                 }
@@ -72,7 +72,7 @@ fn is_value_stored_in_register(value: &mir::Value) -> bool {
     match *value {
         mir::Value::RegisterRef(..) => true,
         mir::Value::ArgumentRef { .. } => true,
-        mir::Value::ConstantInteger { .. } => false,
+        mir::Value::ConstantInteger(..) => false,
     }
 }
 

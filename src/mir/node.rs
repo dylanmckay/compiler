@@ -88,7 +88,7 @@ impl Node
                 OpCode::Zext => {
                     assert_eq!(branch.operands.len(), 2);
                     let bit_width = branch.operands.first().unwrap().expect_leaf().
-                        expect_constant_integer();
+                        expect_constant_integer().bit_width;
 
                     vec![Type::Integer { bit_width: bit_width as _ }]
                 },

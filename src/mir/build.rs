@@ -1,4 +1,4 @@
-use {Node,Value,Dag,OpCode,Type,RegisterRef};
+use {Node,Value,Dag,OpCode,Type,RegisterRef,ConstantInteger};
 use ir;
 use util::{self, Identifiable};
 
@@ -75,10 +75,10 @@ fn node_from_value(context: &mut Context, value: &ir::Value) -> Node {
         ir::Expression::Literal(ref literal) => {
             match *literal {
                 ir::value::Literal::Integer(ref i) => {
-                    Node::leaf(Value::ConstantInteger {
+                    Node::leaf(Value::ConstantInteger(ConstantInteger {
                         bit_width: i.integer_ty().width() as _,
                         value: i.value().to_i64().unwrap(),
-                    })
+                    }))
                 },
                 _ => unimplemented!(),
             }

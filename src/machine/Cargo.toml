@@ -13,6 +13,8 @@ path = "../mir"
 path = "../select"
 [dependencies.compiler_target]
 path = "../target"
+[dependencies.compiler_util]
+path = "../util"
 
 [lib]
 name = "compiler_machine"

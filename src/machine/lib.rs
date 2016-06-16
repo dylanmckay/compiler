@@ -15,6 +15,7 @@ pub mod avr;
 extern crate compiler_mir as mir;
 extern crate compiler_select as select;
 extern crate compiler_target as target;
+extern crate compiler_util as util;
 
 extern crate bit_vec;
 
