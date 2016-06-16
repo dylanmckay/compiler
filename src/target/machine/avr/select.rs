@@ -1,4 +1,4 @@
-use {Pattern, PatternNode, PatternOperand};
+use machine::{Pattern, PatternNode, PatternOperand};
 use machine::avr::registers;
 
 use machine;

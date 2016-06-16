@@ -1,5 +1,4 @@
 use Target;
-use Pattern;
 use machine;
 use select;
 

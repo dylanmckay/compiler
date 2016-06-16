@@ -4,10 +4,12 @@ use select;
 pub use self::instruction::Instruction;
 pub use self::encoded_instruction::EncodedInstruction;
 pub use self::operand::Operand;
+pub use self::pattern::{Pattern, PatternNode, PatternOperand};
 
 pub mod instruction;
 pub mod encoded_instruction;
 pub mod operand;
+pub mod pattern;
 
 pub mod avr;
 
@@ -45,5 +47,5 @@ pub struct RegisterClass
     pub registers: &'static [&'static Register],
 }
 
-pub type Selector = select::Selector<::PatternOperand>;
+pub type Selector = select::Selector<PatternOperand>;
 
