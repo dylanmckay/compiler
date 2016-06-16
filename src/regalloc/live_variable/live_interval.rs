@@ -13,3 +13,9 @@ pub struct LiveInterval<I: Instruction>
     pub register: Option<I::Register>,
 }
 
+/// A collection of live intervals.
+pub struct LiveIntervals<I: Instruction>
+{
+    pub intervals: Vec<LiveInterval<I>>,
+}
+

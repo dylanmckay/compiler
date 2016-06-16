@@ -46,7 +46,7 @@ impl SideEffects
     }
 }
 
-impl regalloc::Instruction for Instruction
+impl regalloc::Instruction for Box<Instruction>
 {
     type Operand = Operand;
     type RegisterClass = RegisterClass;

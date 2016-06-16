@@ -51,7 +51,6 @@ pub fn assemble<T>(target: &T, dag: mir::Dag)
     println!("Instruction selection: {:#?}", instructions);
 
     let instructions = regalloc::allocate(instructions);
-
     println!("Register allocation: {:#?}", instructions);
 }
 

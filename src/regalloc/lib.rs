@@ -1,7 +1,7 @@
 pub use self::program::{Program, Item};
 pub use self::instruction::{Instruction, Operand};
 pub use self::register::{RegisterClass, Register};
-pub use self::live_variable::{LiveRange, LiveInterval};
+pub use self::live_variable::{LiveRange, LiveInterval, LiveIntervals};
 
 pub use self::allocate::allocate;
 
