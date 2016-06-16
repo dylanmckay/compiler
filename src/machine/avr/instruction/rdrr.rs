@@ -1,4 +1,4 @@
-use {Instruction, Operand, EncodedInstruction};
+use {Instruction, Operand, EncodedInstruction, SideEffects};
 use avr::registers::GPR8;
 use mir;
 use std;
@@ -36,6 +36,10 @@ macro_rules! define_rdrr {
             fn mnemonic(&self) -> String { $mnemonic.to_owned() }
             fn operands(&self) -> Vec<Operand> {
                 vec![self.lhs.clone(), self.rhs.clone()]
+            }
+
+            fn side_effects(&self) -> SideEffects {
+                SideEffects::none()
             }
 
             fn encode(&self) -> EncodedInstruction {

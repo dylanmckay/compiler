@@ -1,6 +1,6 @@
 pub use self::avr::AVR;
 
-pub use self::instruction::Instruction;
+pub use self::instruction::{Instruction, SideEffects};
 pub use self::encoded_instruction::EncodedInstruction;
 pub use self::operand::Operand;
 pub use self::pattern::{Pattern, PatternNode, PatternOperand};

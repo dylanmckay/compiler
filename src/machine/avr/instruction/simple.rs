@@ -1,4 +1,4 @@
-use {Instruction, Operand, EncodedInstruction};
+use {Instruction, Operand, EncodedInstruction, SideEffects};
 use mir;
 use std;
 
@@ -18,6 +18,10 @@ macro_rules! define_simple {
         {
             fn mnemonic(&self) -> String { $mnemonic.to_owned() }
             fn operands(&self) -> Vec<Operand> { vec![] }
+
+            fn side_effects(&self) -> SideEffects {
+                SideEffects::none()
+            }
 
             fn encode(&self) -> EncodedInstruction {
                 // FIXME: this is only for the 'RET' instruction.
