@@ -1,6 +1,7 @@
 ; RUN: asm @file
 
 fn @main() {
-  add i8 6, i8 5
+  %a = add i8 6, i8 5
   ret
 }
+

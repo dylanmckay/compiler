@@ -18,5 +18,7 @@ impl Type
             Type::Nothing => 0,
         }
     }
+
+    pub fn is_nothing(&self) -> bool { *self == Type::Nothing }
 }
 

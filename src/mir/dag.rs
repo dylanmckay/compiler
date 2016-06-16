@@ -52,5 +52,12 @@ impl Dag
     pub fn validate(&self) -> verifier::Result {
         verifier::verify_dag(self)
     }
+
+    /// Panics if the DAG is not valid.
+    pub fn expect_valid(&self) {
+        if let Err(e) = self.validate() {
+            panic!("DAG validation failed: {}", e);
+        }
+    }
 }
 

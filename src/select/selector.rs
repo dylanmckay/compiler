@@ -42,6 +42,8 @@ impl<V> Selector<V>
     }
 
     pub fn select(&mut self, dag: mir::Dag) -> Vec<mir::Node> {
+        dag.expect_valid();
+
         println!("initial dag: {:#?}", dag);
         let dag = dag.expand();
         println!("expanded dag: {:#?}", dag);
