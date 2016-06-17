@@ -3,7 +3,7 @@ pub use self::instruction::{Instruction, Operand};
 pub use self::register::{RegisterClass, Register};
 pub use self::live_variable::{LiveRange, LiveInterval, LiveIntervals};
 pub use self::algorithm::Algorithm;
-pub use self::target::Target;
+pub use self::target::{Target, InstructionBuilder};
 
 pub use self::allocate::allocate;
 

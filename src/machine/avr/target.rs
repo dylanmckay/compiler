@@ -1,10 +1,11 @@
-use {MachineTarget, RegisterInfo, Selector, RegisterClass, Register, Instruction};
+use {MachineTarget, RegisterInfo, Selector, RegisterClass, Register, Instruction,
+     Operand};
 
 use target;
 use select;
 use regalloc;
 
-use avr::registers;
+use avr::{registers, instruction};
 use avr;
 
 /// The AVR target.
@@ -49,5 +50,18 @@ impl regalloc::Target for AVR
     type Instruction = Box<Instruction>;
     type RegisterClass = &'static RegisterClass;
     type Register = &'static Register;
+}
+
+impl regalloc::InstructionBuilder for AVR
+{
+    type Target = AVR;
+
+    fn create_push(source: &&'static Register) -> Box<Instruction> {
+        Box::new(instruction::PUSHRd::new(Operand::Register(source)))
+    }
+
+    fn create_pop(dest: &&'static Register) -> Box<Instruction> {
+        Box::new(instruction::POPRd::new(Operand::Register(dest)))
+    }
 }
 
