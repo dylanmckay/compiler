@@ -1,4 +1,6 @@
 use {Register, RegisterClass};
+
+use util;
 use std;
 
 pub trait Instruction : std::fmt::Debug
@@ -14,7 +16,10 @@ pub trait Operand : std::fmt::Debug
     type RegisterClass: RegisterClass;
 
     fn is_virtual(&self) -> bool;
+    fn virtual_register_id(&self) -> util::Id;
+
     fn register_class(&self) -> Self::RegisterClass;
+
     fn allocate(&mut self, register: Self::Register);
 }
 

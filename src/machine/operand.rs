@@ -85,6 +85,14 @@ impl regalloc::Operand for Operand
         if let Operand::VirtualRegister { .. } = *self { true } else { false }
     }
 
+    fn virtual_register_id(&self) -> util::Id {
+        if let Operand::VirtualRegister { id, .. } = *self {
+            id
+        } else {
+            panic!("operand is not a register");
+        }
+    }
+
     fn register_class(&self) -> &'static RegisterClass {
         match *self {
             Operand::Register(ref _r) => unimplemented!(),
