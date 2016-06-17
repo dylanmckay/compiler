@@ -41,7 +41,7 @@ pub trait MachineTarget : target::Target + regalloc::Target<Instruction=Box<Inst
 pub type Selector = select::Selector<Box<Instruction>, PatternOperand>;
 
 // TODO: this doesn't belong here, but it's good for testing.
-pub fn assemble<T>(target: &T, dag: mir::Dag)
+pub fn compile<T>(target: &T, dag: mir::Dag) -> Vec<Box<Instruction>>
     where T: MachineTarget {
     use regalloc;
 
@@ -51,9 +51,6 @@ pub fn assemble<T>(target: &T, dag: mir::Dag)
     let dag = legalizer.legalize(dag);
     let instructions = selector.select(dag);
 
-    println!("Instruction selection: {:#?}", instructions);
-
-    let instructions = regalloc::allocate::<T>(target, instructions);
-    println!("Register allocation: {:#?}", instructions);
+    regalloc::allocate::<T>(target, instructions)
 }
 

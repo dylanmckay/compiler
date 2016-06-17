@@ -58,10 +58,10 @@ macro_rules! inst_rdi {
         pattern!($ty, {
             node!(Set,
                 operands!(
-                    select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                    select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8hi)),
                     select::PatternOperand::Node(Box::new(node!($opcode,
                           operands!(
-                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8hi)),
                               select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
                           )
                     )))
@@ -88,7 +88,7 @@ pub fn patterns() -> Vec<Pattern> {
         pattern!(LDIRdK, {
             node!(Set,
                   operands!(
-                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8hi)),
                       select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
                   )
             )

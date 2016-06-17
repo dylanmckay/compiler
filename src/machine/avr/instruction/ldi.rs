@@ -1,5 +1,5 @@
 use {Instruction, Operand, OperandInfo, EncodedInstruction, SideEffects};
-use avr::registers::GPR8;
+use avr::registers::GPR8hi;
 use mir;
 use std;
 
@@ -23,7 +23,7 @@ impl LDIRdK
 
         let rd = Operand::VirtualRegister {
             id: dest_reg.register_id,
-            class: &GPR8,
+            class: &GPR8hi,
         };
 
         let i = Operand::Immediate {

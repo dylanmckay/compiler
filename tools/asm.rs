@@ -73,7 +73,9 @@ fn assemble(file_name: &str) {
         let dags = mir::Dag::from_function(func);
 
         for dag in dags {
-            machine::assemble(&target, dag);
+            for instruction in machine::compile(&target, dag) {
+                println!("{:?}", instruction);
+            }
         }
     }
 }

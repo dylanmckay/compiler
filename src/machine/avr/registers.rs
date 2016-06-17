@@ -23,10 +23,21 @@ impl RegisterInfo for Info
 }
 
 macro_rules! define_gpr {
-    ($ident:ident, $name:expr, $number: expr) => {
+    ($ident:ident, $name:expr, $number:expr) => {
         pub static $ident: Register = Register {
             name: $name,
             number: $number,
+            subregs: &[],
+        };
+    }
+}
+
+macro_rules! define_gpr_pair {
+    ($ident:ident, $hi:expr, $lo:ident, $name:expr, $number:expr) => {
+        pub static $ident: Register = Register {
+            name: $name,
+            number: $number,
+            subregs: &[&$hi, &$lo],
         };
     }
 }
@@ -64,46 +75,57 @@ define_gpr!(R29, "r29", 29);
 define_gpr!(R30, "r30", 30);
 define_gpr!(R31, "r31", 31);
 
+define_gpr_pair!(R25R24, R25, R24, "r24", 24);
+define_gpr_pair!(R27R26, R27, R26, "r26", 26);
+define_gpr_pair!(R29R28, R29, R28, "r28", 28);
+define_gpr_pair!(R31R30, R31, R30, "r30", 30);
+
+
+/// 8-bit general purpose registers.
 pub static GPR8: RegisterClass = RegisterClass {
     name: "GPR8",
     bit_width: 8,
     registers: &[
-        &R0,
-        &R1,
-        &R2,
-        &R3,
-        &R4,
-        &R5,
-        &R6,
-        &R7,
-        &R8,
-        &R9,
-        &R10,
-        &R11,
-        &R12,
-        &R13,
-        &R14,
-        &R15,
-        &R16,
-        &R17,
-        &R18,
-        &R19,
-        &R20,
-        &R21,
-        &R22,
-        &R23,
-        &R24,
-        &R25,
-        &R26,
-        &R27,
-        &R28,
-        &R29,
-        &R30,
-        &R31,
+        &R0, &R1, &R2, &R3, &R4, &R5, &R6, &R7, &R8, &R9, &R10, &R11,
+        &R12, &R13, &R14, &R15, &R16, &R17, &R18, &R19, &R20, &R21,
+        &R22, &R23, &R24, &R25, &R26, &R27, &R28, &R29, &R30, &R31,
+    ],
+};
+
+/// The lower 16 GPR registers (r0..r15)
+#[allow(non_upper_case_globals)]
+pub static GPR8lo: RegisterClass = RegisterClass {
+    name: "GPR8lo",
+    bit_width: 8,
+    registers: &[
+        &R0, &R1,  &R2,  &R3,  &R4,  &R5,  &R6,  &R7,  &R8,
+        &R9, &R10, &R11, &R12, &R13, &R14, &R15, &R16,
+    ],
+};
+
+/// The upper 16 GPR registers (r16..r31)
+#[allow(non_upper_case_globals)]
+pub static GPR8hi: RegisterClass = RegisterClass {
+    name: "GPR8lo",
+    bit_width: 8,
+    registers: &[
+        &R16, &R17, &R18, &R19, &R20, &R21, &R22, &R23, &R24,
+        &R25, &R26, &R27, &R28, &R29, &R30, &R31,
+    ],
+};
+
+/// 16-bit registers used with the 'adiw' family of instructions.
+pub static IWREGS: RegisterClass = RegisterClass {
+    name: "IWREGS",
+    bit_width: 16,
+    registers: &[
+        &R25R24, &R27R26, &R29R28, &R31R30,
     ],
 };
 
 pub static CLASSES: &'static [&'static RegisterClass] = &[
     &GPR8,
+    &GPR8lo,
+    &GPR8hi,
 ];
 

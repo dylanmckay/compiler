@@ -112,8 +112,8 @@ impl std::fmt::Debug for Operand
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
-            Operand::Immediate { bit_width, value } => {
-                write!(fmt, "i{}:{}", bit_width, value)
+            Operand::Immediate { value, .. } => {
+                write!(fmt, "{}", value)
             },
             Operand::Register(reg) => {
                 write!(fmt, "{}", reg.name)

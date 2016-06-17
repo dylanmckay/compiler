@@ -1,10 +1,10 @@
 use {Instruction, Operand, OperandInfo, EncodedInstruction, SideEffects};
-use avr::registers::GPR8;
+use avr::registers::{GPR8hi, IWREGS};
 use mir;
 use std;
 
 macro_rules! define_rdi_struct {
-    ($name:ident) => {
+    ($name:ident, $regclass:ident) => {
         #[derive(Clone)]
         pub struct $name
         {
@@ -27,7 +27,7 @@ macro_rules! define_rdi_struct {
 
                 let rd = Operand::VirtualRegister {
                     id: dest_reg.register_id,
-                    class: &GPR8,
+                    class: &$regclass,
                 };
 
                 let i = Operand::Immediate {
@@ -42,8 +42,8 @@ macro_rules! define_rdi_struct {
 }
 
 macro_rules! define_rdi {
-    ($name:ident, $mnemonic:expr) => {
-        define_rdi_struct!($name);
+    ($name:ident, $mnemonic:expr, $regclass:ident) => {
+        define_rdi_struct!($name, $regclass);
 
         impl Instruction for $name
         {
@@ -74,8 +74,8 @@ macro_rules! define_rdi {
 
 /// Defines an RdI instruction which doesn'tm= modift it registers.
 macro_rules! define_pure_rdi {
-    ($name:ident, $mnemonic:expr) => {
-        define_rdi_struct!($name);
+    ($name:ident, $mnemonic:expr, $regclass:ident) => {
+        define_rdi_struct!($name, $regclass);
 
         impl Instruction for $name
         {
@@ -105,10 +105,12 @@ macro_rules! define_pure_rdi {
     }
 }
 
-define_rdi!(ADIWRdK,  "adiw");
-define_rdi!(SUBIRdK,  "subi");
-define_rdi!(SBCIRdK,  "sbci");
-define_rdi!(ANDIRdK,  "andi");
-define_rdi!(ORIRdK,   "ori");
-define_pure_rdi!(CPIRdK,   "cpi");
+define_rdi!(ADIWRdK,  "adiw", IWREGS);
+
+define_rdi!(SUBIRdK,  "subi", GPR8hi);
+define_rdi!(SBCIRdK,  "sbci", GPR8hi);
+define_rdi!(ANDIRdK,  "andi", GPR8hi);
+define_rdi!(ORIRdK,   "ori",  GPR8hi);
+
+define_pure_rdi!(CPIRdK, "cpi", GPR8hi);
 

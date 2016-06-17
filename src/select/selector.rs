@@ -49,10 +49,7 @@ impl<S: Selectable, V> Selector<S, V>
     pub fn select(&mut self, dag: mir::Dag) -> Vec<S> {
         dag.expect_valid();
 
-        println!("initial dag: {:#?}", dag);
         let dag = dag.expand();
-        println!("expanded dag: {:#?}", dag);
-
         let nodes: Vec<_> = dag.nodes.iter().flat_map(|node| self.select_node(node)).collect();
 
         nodes.iter().map(|node| self.select_legal_node(&node)).collect()

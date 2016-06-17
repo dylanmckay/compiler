@@ -12,6 +12,7 @@ pub struct Register
 {
     pub name: &'static str,
     pub number: u32,
+    pub subregs: &'static [&'static Register],
 }
 
 #[derive(Clone,Debug,PartialEq,Eq)]
