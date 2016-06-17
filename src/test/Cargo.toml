@@ -7,6 +7,7 @@ authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 [dependencies]
 walkdir = "0.1"
 term = "*"
+regex = "0.1.71"
 
 [dependencies.compiler_ir]
 path = "../ir"

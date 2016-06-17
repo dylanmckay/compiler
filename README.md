@@ -110,3 +110,14 @@ the node is replaced with the instruction.
 Currently, the only register allocator is _really dumb_. It doesn't try to spill any
 registers, and will panic once there are no registers free. Registers are not reused.
 
+## Test suite
+
+The test suite exists in the `tests/` directory. The file format is very similar to LLVM's
+`lit` tool.
+
+The entire test suite can be ran by executing
+
+``` bash
+cargo run --bin test -- tests
+```
+
