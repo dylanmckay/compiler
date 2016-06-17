@@ -1,6 +1,3 @@
-extern crate num;
-extern crate bit_vec;
-
 /// The intermediate representation.
 pub use self::compiler_ir as ir;
 /// The machine module.

@@ -5,10 +5,7 @@ version = "0.0.1"
 authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
 [dependencies]
-num = "0.1.32"
-bit-vec = "0.4.3"
 argparse = "0.2.1"
-walkdir = "0.1.5"
 term = "0.4.4"
 
 [dependencies.compiler_ir]
