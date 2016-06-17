@@ -1,0 +1,5 @@
+; RUN: asm --target avr @file
+
+fn @main() {
+  ret
+}

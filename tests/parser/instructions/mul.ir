@@ -1,4 +1,4 @@
-; RUN: asm @file
+; RUN: asm @file --parse
 
 global @ABCD = mul i32 5, i32 10
 global @FOO = mul i21 2, i21 10

@@ -19,6 +19,17 @@ enum Task
     ListTargets,
 }
 
+impl Task
+{
+    fn requires_input_files(&self) -> bool {
+        match *self {
+            Task::Parse => true,
+            Task::Assemble => true,
+            Task::ListTargets => false,
+        }
+    }
+}
+
 fn main() {
     machine::AVR::register();
 
@@ -45,30 +56,27 @@ fn main() {
         ap.parse_args_or_exit();
     }
 
+    if task.requires_input_files() && files.len() == 0 {
+        abort("no files given");
+    }
+
     match task {
         Task::ListTargets => list_targets(),
-        _ => {
+        Task::Parse => for file_name in files { parse(&file_name) },
+        Task::Assemble => {
+            if target_name.len() == 0 {
+                abort("target not speficied on command line");
+            }
+
+            let target = match target::registry::lookup(&target_name) {
+                Some(target) => target,
+                None => {
+                    abort(format!("target '{}' does not exist", target_name));
+                },
+            };
+
             for file_name in files.iter() {
-                if target_name.len() == 0 {
-                    println!("target not speficied on command line");
-                    return;
-                }
-
-                match task {
-                    Task::Parse => parse(&file_name),
-                    Task::Assemble => {
-                        let target = match target::registry::lookup(&target_name) {
-                            Some(target) => target,
-                            None => {
-                                println!("target '{}' does not exist", target_name);
-                                return;
-                            },
-                        };
-
-                        generate(target::OutputType::Assembly, target, &file_name)
-                    },
-                    _ => (),
-                }
+                generate(target::OutputType::Assembly, target, &file_name);
             }
         }
     }

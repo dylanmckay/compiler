@@ -1,4 +1,4 @@
-; RUN: asm @file
+; RUN: asm --target avr @file
 
 fn @main(%foo: i8) {
   %a = add i8 5, i8 10

@@ -1,5 +1,0 @@
-; RUN: asm @file
-
-fn @main() {
-  ret
-}
