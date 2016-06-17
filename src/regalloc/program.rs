@@ -1,20 +1,20 @@
-use Instruction;
+use Target;
 use util;
 
-pub struct Item<I: Instruction>
+pub struct Item<T: Target>
 {
     pub id: util::Id,
-    pub instruction: I,
+    pub instruction: T::Instruction,
 }
 
-pub struct Program<I: Instruction>
+pub struct Program<T: Target>
 {
-    pub items: Vec<Item<I>>,
+    pub items: Vec<Item<T>>,
 }
 
-impl<I: Instruction> Item<I>
+impl<T: Target> Item<T>
 {
-    pub fn new(instruction: I) -> Self {
+    pub fn new(instruction: T::Instruction) -> Self {
         Item {
             id: util::Id::next(),
             instruction: instruction,
@@ -22,16 +22,16 @@ impl<I: Instruction> Item<I>
     }
 }
 
-impl<I: Instruction> Program<I>
+impl<T: Target> Program<T>
 {
     pub fn build<It>(instructions: It) -> Self
-        where It: IntoIterator<Item=I> {
+        where It: IntoIterator<Item=T::Instruction> {
         Program {
             items: instructions.into_iter().map(Item::new).collect(),
         }
     }
 
-    pub fn into_instructions(self) -> Vec<I> {
+    pub fn into_instructions(self) -> Vec<T::Instruction> {
         self.items.into_iter().map(|item| item.instruction).collect()
     }
 }

@@ -3,6 +3,7 @@ pub use self::instruction::{Instruction, Operand};
 pub use self::register::{RegisterClass, Register};
 pub use self::live_variable::{LiveRange, LiveInterval, LiveIntervals};
 pub use self::algorithm::Algorithm;
+pub use self::target::Target;
 
 pub use self::allocate::allocate;
 
@@ -11,7 +12,7 @@ pub mod instruction;
 pub mod register;
 pub mod allocate;
 pub mod algorithm;
-
+pub mod target;
 pub mod live_variable;
 
 extern crate compiler_util as util;

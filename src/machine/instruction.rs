@@ -1,4 +1,4 @@
-use {OperandInfo, Operand, EncodedInstruction, Register, RegisterClass};
+use {OperandInfo, Operand, EncodedInstruction, Register};
 
 use regalloc;
 use std;
@@ -49,8 +49,6 @@ impl SideEffects
 impl regalloc::Instruction for Box<Instruction>
 {
     type Operand = Operand;
-    type RegisterClass = &'static RegisterClass;
-    type Register = &'static Register;
 
     fn operands_mut(&mut self) -> Vec<Box<regalloc::Operand>> {
         unimplemented!();

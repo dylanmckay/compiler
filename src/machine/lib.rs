@@ -23,7 +23,10 @@ extern crate compiler_util as util;
 extern crate bit_vec;
 
 /// A target.
-pub trait MachineTarget : target::Target
+pub trait MachineTarget : target::Target +
+    regalloc::Target<Instruction=Box<Instruction>,
+                     RegisterClass=&'static RegisterClass,
+                     Register=&'static Register>
 {
     /// Gets the width of a pointer.
     fn pointer_width(&self) -> u16;
@@ -50,7 +53,7 @@ pub fn assemble<T>(target: &T, dag: mir::Dag)
 
     println!("Instruction selection: {:#?}", instructions);
 
-    let instructions = regalloc::allocate(instructions);
+    let instructions = regalloc::allocate::<T>(target, instructions);
     println!("Register allocation: {:#?}", instructions);
 }
 

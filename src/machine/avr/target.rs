@@ -1,7 +1,8 @@
-use {MachineTarget, RegisterInfo, Selector};
+use {MachineTarget, RegisterInfo, Selector, RegisterClass, Register, Instruction};
 
 use target;
 use select;
+use regalloc;
 
 use avr::registers;
 use avr;
@@ -41,5 +42,12 @@ impl MachineTarget for AVR
     fn create_selector(&self) -> Selector {
         avr::select::selector()
     }
+}
+
+impl regalloc::Target for AVR
+{
+    type Instruction = Box<Instruction>;
+    type RegisterClass = &'static RegisterClass;
+    type Register = &'static Register;
 }
 

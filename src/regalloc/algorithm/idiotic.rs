@@ -1,4 +1,4 @@
-use {Algorithm, Program, Instruction};
+use {Target, Algorithm, Program};
 
 /// An idiotic register allocator.
 ///
@@ -7,8 +7,8 @@ pub struct Idiotic;
 
 impl Algorithm for Idiotic
 {
-    fn allocate<I>(&mut self, program: Program<I>) -> Program<I>
-        where I: Instruction {
+    fn allocate<T>(&mut self, _target: &T, program: Program<T>) -> Program<T>
+        where T: Target {
         program
     }
 }

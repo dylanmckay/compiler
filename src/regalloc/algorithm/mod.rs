@@ -2,13 +2,13 @@ pub use self::idiotic::Idiotic;
 
 pub mod idiotic;
 
-use {Program, Instruction};
+use {Target, Program};
 
 /// A register allocation algorithm.
 pub trait Algorithm
 {
-    fn allocate<I>(&mut self, program: Program<I>) -> Program<I>
-        where I: Instruction;
+    fn allocate<T>(&mut self, target: &T, program: Program<T>) -> Program<T>
+        where T: Target;
 }
 
 /// Creates the default register allocator.
