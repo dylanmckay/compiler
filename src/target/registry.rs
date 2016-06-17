@@ -11,6 +11,13 @@ pub fn list() -> Vec<&'static Target> {
     GLOBAL_REGISTRY.lock().unwrap().targets.clone()
 }
 
+/// Looks up a target by name.
+pub fn lookup(name: &str) -> Option<&'static Target> {
+    GLOBAL_REGISTRY.lock().unwrap().targets.iter().map(|&t| t).find(|target| {
+        target.name() == name
+    }).clone()
+}
+
 /// Keeps track of the currently loaded targets.
 struct Registry
 {

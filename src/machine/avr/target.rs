@@ -6,12 +6,17 @@ use regalloc;
 
 use avr::instruction;
 use avr;
+use std::io;
 
 /// The AVR target.
 pub struct AVR;
 
 /// The global AVR target.
 static TARGET: AVR = AVR;
+
+static SUPPORTED_OUTPUTS: &'static [target::OutputType] = &[
+    target::OutputType::Assembly,
+];
 
 impl AVR
 {
@@ -24,6 +29,18 @@ impl target::Target for AVR
 {
     fn name(&self) -> &'static str { "avr" }
     fn display_name(&self) -> &'static str { "AVR" }
+
+    fn output_types(&self) -> &'static [target::OutputType] {
+        SUPPORTED_OUTPUTS
+    }
+
+    fn generate(&self,
+                output_type: target::OutputType,
+                input: &mut io::Read,
+                output: &mut io::Write)
+        -> Result<(), target::Error> {
+        ::generate::generate(self, output_type, input, output)
+    }
 }
 
 impl MachineTarget for AVR

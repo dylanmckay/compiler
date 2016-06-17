@@ -7,6 +7,8 @@ authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 [dependencies]
 bit-vec = "*"
 
+[dependencies.compiler_ir]
+path = "../ir"
 [dependencies.compiler_mir]
 path = "../mir"
 [dependencies.compiler_regalloc]

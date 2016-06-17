@@ -3,20 +3,20 @@
 extern crate compiler;
 extern crate argparse;
 
-use compiler::{ir,mir,machine,target};
+use compiler::{ir,machine,target};
+use compiler::target::Target;
 use std::error::Error;
 use std::io::{Read,Write};
+use std::fs;
 
 use argparse::ArgumentParser;
 
 #[derive(Copy,Clone)]
 enum Task
 {
-    Tokenize,
     Parse,
-    ListTargets,
-
     Assemble,
+    ListTargets,
 }
 
 fn main() {
@@ -25,6 +25,7 @@ fn main() {
     let mut files: Vec<String> = Vec::new();
 
     let mut task = Task::Assemble;
+    let mut target_name = "".to_owned();
 
     {
         let mut ap = ArgumentParser::new();
@@ -33,23 +34,39 @@ fn main() {
         ap.refer(&mut files)
             .add_argument("files", argparse::List,
                           r#"Files to process"#);
+        ap.refer(&mut target_name)
+            .add_option(&["--target"], argparse::Store,
+                        "the target");
         ap.refer(&mut task)
-            .add_option(&["--tokenize"], argparse::StoreConst(Task::Tokenize),
-                        "only tokenize the module")
             .add_option(&["--parse"], argparse::StoreConst(Task::Parse),
                         "only parse the module")
             .add_option(&["--list-targets"], argparse::StoreConst(Task::ListTargets),
                         "list all of the targets supported");
         ap.parse_args_or_exit();
     }
+
     match task {
         Task::ListTargets => list_targets(),
         _ => {
             for file_name in files.iter() {
+                if target_name.len() == 0 {
+                    println!("target not speficied on command line");
+                    return;
+                }
+
                 match task {
-                    Task::Tokenize => tokenize(&file_name),
                     Task::Parse => parse(&file_name),
-                    Task::Assemble => assemble(&file_name),
+                    Task::Assemble => {
+                        let target = match target::registry::lookup(&target_name) {
+                            Some(target) => target,
+                            None => {
+                                println!("target '{}' does not exist", target_name);
+                                return;
+                            },
+                        };
+
+                        generate(target::OutputType::Assembly, target, &file_name)
+                    },
                     _ => (),
                 }
             }
@@ -57,33 +74,16 @@ fn main() {
     }
 }
 
-fn tokenize(file_name: &str) {
-    let chars = open_file(file_name).chars().map(|c| c.unwrap());
+fn generate(output_type: target::OutputType, target: &Target, file_name: &str) {
+    let mut file = fs::File::open(file_name).unwrap();
+    let mut output: Vec<u8> = Vec::new();
 
-    let tokenizer = ir::read::Tokenizer::new(chars).preserve_comments();
+    target.generate(output_type,
+                    &mut file,
+                    &mut output).unwrap();
 
-    for token in tokenizer {
-        println!("{:?}", token);
-    }
-}
-
-fn assemble(file_name: &str) {
-    let module = parse_module(&file_name);
-
-    verify_module(&module);
-
-    let module = parse_module(&file_name);
-
-    for func in module.functions() {
-        let target = machine::AVR;
-        let dags = mir::Dag::from_function(func);
-
-        for dag in dags {
-            for instruction in machine::compile(&target, dag) {
-                println!("{:?}", instruction);
-            }
-        }
-    }
+    let asm = String::from_utf8(output).unwrap();
+    print!("{}", asm);
 }
 
 fn list_targets() {
@@ -112,15 +112,6 @@ fn parse_module(file_name: &str) -> ir::Module {
     match ir::read::textual(chars) {
         Ok(module) => module,
         Err(e) => abort(format!("could not parse IR file: {}", e)),
-    }
-}
-
-fn verify_module(module: &ir::Module) {
-    match ir::verifier::verify(module) {
-        Ok(..) => (),
-        Err(e) => {
-            abort(format!("module verification failed: {}", e))
-        },
     }
 }
 

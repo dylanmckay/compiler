@@ -11,9 +11,11 @@ pub mod encoded_instruction;
 pub mod operand;
 pub mod pattern;
 pub mod register;
+pub mod generate;
 
 pub mod avr;
 
+extern crate compiler_ir as ir;
 extern crate compiler_mir as mir;
 extern crate compiler_regalloc as regalloc;
 extern crate compiler_select as select;
@@ -36,18 +38,4 @@ pub trait MachineTarget : target::Target + regalloc::Target<Instruction=Box<Inst
 }
 
 pub type Selector = select::Selector<Box<Instruction>, PatternOperand>;
-
-// TODO: this doesn't belong here, but it's good for testing.
-pub fn compile<T>(target: &T, dag: mir::Dag) -> Vec<Box<Instruction>>
-    where T: MachineTarget {
-    use regalloc;
-
-    let legalizer = target.create_legalizer();
-    let mut selector = target.create_selector();
-
-    let dag = legalizer.legalize(dag);
-    let instructions = selector.select(dag);
-
-    regalloc::allocate::<T>(target, instructions)
-}
 
