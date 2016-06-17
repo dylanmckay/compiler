@@ -45,6 +45,10 @@ impl Instruction for LDIRdK
         ]
     }
 
+    fn operands_mut(&mut self) -> Vec<&mut Operand> {
+        vec![&mut self.rd, &mut self.i]
+    }
+
     fn side_effects(&self) -> SideEffects {
         SideEffects::none()
     }

@@ -30,10 +30,15 @@ macro_rules! define_rd {
         impl Instruction for $name
         {
             fn mnemonic(&self) -> String { $mnemonic.to_owned() }
+
             fn operands(&self) -> Vec<OperandInfo> {
                 vec![
                     OperandInfo::input_output(self.rd.clone()),
                 ]
+            }
+
+            fn operands_mut(&mut self) -> Vec<&mut Operand> {
+                vec![&mut self.rd]
             }
 
             fn side_effects(&self) -> SideEffects {

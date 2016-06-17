@@ -58,6 +58,17 @@ impl OperandInfo
     }
 }
 
+impl Operand
+{
+    pub fn is_register(&self) -> bool {
+        match *self {
+            Operand::Register(..) => true,
+            Operand::VirtualRegister { .. } => true,
+            Operand::Immediate { .. } => false,
+        }
+    }
+}
+
 impl std::fmt::Debug for OperandInfo
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
@@ -67,8 +78,25 @@ impl std::fmt::Debug for OperandInfo
 
 impl regalloc::Operand for Operand
 {
+    type Register = &'static Register;
+    type RegisterClass = &'static RegisterClass;
+
     fn is_virtual(&self) -> bool {
         if let Operand::VirtualRegister { .. } = *self { true } else { false }
+    }
+
+    fn register_class(&self) -> &'static RegisterClass {
+        match *self {
+            Operand::Register(ref _r) => unimplemented!(),
+            Operand::VirtualRegister { class, .. } => class,
+            _ => panic!("operand is not a register"),
+        }
+    }
+
+    fn allocate(&mut self, register: &'static Register) {
+        if let Operand::VirtualRegister { .. } = *self {
+            *self = Operand::Register(register);
+        }
     }
 }
 

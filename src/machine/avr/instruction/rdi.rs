@@ -55,6 +55,10 @@ macro_rules! define_rdi {
                 ]
             }
 
+            fn operands_mut(&mut self) -> Vec<&mut Operand> {
+                vec![&mut self.rd, &mut self.i]
+            }
+
             fn side_effects(&self) -> SideEffects {
                 SideEffects::none()
             }
@@ -76,11 +80,16 @@ macro_rules! define_pure_rdi {
         impl Instruction for $name
         {
             fn mnemonic(&self) -> String { $mnemonic.to_owned() }
+
             fn operands(&self) -> Vec<OperandInfo> {
                 vec![
                     OperandInfo::input(self.rd.clone()),
                     OperandInfo::input(self.i.clone()),
                 ]
+            }
+
+            fn operands_mut(&mut self) -> Vec<&mut Operand> {
+                vec![&mut self.rd, &mut self.i]
             }
 
             fn side_effects(&self) -> SideEffects {

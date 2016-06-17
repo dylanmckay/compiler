@@ -8,7 +8,9 @@ pub trait Instruction : std::fmt::Debug
 {
     /// Gets the mnemonic of the instruction.
     fn mnemonic(&self) -> String;
+
     fn operands(&self) -> Vec<OperandInfo>;
+    fn operands_mut(&mut self) -> Vec<&mut Operand>;
 
     /// Gets the side effects of the instruction.
     fn side_effects(&self) -> SideEffects;
@@ -50,8 +52,10 @@ impl regalloc::Instruction for Box<Instruction>
 {
     type Operand = Operand;
 
-    fn operands_mut(&mut self) -> Vec<Box<regalloc::Operand>> {
-        unimplemented!();
+    fn operands_mut(&mut self) -> Vec<&mut Operand> {
+        Instruction::operands_mut(self.as_mut()).into_iter().
+            filter(|op| op.is_register()).
+            collect()
     }
 }
 

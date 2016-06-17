@@ -29,6 +29,10 @@ impl regalloc::Register for &'static Register
 
 impl regalloc::RegisterClass for &'static RegisterClass
 {
+    type Register = &'static Register;
 
+    fn registers(&self) -> Vec<&'static Register> {
+        self.registers.to_owned()
+    }
 }
 

@@ -38,6 +38,10 @@ impl Instruction for MOVRdRr
         ]
     }
 
+    fn operands_mut(&mut self) -> Vec<&mut Operand> {
+        vec![&mut self.rd, &mut self.rr]
+    }
+
     fn side_effects(&self) -> SideEffects {
         SideEffects::none()
     }

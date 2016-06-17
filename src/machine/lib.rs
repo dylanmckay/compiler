@@ -23,10 +23,10 @@ extern crate compiler_util as util;
 extern crate bit_vec;
 
 /// A target.
-pub trait MachineTarget : target::Target +
-    regalloc::Target<Instruction=Box<Instruction>,
-                     RegisterClass=&'static RegisterClass,
-                     Register=&'static Register>
+pub trait MachineTarget : target::Target + regalloc::Target<Instruction=Box<Instruction>,
+                                                            Operand=Operand,
+                                                            RegisterClass=&'static RegisterClass,
+                                                            Register=&'static Register>
 {
     /// Gets the width of a pointer.
     fn pointer_width(&self) -> u16;

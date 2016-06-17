@@ -50,6 +50,7 @@ impl regalloc::Target for AVR
     type Instruction = Box<Instruction>;
     type RegisterClass = &'static RegisterClass;
     type Register = &'static Register;
+    type Operand = Operand;
 }
 
 impl regalloc::InstructionBuilder for AVR

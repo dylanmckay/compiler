@@ -1,4 +1,4 @@
-use {Instruction, OperandInfo, EncodedInstruction, SideEffects};
+use {Instruction, OperandInfo, Operand, EncodedInstruction, SideEffects};
 use mir;
 use std;
 
@@ -17,7 +17,10 @@ macro_rules! define_simple {
         impl Instruction for $name
         {
             fn mnemonic(&self) -> String { $mnemonic.to_owned() }
+
             fn operands(&self) -> Vec<OperandInfo> { vec![] }
+
+            fn operands_mut(&mut self) -> Vec<&mut Operand> { vec![] }
 
             fn side_effects(&self) -> SideEffects {
                 SideEffects::none()

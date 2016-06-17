@@ -40,11 +40,16 @@ macro_rules! define_rdrr {
         impl Instruction for $name
         {
             fn mnemonic(&self) -> String { $mnemonic.to_owned() }
+
             fn operands(&self) -> Vec<OperandInfo> {
                 vec![
                     OperandInfo::input_output(self.lhs.clone()),
                     OperandInfo::input(self.rhs.clone()),
                 ]
+            }
+
+            fn operands_mut(&mut self) -> Vec<&mut Operand> {
+                vec![&mut self.lhs, &mut self.rhs]
             }
 
             fn side_effects(&self) -> SideEffects {
@@ -68,11 +73,16 @@ macro_rules! define_pure_rdrr {
         impl Instruction for $name
         {
             fn mnemonic(&self) -> String { $mnemonic.to_owned() }
+
             fn operands(&self) -> Vec<OperandInfo> {
                 vec![
                     OperandInfo::input(self.lhs.clone()),
                     OperandInfo::input(self.rhs.clone()),
                 ]
+            }
+
+            fn operands_mut(&mut self) -> Vec<&mut Operand> {
+                vec![&mut self.lhs, &mut self.rhs]
             }
 
             fn side_effects(&self) -> SideEffects {
