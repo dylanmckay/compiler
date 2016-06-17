@@ -3,7 +3,7 @@
 extern crate compiler;
 extern crate argparse;
 
-use compiler::{ir,mir,machine};
+use compiler::{ir,mir,machine,target};
 use std::error::Error;
 use std::io::{Read,Write};
 
@@ -14,11 +14,14 @@ enum Task
 {
     Tokenize,
     Parse,
+    ListTargets,
 
     Assemble,
 }
 
 fn main() {
+    machine::AVR::register();
+
     let mut files: Vec<String> = Vec::new();
 
     let mut task = Task::Assemble;
@@ -34,19 +37,22 @@ fn main() {
             .add_option(&["--tokenize"], argparse::StoreConst(Task::Tokenize),
                         "only tokenize the module")
             .add_option(&["--parse"], argparse::StoreConst(Task::Parse),
-                        "only parse the module");
+                        "only parse the module")
+            .add_option(&["--list-targets"], argparse::StoreConst(Task::ListTargets),
+                        "list all of the targets supported");
         ap.parse_args_or_exit();
     }
-
-    if files.is_empty() {
-        abort("expected a file_name to assemble");
-    }
-
-    for file_name in files.iter() {
-        match task {
-            Task::Tokenize => tokenize(&file_name),
-            Task::Parse => parse(&file_name),
-            Task::Assemble => assemble(&file_name),
+    match task {
+        Task::ListTargets => list_targets(),
+        _ => {
+            for file_name in files.iter() {
+                match task {
+                    Task::Tokenize => tokenize(&file_name),
+                    Task::Parse => parse(&file_name),
+                    Task::Assemble => assemble(&file_name),
+                    _ => (),
+                }
+            }
         }
     }
 }
@@ -69,7 +75,7 @@ fn assemble(file_name: &str) {
     let module = parse_module(&file_name);
 
     for func in module.functions() {
-        let target = machine::AVR::new();
+        let target = machine::AVR;
         let dags = mir::Dag::from_function(func);
 
         for dag in dags {
@@ -77,6 +83,12 @@ fn assemble(file_name: &str) {
                 println!("{:?}", instruction);
             }
         }
+    }
+}
+
+fn list_targets() {
+    for target in target::registry::list() {
+        println!("{}", target.name());
     }
 }
 

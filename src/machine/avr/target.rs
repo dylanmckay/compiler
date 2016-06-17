@@ -1,40 +1,34 @@
-use {MachineTarget, RegisterInfo, Selector, RegisterClass, Register, Instruction,
-     Operand};
+use {MachineTarget, Selector, RegisterClass, Register, Instruction, Operand};
 
 use target;
 use select;
 use regalloc;
 
-use avr::{registers, instruction};
+use avr::instruction;
 use avr;
 
 /// The AVR target.
-pub struct AVR
-{
-    register_info: registers::Info,
-}
+pub struct AVR;
+
+/// The global AVR target.
+static TARGET: AVR = AVR;
 
 impl AVR
 {
-    pub fn new() -> Self {
-        AVR {
-            register_info: registers::Info::new(),
-        }
+    pub fn register() {
+        target::register(&TARGET)
     }
 }
 
 impl target::Target for AVR
 {
-    fn name(&self) -> &'static str { "AVR" }
+    fn name(&self) -> &'static str { "avr" }
+    fn display_name(&self) -> &'static str { "AVR" }
 }
 
 impl MachineTarget for AVR
 {
     fn pointer_width(&self) -> u16 { 16 }
-
-    fn register_info(&self) -> &RegisterInfo {
-        &self.register_info
-    }
 
     fn create_legalizer(&self) -> select::Legalizer {
         avr::legalize::legalizer()

@@ -4,6 +4,9 @@ name = "compiler_target"
 version = "0.0.1"
 authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
+[dependencies]
+lazy_static = "0.2.1"
+
 [lib]
 name = "compiler_target"
 path = "lib.rs"

@@ -31,9 +31,6 @@ pub trait MachineTarget : target::Target + regalloc::Target<Instruction=Box<Inst
     /// Gets the width of a pointer.
     fn pointer_width(&self) -> u16;
 
-    /// Gets register information.
-    fn register_info(&self) -> &RegisterInfo;
-
     fn create_legalizer(&self) -> select::Legalizer;
     fn create_selector(&self) -> Selector;
 }
