@@ -3,6 +3,7 @@ use Selectable;
 
 use mir;
 use std;
+use util;
 
 /// A pattern.
 pub struct Pattern<S: Selectable + 'static, V: PatternValue>
@@ -25,6 +26,7 @@ impl<S: Selectable + 'static, V: PatternValue> Clone for Pattern<S, V>
 #[derive(Clone,PartialEq,Eq)]
 pub struct PatternNode<V: PatternValue>
 {
+    pub id: util::Id,
     pub opcode: mir::OpCode,
     pub operands: Vec<PatternOperand<V>>,
 }

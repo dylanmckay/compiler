@@ -3,6 +3,7 @@ use avr::{registers, instruction};
 
 use select;
 use mir;
+use util;
 
 macro_rules! pattern {
     ($ty:ident, $node:expr) => {
@@ -16,6 +17,7 @@ macro_rules! pattern {
 macro_rules! node {
     ($opcode:ident, $operands:expr) => {
         PatternNode {
+            id: util::Id::next(),
             opcode: mir::OpCode::$opcode,
             operands: $operands,
         }

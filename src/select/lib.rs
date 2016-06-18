@@ -9,4 +9,5 @@ pub mod pattern;
 pub mod adjustment;
 
 extern crate compiler_mir as mir;
+extern crate compiler_util as util;
 
