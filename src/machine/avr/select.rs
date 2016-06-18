@@ -7,11 +7,16 @@ use util;
 
 macro_rules! pattern {
     ($ty:ident, $node:expr) => {
+        pattern!($ty, $node, Vec::new());
+    };
+
+    ($ty:ident, $node:expr, $constraints:expr) => {
         Pattern {
             root: $node,
+            constraints: Vec::new(),
             factory: instruction::$ty::from_pattern,
         }
-    }
+    };
 }
 
 macro_rules! node {

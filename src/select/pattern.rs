@@ -1,5 +1,6 @@
 use Adjustment;
 use Selectable;
+use Constraint;
 
 use mir;
 use std;
@@ -9,6 +10,7 @@ use util;
 pub struct Pattern<S: Selectable + 'static, V: PatternValue>
 {
     pub root: PatternNode<V>,
+    pub constraints: Vec<Constraint>,
     pub factory: fn(&mir::Node) -> S,
 }
 
@@ -17,6 +19,7 @@ impl<S: Selectable + 'static, V: PatternValue> Clone for Pattern<S, V>
     fn clone(&self) -> Self {
         Pattern {
             root: self.root.clone(),
+            constraints: self.constraints.clone(),
             factory: self.factory,
         }
     }
