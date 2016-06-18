@@ -1,13 +1,15 @@
 ; RUN: asm --target avr @file
 
 ; CHECK: ldi r16, 5
-; CHECK-NEXT: adiw r24, 10
-; CHECK-NEXT: add r0, r24
+; CHECK-NEXT: adiw [[reg:r[0-9]+]], 10
+; CHECK-NEXT: add r0, [[reg]]
 ; CHECK-NEXT: subi r17, 5
 ; CHECK-NEXT: ret
+
 fn @main(%foo: i8) {
   %a = add i8 5, i8 10
   %b = add %foo, %a
   %c = sub %foo, i8 5
   ret
 }
+

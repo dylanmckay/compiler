@@ -3,7 +3,7 @@ use Instance;
 use tool;
 use std;
 
-use regex::Regex;
+use regex::{Regex, Captures};
 
 #[derive(Clone,Debug,PartialEq,Eq)]
 pub struct Directive
@@ -29,6 +29,22 @@ impl Directive
         }
     }
 
+    /// Converts a match string to a regex.
+    ///
+    /// Converts from the `[[capture_name:capture_regex]]` syntaxs to
+    /// a regex.
+    fn parse_regex(mut string: String) -> Regex {
+        let capture_regex = Regex::new("\\[\\[(\\w+):(.*)\\]\\]").unwrap();
+
+        if capture_regex.is_match(&string) {
+            string = capture_regex.replace_all(&string, |caps: &Captures| {
+                format!("(?P<{}>{})", caps.at(1).unwrap(), caps.at(2).unwrap())
+            });
+        }
+
+        Regex::new(&string).unwrap()
+    }
+
     pub fn maybe_parse(string: &str, line: u32) -> Option<Result<Self,String>> {
         let regex = Regex::new("([A-Z-]+):(.*)").unwrap();
 
@@ -50,11 +66,11 @@ impl Directive
                 Some(Ok(Directive::new(Command::Run(invocation), line)))
             },
             "CHECK" => {
-                let regex = Regex::new(after_command_str).unwrap();
+                let regex = Self::parse_regex(after_command_str.to_owned());
                 Some(Ok(Directive::new(Command::Check(regex), line)))
             },
             "CHECK-NEXT" => {
-                let regex = Regex::new(after_command_str).unwrap();
+                let regex = Self::parse_regex(after_command_str.to_owned());
                 Some(Ok(Directive::new(Command::CheckNext(regex), line)))
             },
             _ => {
