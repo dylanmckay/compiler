@@ -21,6 +21,8 @@ fn assemble<T>(target: &T,
     let module = try!(self::parse_ir(input));
 
     for func in module.functions() {
+        try!(write!(output, "{}:\n", func.name));
+
         let dags = mir::Dag::from_function(func);
 
         for dag in dags {
@@ -33,10 +35,12 @@ fn assemble<T>(target: &T,
             let instructions = regalloc::allocate(target, instructions);
 
             for instruction in instructions {
-                let inst_str = format!("{:?}\n", instruction);
+                let inst_str = format!("  {:?}\n", instruction);
                 try!(output.write(inst_str.as_bytes()));
             }
         }
+
+        try!(write!(output, "\n"));
     }
 
     Ok(())
