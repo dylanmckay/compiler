@@ -14,7 +14,7 @@ pub type MatchResult = select::MatchResult<PatternOperand>;
 pub enum PatternOperand
 {
     Immediate { width: u32 },
-    Register(&'static RegisterClass),
+    RegisterClass(&'static RegisterClass),
 }
 
 pub type Adjustment = ();
@@ -32,7 +32,7 @@ impl select::PatternValue for PatternOperand {
                     _ => select::MatchResult::None,
                 }
             },
-            PatternOperand::Register(class) => {
+            PatternOperand::RegisterClass(class) => {
                 if value.ty().bit_width() == class.bit_width {
                     // If the value is already stored in a register.
                     if self::is_value_stored_in_register(value) {
@@ -61,7 +61,7 @@ impl std::fmt::Debug for PatternOperand
             PatternOperand::Immediate { width } => {
                 write!(fmt, "i{}imm", width)
             },
-            PatternOperand::Register(class) => {
+            PatternOperand::RegisterClass(class) => {
                 write!(fmt, "{}", class.name)
             },
         }

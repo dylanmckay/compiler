@@ -2,6 +2,7 @@
 
 fn @main() {
   %a = add i8 6, i8 5
+  %b = add %a, i8 10
   ret
 }
 

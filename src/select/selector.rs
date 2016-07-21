@@ -57,6 +57,7 @@ impl<S: Selectable, V> Selector<S, V>
 
     pub fn select_node(&mut self, node: &mir::Node) -> Vec<mir::Node> {
         let permutations = self.find_matching_permutations(node);
+        println!("permutations: {:#?}", permutations);
 
         match self::find_optimal_permutation(&permutations) {
             Some(permutation) => permutation.nodes.clone(),

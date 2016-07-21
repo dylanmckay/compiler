@@ -46,11 +46,11 @@ macro_rules! inst_rdrr {
         pattern!($ty, {
             node!(Set,
                   operands!(
-                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
+                      select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8)),
                       select::PatternOperand::Node(Box::new(node!($opcode,
                           operands!(
-                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
-                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
+                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8)),
+                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8))
                           )
                       )))
                   )
@@ -65,10 +65,10 @@ macro_rules! inst_rdi {
         pattern!($ty, {
             node!(Set,
                 operands!(
-                    select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8hi)),
+                    select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8hi)),
                     select::PatternOperand::Node(Box::new(node!($opcode,
                           operands!(
-                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8hi)),
+                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8hi)),
                               select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
                           )
                     )))
@@ -84,10 +84,10 @@ macro_rules! inst_wide_rdi {
         pattern!($ty, {
             node!(Set,
                 operands!(
-                    select::PatternOperand::Value(PatternOperand::Register(&registers::IWREGS)),
+                    select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::IWREGS)),
                     select::PatternOperand::Node(Box::new(node!($opcode,
                           operands!(
-                              select::PatternOperand::Value(PatternOperand::Register(&registers::IWREGS)),
+                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::IWREGS)),
                               select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
                           )
                     )))
@@ -114,7 +114,7 @@ pub fn patterns() -> Vec<Pattern> {
         pattern!(LDIRdK, {
             node!(Set,
                   operands!(
-                      select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8hi)),
+                      select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8hi)),
                       select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
                   )
             )
@@ -125,8 +125,8 @@ pub fn patterns() -> Vec<Pattern> {
                   operands!(
                       select::PatternOperand::Node(Box::new(node!(Add,
                           operands!(
-                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8)),
-                              select::PatternOperand::Value(PatternOperand::Register(&registers::GPR8))
+                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8)),
+                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8))
                           )
                       )))
                   )
