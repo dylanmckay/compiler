@@ -33,7 +33,7 @@ impl select::PatternValue for PatternOperand {
                 }
             },
             PatternOperand::Register(class) => {
-                if value.ty().bit_width() <= class.bit_width {
+                if value.ty().bit_width() == class.bit_width {
                     // If the value is already stored in a register.
                     if self::is_value_stored_in_register(value) {
                         select::MatchResult::Perfect

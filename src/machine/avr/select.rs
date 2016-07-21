@@ -78,13 +78,32 @@ macro_rules! inst_rdi {
     }
 }
 
+/// An instruction which takes a DREGS and an 16-bit immediate.
+macro_rules! inst_wide_rdi {
+    ($ty:ident, $opcode:ident) => {
+        pattern!($ty, {
+            node!(Set,
+                operands!(
+                    select::PatternOperand::Value(PatternOperand::Register(&registers::IWREGS)),
+                    select::PatternOperand::Node(Box::new(node!($opcode,
+                          operands!(
+                              select::PatternOperand::Value(PatternOperand::Register(&registers::IWREGS)),
+                              select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
+                          )
+                    )))
+                )
+            )
+        })
+    }
+}
+
 pub fn selector() -> Selector {
     Selector::new(self::patterns())
 }
 
 pub fn patterns() -> Vec<Pattern> {
     vec![
-        inst_rdi!(ADIWRdK, Add),
+        inst_wide_rdi!(ADIWRdK, Add),
         inst_rdi!(SUBIRdK, Sub),
 
         inst_rdrr!(ADDRdRr, Add),
