@@ -1,5 +1,7 @@
 use PatternValue;
+
 use mir;
+use util;
 
 /// An adjustment to a pattern.
 ///
@@ -33,6 +35,25 @@ pub enum Adjustment<V: PatternValue>
     /// Demotes a subnode to a register.
     DemoteToRegister {
         demotee: mir::Node,
+    },
+    /// Merges two virtual registers into one.
+    ///
+    /// This can do something like the following.
+    ///
+    /// ```ignore
+    /// (set %a, (add %b, i5))
+    /// ```
+    ///
+    /// ```ignore
+    /// (set %a, (add %a, i5))
+    /// ```
+    ///
+    /// So that they will always refer to the same physical register.
+    MergeVirtualRegisters {
+        /// The ID of the register to remove.
+        from: util::Id,
+        /// The ID of the register that will now be referenced.
+        to: util::Id,
     },
     Target(V::Adjustment),
 }
@@ -106,6 +127,9 @@ impl<V: PatternValue> Adjustment<V>
                 });
 
                 AdjustmentApplication { preceding_nodes: preceding_nodes, adjusted_node: adjusted_node }
+            },
+            Adjustment::MergeVirtualRegisters { from, to } => {
+                unimplemented!();
             },
             Adjustment::Target(ref _adjustment) => {
                 unimplemented!();
