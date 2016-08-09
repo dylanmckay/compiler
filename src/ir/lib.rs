@@ -1,5 +1,3 @@
-#![feature(iter_arith)]
-
 pub use self::types::{Type,TypeTrait};
 pub use self::value::{Value,Expression,ExpressionTrait,Register};
 pub use self::instruction::{Instruction,InstructionTrait,Unary,Binary};

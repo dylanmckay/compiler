@@ -4,6 +4,8 @@ use util;
 pub enum Constraint
 {
     /// Constraints that two operands are identical.
-    Equality(util::Id, util::Id),
+    Equality {
+        constrained_register_ids: Vec<util::Id>,
+    }
 }
 
