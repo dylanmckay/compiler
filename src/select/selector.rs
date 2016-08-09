@@ -95,6 +95,9 @@ impl<S: Selectable, V> Selector<S, V>
     }
 
     fn find_similar_matches(&mut self, node: &mir::Node) -> Vec<MatchedPattern<S, V>> {
+        // FIXME: check if there are register operands with the same id referenced twice
+        // in this case, we need to add 'merge virt regs' adjustments
+
         self.patterns.iter().cloned().filter_map(|pattern| {
             let pat_match = MatchedPattern { node: node.clone(), result: pattern.matches(node), pattern: pattern };
 

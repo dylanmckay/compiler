@@ -2,6 +2,7 @@ use RegisterClass;
 use Instruction;
 use mir;
 use select;
+use util;
 
 use std;
 
@@ -14,9 +15,20 @@ pub type MatchResult = select::MatchResult<PatternOperand>;
 pub enum PatternOperand
 {
     Immediate { width: u32 },
-    RegisterClass(&'static RegisterClass),
+    RegisterClass {
+        id: util::Id,
+        class: &'static RegisterClass,
+    },
 }
 
+impl PatternOperand
+{
+    pub fn register(class: &'static RegisterClass) -> Self {
+        PatternOperand::RegisterClass { class: class, id: util::Id::next() }
+    }
+}
+
+/// There are no machine adjustments.
 pub type Adjustment = ();
 
 impl select::PatternValue for PatternOperand {
@@ -32,7 +44,7 @@ impl select::PatternValue for PatternOperand {
                     _ => select::MatchResult::None,
                 }
             },
-            PatternOperand::RegisterClass(class) => {
+            PatternOperand::RegisterClass { class, .. } => {
                 if value.ty().bit_width() == class.bit_width {
                     // If the value is already stored in a register.
                     if self::is_value_stored_in_register(value) {
@@ -61,7 +73,7 @@ impl std::fmt::Debug for PatternOperand
             PatternOperand::Immediate { width } => {
                 write!(fmt, "i{}imm", width)
             },
-            PatternOperand::RegisterClass(class) => {
+            PatternOperand::RegisterClass { class, .. } => {
                 write!(fmt, "{}", class.name)
             },
         }

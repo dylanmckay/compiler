@@ -43,57 +43,71 @@ macro_rules! operands {
 /// An instruction which takes a destination and source GPR8.
 macro_rules! inst_rdrr {
     ($ty:ident, $opcode:ident) => {
-        pattern!($ty, {
-            node!(Set,
-                  operands!(
-                      select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8)),
-                      select::PatternOperand::Node(Box::new(node!($opcode,
-                          operands!(
-                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8)),
-                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8))
-                          )
-                      )))
-                  )
-            )
-        })
+        {
+            let rd = PatternOperand::register(&registers::GPR8);
+
+            pattern!($ty, {
+                node!(Set,
+                      operands!(
+                          select::PatternOperand::Value(rd.clone()),
+                          select::PatternOperand::Node(Box::new(node!($opcode,
+                              operands!(
+                                  select::PatternOperand::Value(rd.clone()),
+                                  select::PatternOperand::Value(PatternOperand::register(&registers::GPR8))
+                              )
+                          )))
+
+
+                      )
+                )
+            })
+        }
     }
 }
 
 /// An instruction which takes a GPR8 and an 8-bit immediate.
 macro_rules! inst_rdi {
     ($ty:ident, $opcode:ident) => {
-        pattern!($ty, {
-            node!(Set,
-                operands!(
-                    select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8hi)),
-                    select::PatternOperand::Node(Box::new(node!($opcode,
-                          operands!(
-                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8hi)),
-                              select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
-                          )
-                    )))
+        {
+            let rd = PatternOperand::register(&registers::GPR8hi);
+
+            pattern!($ty, {
+                node!(Set,
+                    operands!(
+                        select::PatternOperand::Value(rd.clone()),
+                        select::PatternOperand::Node(Box::new(node!($opcode,
+                              operands!(
+                                  select::PatternOperand::Value(rd.clone()),
+                                  select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
+                              )
+                        )))
+                    )
                 )
-            )
-        })
+            })
+        }
     }
 }
 
 /// An instruction which takes a DREGS and an 16-bit immediate.
 macro_rules! inst_wide_rdi {
     ($ty:ident, $opcode:ident) => {
-        pattern!($ty, {
-            node!(Set,
-                operands!(
-                    select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::IWREGS)),
-                    select::PatternOperand::Node(Box::new(node!($opcode,
-                          operands!(
-                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::IWREGS)),
-                              select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
-                          )
-                    )))
+        {
+            let rd = PatternOperand::register(&registers::IWREGS);
+
+            pattern!($ty, {
+                node!(Set,
+                    operands!(
+                        select::PatternOperand::Value(rd.clone()),
+                        select::PatternOperand::Node(Box::new(node!($opcode,
+                              operands!(
+                                  select::PatternOperand::Value(rd.clone()),
+                                  select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
+                              )
+                        )))
+                    )
                 )
-            )
-        })
+            })
+        }
     }
 }
 
@@ -114,7 +128,7 @@ pub fn patterns() -> Vec<Pattern> {
         pattern!(LDIRdK, {
             node!(Set,
                   operands!(
-                      select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8hi)),
+                      select::PatternOperand::Value(PatternOperand::register(&registers::GPR8hi)),
                       select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
                   )
             )
@@ -125,8 +139,8 @@ pub fn patterns() -> Vec<Pattern> {
                   operands!(
                       select::PatternOperand::Node(Box::new(node!(Add,
                           operands!(
-                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8)),
-                              select::PatternOperand::Value(PatternOperand::RegisterClass(&registers::GPR8))
+                              select::PatternOperand::Value(PatternOperand::register(&registers::GPR8)),
+                              select::PatternOperand::Value(PatternOperand::register(&registers::GPR8))
                           )
                       )))
                   )
