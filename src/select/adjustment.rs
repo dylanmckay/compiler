@@ -1,4 +1,5 @@
 use PatternValue;
+use Constraint;
 use mir;
 
 /// An adjustment to a pattern.
@@ -34,6 +35,9 @@ pub enum Adjustment<V: PatternValue>
     DemoteToRegister {
         demotee: mir::Node,
     },
+    /// Apply a constraint to the original MIR sequence.
+    ApplyConstraint(Constraint),
+    /// A target-specific constraint.
     Target(V::Adjustment),
 }
 
@@ -106,6 +110,9 @@ impl<V: PatternValue> Adjustment<V>
                 });
 
                 AdjustmentApplication { preceding_nodes: preceding_nodes, adjusted_node: adjusted_node }
+            },
+            Adjustment::ApplyConstraint(ref _constraint) => {
+                unimplemented!();
             },
             Adjustment::Target(ref _adjustment) => {
                 unimplemented!();
