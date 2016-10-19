@@ -5,6 +5,7 @@
 ; CHECK-NEXT: ret
 fn @add_8_reg_imm(%foo: i8) {
   %a = add %foo, i8 5
+  %b = add %a, i8 5
   ret
 }
 
