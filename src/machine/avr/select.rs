@@ -33,6 +33,15 @@ macro_rules! node {
 
 }
 
+macro_rules! value {
+    ($name:expr => $value:expr) => {
+        select::PatternOperand::Value {
+            name: $name.to_string(),
+            value: $value,
+        }
+    }
+}
+
 macro_rules! operands {
     ($($operand:expr),*) => {
         vec![$( $operand ),+]
@@ -43,16 +52,14 @@ macro_rules! operands {
 macro_rules! inst_rdrr {
     ($ty:ident, $opcode:ident) => {
         {
-            let rd = PatternOperand::register(&registers::GPR8);
-
             pattern!($ty, {
                 node!(Set,
                       operands!(
-                          select::PatternOperand::Value(rd.clone()),
+                          value!("rd" => PatternOperand::register(&registers::GPR8)),
                           select::PatternOperand::Node(Box::new(node!($opcode,
                               operands!(
-                                  select::PatternOperand::Value(rd.clone()),
-                                  select::PatternOperand::Value(PatternOperand::register(&registers::GPR8))
+                                  value!("rd" => PatternOperand::register(&registers::GPR8)),
+                                  value!("rr" => PatternOperand::register(&registers::GPR8))
                               )
                           )))
 
@@ -68,16 +75,14 @@ macro_rules! inst_rdrr {
 macro_rules! inst_rdi {
     ($ty:ident, $opcode:ident) => {
         {
-            let rd = PatternOperand::register(&registers::GPR8hi);
-
             pattern!($ty, {
                 node!(Set,
                     operands!(
-                        select::PatternOperand::Value(rd.clone()),
+                        value!("rd" => PatternOperand::register(&registers::GPR8)),
                         select::PatternOperand::Node(Box::new(node!($opcode,
                               operands!(
-                                  select::PatternOperand::Value(rd.clone()),
-                                  select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
+                                  value!("rd" => PatternOperand::register(&registers::GPR8)),
+                                  value!("i" => PatternOperand::Immediate { width: 8 })
                               )
                         )))
                     )
@@ -91,16 +96,14 @@ macro_rules! inst_rdi {
 macro_rules! inst_wide_rdi {
     ($ty:ident, $opcode:ident) => {
         {
-            let rd = PatternOperand::register(&registers::IWREGS);
-
             pattern!($ty, {
                 node!(Set,
                     operands!(
-                        select::PatternOperand::Value(rd.clone()),
+                        value!("rd" => PatternOperand::register(&registers::IWREGS)),
                         select::PatternOperand::Node(Box::new(node!($opcode,
                               operands!(
-                                  select::PatternOperand::Value(rd.clone()),
-                                  select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
+                                  value!("rd" => PatternOperand::register(&registers::IWREGS)),
+                                  value!("i" => PatternOperand::Immediate { width: 8 })
                               )
                         )))
                     )
@@ -127,25 +130,11 @@ pub fn patterns() -> Vec<Pattern> {
         pattern!(LDIRdK, {
             node!(Set,
                   operands!(
-                      select::PatternOperand::Value(PatternOperand::register(&registers::GPR8hi)),
-                      select::PatternOperand::Value(PatternOperand::Immediate { width: 8 })
+                      value!("rd" => PatternOperand::register(&registers::GPR8hi)),
+                      value!("k"  => PatternOperand::Immediate { width: 8 })
                   )
             )
         }),
-
-        pattern!(RET, {
-            node!(Ret,
-                  operands!(
-                      select::PatternOperand::Node(Box::new(node!(Add,
-                          operands!(
-                              select::PatternOperand::Value(PatternOperand::register(&registers::GPR8)),
-                              select::PatternOperand::Value(PatternOperand::register(&registers::GPR8))
-                          )
-                      )))
-                  )
-            )
-        })
-
     ]
 }
 

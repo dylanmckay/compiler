@@ -37,7 +37,12 @@ pub enum PatternOperand<V: PatternValue>
     /// A node.
     Node(Box<PatternNode<V>>),
     /// A value.
-    Value(V),
+    Value {
+        /// The name of the value.
+        name: String,
+        /// The underlying value.
+        value: V,
+    },
 }
 
 #[derive(Clone,Debug,PartialEq,Eq)]
@@ -136,9 +141,9 @@ impl<V: PatternValue> PatternOperand<V>
 {
     pub fn matches(&self, node: &mir::Node) -> MatchResult<V> {
         match *self {
-            PatternOperand::Value(ref pat_val) => {
+            PatternOperand::Value { ref name, ref value } => {
                 if let mir::Node::Leaf(ref mir_val) = *node {
-                    pat_val.matches(mir_val)
+                    value.matches(mir_val)
                 } else {
                     MatchResult::adjust(Adjustment::demote_to_register(node))
                 }
@@ -189,7 +194,7 @@ impl<V: PatternValue> std::fmt::Debug for PatternOperand<V>
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
             PatternOperand::Node(ref node) => write!(fmt, "({:?})", node),
-            PatternOperand::Value(ref val) => write!(fmt, "{:?}", val),
+            PatternOperand::Value { ref value, .. } => write!(fmt, "{:?}", value),
         }
     }
 }
