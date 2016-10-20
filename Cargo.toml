@@ -20,6 +20,8 @@ path = "src/pass"
 path = "src/regalloc"
 [dependencies.compiler_select]
 path = "src/select"
+[dependencies.compiler_select2]
+path = "src/select2"
 [dependencies.compiler_target]
 path = "src/target"
 [dependencies.compiler_test]

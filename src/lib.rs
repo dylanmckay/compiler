@@ -10,6 +10,8 @@ pub use self::compiler_pass as pass;
 pub use self::compiler_regalloc as regalloc;
 /// The instruction selector.
 pub use self::compiler_select as select;
+/// The new instruction selector.
+pub use self::compiler_select as select2;
 /// The backend.
 pub use self::compiler_target as target;
 /// The integrated tester.
