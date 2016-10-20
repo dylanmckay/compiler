@@ -48,7 +48,7 @@ impl SideEffects
     }
 }
 
-impl regalloc::Instruction for Box<Instruction>
+impl regalloc::TargetInstruction for Box<Instruction>
 {
     type Operand = Operand;
 
