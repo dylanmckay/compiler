@@ -1,5 +1,5 @@
 pub use self::program::{Program, Item};
-pub use self::instruction::{Instruction, TargetInstruction, TargetOperand, Operand};
+pub use self::instruction::{Instruction, TargetInstruction, TargetOperand, Register};
 pub use self::register::{TargetRegisterClass, TargetRegister};
 pub use self::live_variable::{LiveRange, LiveInterval, LiveIntervals};
 pub use self::algorithm::Algorithm;

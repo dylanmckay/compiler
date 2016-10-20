@@ -23,14 +23,14 @@ pub struct RegisterClass
     pub registers: &'static [&'static Register],
 }
 
-impl regalloc::Register for &'static Register
+impl regalloc::TargetRegister for &'static Register
 {
 
 }
 
-impl regalloc::RegisterClass for &'static RegisterClass
+impl regalloc::TargetRegisterClass for &'static RegisterClass
 {
-    type Register = &'static Register;
+    type TargetRegister = &'static Register;
 
     fn registers(&self) -> Vec<&'static Register> {
         self.registers.to_owned()

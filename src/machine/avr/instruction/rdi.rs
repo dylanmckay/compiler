@@ -25,7 +25,7 @@ macro_rules! define_rdi_struct {
                 let imm = value.operands[1].expect_leaf().
                     expect_constant_integer();
 
-                let rd = Operand::Regalloc(regalloc::Operand::VirtualRegister {
+                let rd = Operand::Register(regalloc::Register::Virtual {
                     id: dest_reg.register_id,
                     class: &$regclass,
                 });

@@ -1,4 +1,4 @@
-use {Target, Algorithm, Program, TargetInstruction, TargetOperand, Operand, TargetRegisterClass};
+use {Target, Algorithm, Program, TargetInstruction, TargetOperand, Register, TargetRegisterClass};
 use std::collections::HashMap;
 
 use util;
@@ -55,7 +55,7 @@ fn allocate_instruction<T: Target>(mut instruction: T::Instruction,
             let next_free_register = self::next_free_register::<T>(&register_class, register_map);
             let register = register_map.entry(virt_id).or_insert(next_free_register).clone();
 
-            operand.allocate(Operand::PhysicalRegister(register));
+            operand.allocate(Register::Physical(register));
         }
     }
 

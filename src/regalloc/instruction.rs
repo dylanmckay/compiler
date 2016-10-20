@@ -26,17 +26,17 @@ pub trait TargetOperand : Clone + std::fmt::Debug
 
     fn register_class(&self) -> Self::RegisterClass;
 
-    fn allocate(&mut self, register: Operand<Self>);
+    fn allocate(&mut self, register: Register<Self>);
 }
 
 #[derive(Clone,PartialEq,Eq)]
-pub enum Operand<TO: TargetOperand+'static>
+pub enum Register<TO: TargetOperand+'static>
 {
     /// An allocated register.
-    PhysicalRegister(TO::Register),
+    Physical(TO::Register),
 
     /// A virtual register.
-    VirtualRegister {
+    Virtual {
         id: util::Id,
         class: TO::RegisterClass,
     },

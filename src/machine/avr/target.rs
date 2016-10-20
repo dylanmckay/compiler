@@ -69,11 +69,11 @@ impl regalloc::InstructionBuilder for AVR
     type Target = AVR;
 
     fn create_push(source: &&'static Register) -> Box<Instruction> {
-        Box::new(instruction::PUSHRd::new(Operand::Regalloc(regalloc::Operand::PhysicalRegister(*source))))
+        Box::new(instruction::PUSHRd::new(Operand::Register(regalloc::Register::Physical(*source))))
     }
 
     fn create_pop(dest: &&'static Register) -> Box<Instruction> {
-        Box::new(instruction::POPRd::new(Operand::Regalloc(regalloc::Operand::PhysicalRegister(*dest))))
+        Box::new(instruction::POPRd::new(Operand::Register(regalloc::Register::Physical(*dest))))
     }
 }
 
