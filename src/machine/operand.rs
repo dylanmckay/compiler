@@ -31,14 +31,7 @@ pub enum Operand
     /// An immediate value.
     Immediate { bit_width: u32, value: i64 },
 
-    /// A machine register.
-    Register(&'static Register),
-
-    /// A virtual register.
-    VirtualRegister {
-        id: util::Id,
-        class: &'static RegisterClass,
-    },
+    Regalloc(regalloc::Operand<Operand>),
 }
 
 impl OperandInfo
@@ -62,9 +55,11 @@ impl Operand
 {
     pub fn is_register(&self) -> bool {
         match *self {
-            Operand::Register(..) => true,
-            Operand::VirtualRegister { .. } => true,
             Operand::Immediate { .. } => false,
+            Operand::Regalloc(ref a) => match *a {
+                regalloc::Operand::VirtualRegister { .. } => true,
+                regalloc::Operand::PhysicalRegister(..) => true,
+            }
         }
     }
 }
@@ -76,17 +71,17 @@ impl std::fmt::Debug for OperandInfo
     }
 }
 
-impl regalloc::Operand for Operand
+impl regalloc::TargetOperand for Operand
 {
     type Register = &'static Register;
     type RegisterClass = &'static RegisterClass;
 
     fn is_virtual(&self) -> bool {
-        if let Operand::VirtualRegister { .. } = *self { true } else { false }
+        if let Operand::Regalloc(regalloc::Operand::VirtualRegister { .. }) = *self { true } else { false }
     }
 
     fn virtual_register_id(&self) -> util::Id {
-        if let Operand::VirtualRegister { id, .. } = *self {
+        if let Operand::Regalloc(regalloc::Operand::VirtualRegister { id, .. }) = *self {
             id
         } else {
             panic!("operand is not a register");
@@ -95,16 +90,16 @@ impl regalloc::Operand for Operand
 
     fn register_class(&self) -> &'static RegisterClass {
         match *self {
-            Operand::Register(ref _r) => unimplemented!(),
-            Operand::VirtualRegister { class, .. } => class,
+            Operand::Regalloc(ref r) => match *r {
+                regalloc::Operand::PhysicalRegister(ref _r) => unimplemented!(),
+                regalloc::Operand::VirtualRegister { class, .. } => class,
+            },
             _ => panic!("operand is not a register"),
         }
     }
 
-    fn allocate(&mut self, register: &'static Register) {
-        if let Operand::VirtualRegister { .. } = *self {
-            *self = Operand::Register(register);
-        }
+    fn allocate(&mut self, register: regalloc::Operand<Self>) {
+        *self = Operand::Regalloc(register);
     }
 }
 
@@ -115,12 +110,14 @@ impl std::fmt::Debug for Operand
             Operand::Immediate { value, .. } => {
                 write!(fmt, "{}", value)
             },
-            Operand::Register(reg) => {
-                write!(fmt, "{}", reg.name)
-            },
-            Operand::VirtualRegister { id, class } => {
-                write!(fmt, "<{}:#{}>", class.name, id)
-            },
+            Operand::Regalloc(ref r) => match *r {
+                regalloc::Operand::PhysicalRegister(reg) => {
+                    write!(fmt, "{}", reg.name)
+                },
+                regalloc::Operand::VirtualRegister { id, class } => {
+                    write!(fmt, "<{}:#{}>", class.name, id)
+                },
+            }
         }
     }
 }

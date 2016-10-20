@@ -1,6 +1,6 @@
 use {Instruction, Operand, OperandInfo, EncodedInstruction, SideEffects};
 use avr::registers::{GPR8hi, IWREGS};
-use mir;
+use {mir, regalloc};
 use std;
 
 macro_rules! define_rdi_struct {
@@ -25,10 +25,10 @@ macro_rules! define_rdi_struct {
                 let imm = value.operands[1].expect_leaf().
                     expect_constant_integer();
 
-                let rd = Operand::VirtualRegister {
+                let rd = Operand::Regalloc(regalloc::Operand::VirtualRegister {
                     id: dest_reg.register_id,
                     class: &$regclass,
-                };
+                });
 
                 let i = Operand::Immediate {
                     bit_width: imm.bit_width,

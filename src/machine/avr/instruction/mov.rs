@@ -1,6 +1,6 @@
 use {Instruction, Operand, OperandInfo, EncodedInstruction, SideEffects};
 use avr::registers::GPR8;
-use mir;
+use {mir, regalloc};
 use std;
 
 #[derive(Clone)]
@@ -21,8 +21,8 @@ impl MOVRdRr
         let dest_reg = set.operands[0].expect_leaf().expect_register_ref();
         let source_reg = set.operands[1].expect_leaf().expect_register_ref();
 
-        let rd = Operand::VirtualRegister { id: dest_reg.register_id, class: &GPR8 };
-        let rr = Operand::VirtualRegister { id: source_reg.register_id, class: &GPR8 };
+        let rd = Operand::Regalloc(regalloc::Operand::VirtualRegister { id: dest_reg.register_id, class: &GPR8 });
+        let rr = Operand::Regalloc(regalloc::Operand::VirtualRegister { id: source_reg.register_id, class: &GPR8 });
 
         Box::new(Self::new(rd, rr))
     }

@@ -50,7 +50,7 @@ impl SideEffects
 
 impl regalloc::TargetInstruction for Box<Instruction>
 {
-    type Operand = Operand;
+    type TargetOperand = Operand;
 
     fn operands_mut(&mut self) -> Vec<&mut Operand> {
         Instruction::operands_mut(self.as_mut()).into_iter().

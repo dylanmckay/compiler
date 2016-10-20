@@ -1,6 +1,6 @@
 use {Instruction, Operand, OperandInfo, EncodedInstruction, SideEffects};
 use avr::registers::GPR8hi;
-use mir;
+use {mir, regalloc};
 use std;
 
 #[derive(Clone)]
@@ -21,10 +21,10 @@ impl LDIRdK
         let dest_reg = set.operands[0].expect_leaf().expect_register_ref();
         let imm = set.operands[1].expect_leaf().expect_constant_integer();
 
-        let rd = Operand::VirtualRegister {
+        let rd = Operand::Regalloc(regalloc::Operand::VirtualRegister {
             id: dest_reg.register_id,
             class: &GPR8hi,
-        };
+        });
 
         let i = Operand::Immediate {
             bit_width: imm.bit_width,
