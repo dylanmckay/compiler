@@ -1,4 +1,4 @@
-use {Pattern, PatternValue, MatchResult, Adjustment};
+use {Pattern, PatternValue, MatchResult, Adjustment, AdjustmentApplication};
 use mir;
 
 pub trait Selectable : ::std::fmt::Debug
@@ -73,21 +73,34 @@ impl<S: Selectable, V> Selector<S, V>
                 MatchResult::Perfect => {
                     Some(Permutation { nodes: vec![node.clone()], pattern: pat_match.pattern.clone() })
                 },
-                MatchResult::Partial(ref adjustments) => {
-                    let mut application = Adjustment::apply_several_to(node.clone(), adjustments);
+                MatchResult::Partial(mut adjustments) => {
+                    let mut current_application = AdjustmentApplication::unadjusted(node.clone());
 
-                    if pat_match.pattern.matches(&application.adjusted_node).is_perfect() {
-                        application.preceding_nodes = application.preceding_nodes.into_iter().flat_map(|preceding_node| {
-                            self.select_node(&preceding_node)
-                        }).collect();
+                    // Try to legalize the permutation.
+                    for _ in 0..8 {
+                        let new_application = Adjustment::apply_several_to(current_application.adjusted_node.clone(), &adjustments);
+                        current_application = current_application.merge(new_application);
 
-                        Some(Permutation {
-                            nodes: application.nodes(),
-                            pattern: pat_match.pattern.clone(),
-                        })
-                    } else {
-                        None
+                        match pat_match.pattern.matches(&current_application.adjusted_node) {
+                            MatchResult::Perfect => {
+                                current_application.preceding_nodes = current_application.preceding_nodes.into_iter().flat_map(|preceding_node| {
+                                    self.select_node(&preceding_node)
+                                }).collect();
+
+                                return Some(Permutation {
+                                    nodes: current_application.nodes(),
+                                    pattern: pat_match.pattern.clone(),
+                                });
+                            }
+                            MatchResult::Partial(new_adjustments) => {
+                                println!("partial with {:?}", new_adjustments);
+                                adjustments = new_adjustments;
+                            },
+                            MatchResult::None => return None,
+                        }
                     }
+
+                    None
                 },
                 MatchResult::None => unreachable!(),
             }

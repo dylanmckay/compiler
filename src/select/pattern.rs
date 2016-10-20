@@ -1,9 +1,10 @@
 use Adjustment;
 use Selectable;
 
-use mir;
+use {mir, util};
+
+use std::collections::HashMap;
 use std;
-use util;
 
 /// A pattern.
 pub struct Pattern<S: Selectable + 'static, V: PatternValue>
@@ -53,6 +54,43 @@ pub enum MatchResult<V: PatternValue>
     None,
 }
 
+/// A matching context.
+pub struct MatchContext<V: PatternValue>
+{
+    pub values: HashMap<String, Vec<mir::Value>>,
+    pub phantom: std::marker::PhantomData<V>,
+}
+
+impl<V: PatternValue> MatchContext<V>
+{
+    pub fn track_value(&mut self, name: String, value: &mir::Value) {
+        let mut values = self.values.entry(name).or_insert_with(|| Vec::new());
+        values.push(value.clone());
+    }
+
+    pub fn match_result(&self) -> MatchResult<V> {
+        let repeated_name_values: Vec<_> = self.values.iter().filter(|&(_, values)| values.len() > 1).collect();
+
+        let mut adjustments = Vec::new();
+
+        for (_, values) in repeated_name_values {
+            let (cannonical_value, duplicate_values) = values.split_last().unwrap();
+
+            for value in duplicate_values {
+                if value != cannonical_value {
+                    adjustments.push(Adjustment::CoerceValue { from: value.clone(), to: cannonical_value.clone() });
+                }
+            }
+        }
+
+        if adjustments.is_empty() {
+            MatchResult::Perfect
+        } else {
+            MatchResult::Partial(adjustments)
+        }
+    }
+}
+
 impl<V: PatternValue> MatchResult<V>
 {
     pub fn adjust(adjustment: Adjustment<V>) -> Self {
@@ -96,8 +134,13 @@ impl<V: PatternValue> std::ops::Add for MatchResult<V>
 impl<S: Selectable, V: PatternValue> Pattern<S, V>
 {
     pub fn matches(&self, node: &mir::Node) -> MatchResult<V> {
+        let mut context = MatchContext {
+            values: HashMap::new(),
+            phantom: std::marker::PhantomData,
+        };
+
         if let mir::Node::Branch(ref branch) = *node {
-            self.root.matches(branch)
+            self.root.matches(branch, &mut context) + context.match_result()
         } else {
             MatchResult::None
         }
@@ -106,10 +149,10 @@ impl<S: Selectable, V: PatternValue> Pattern<S, V>
 
 impl<V: PatternValue> PatternNode<V>
 {
-    pub fn matches(&self, branch: &mir::Branch) -> MatchResult<V> {
+    pub fn matches(&self, branch: &mir::Branch, context: &mut MatchContext<V>) -> MatchResult<V> {
         if self.opcode == branch.opcode && self.operands.len() == branch.operands.len() {
             self.operands.iter().zip(branch.operands.iter()).
-                fold(MatchResult::Perfect, |result, (pat_op, mir_op)| result + pat_op.matches(mir_op))
+                fold(MatchResult::Perfect, |result, (pat_op, mir_op)| result + pat_op.matches(mir_op, context))
         } else {
             MatchResult::None
         }
@@ -139,10 +182,12 @@ impl<V: PatternValue> PatternNode<V>
 
 impl<V: PatternValue> PatternOperand<V>
 {
-    pub fn matches(&self, node: &mir::Node) -> MatchResult<V> {
+    pub fn matches(&self, node: &mir::Node, context: &mut MatchContext<V>) -> MatchResult<V> {
         match *self {
             PatternOperand::Value { ref name, ref value } => {
                 if let mir::Node::Leaf(ref mir_val) = *node {
+                    context.track_value(name.clone(), &mir_val);
+
                     value.matches(mir_val)
                 } else {
                     MatchResult::adjust(Adjustment::demote_to_register(node))
@@ -150,7 +195,7 @@ impl<V: PatternValue> PatternOperand<V>
             },
             PatternOperand::Node(ref pat_node) => {
                 if let mir::Node::Branch(ref mir_branch) = *node {
-                    pat_node.matches(mir_branch)
+                    pat_node.matches(mir_branch, context)
                 } else {
                     MatchResult::None
                 }
@@ -194,7 +239,9 @@ impl<V: PatternValue> std::fmt::Debug for PatternOperand<V>
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
         match *self {
             PatternOperand::Node(ref node) => write!(fmt, "({:?})", node),
-            PatternOperand::Value { ref value, .. } => write!(fmt, "{:?}", value),
+            PatternOperand::Value { ref name, ref value } => {
+                write!(fmt, "${}:{:?}", name, value)
+            },
         }
     }
 }

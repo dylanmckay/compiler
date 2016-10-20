@@ -34,6 +34,10 @@ pub enum Adjustment<V: PatternValue>
     DemoteToRegister {
         demotee: mir::Node,
     },
+    CoerceValue {
+        from: mir::Value,
+        to: mir::Value,
+    },
     /// A target-specific constraint.
     Target(V::Adjustment),
 }
@@ -68,7 +72,7 @@ impl AdjustmentApplication
         nodes
     }
 
-    fn merge(mut self, other: Self) -> Self {
+    pub fn merge(mut self, other: Self) -> Self {
         self.preceding_nodes.extend(other.preceding_nodes);
         self.adjusted_node = other.adjusted_node;
         self
@@ -107,6 +111,20 @@ impl<V: PatternValue> Adjustment<V>
                 });
 
                 AdjustmentApplication { preceding_nodes: preceding_nodes, adjusted_node: adjusted_node }
+            },
+            Adjustment::CoerceValue { ref from, ref to } => {
+                let adjusted_node = root_node.recursive_map(&mut |node| {
+                    match node {
+                        mir::Node::Leaf(value) => {
+                            mir::Node::Leaf(if value == *from { to.clone() } else { value })
+                        },
+                        node => node,
+                    }
+                });
+
+                println!("applied {:?}=>{:?} == {:?}", from, to, adjusted_node);
+
+                AdjustmentApplication { preceding_nodes: Vec::new(), adjusted_node: adjusted_node }
             },
             Adjustment::Target(ref _adjustment) => {
                 unimplemented!();
