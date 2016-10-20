@@ -139,7 +139,7 @@ impl<S: Selectable, V: PatternValue> Pattern<S, V>
             phantom: std::marker::PhantomData,
         };
 
-        if let mir::Node::Branch(ref branch) = *node {
+        if let mir::NodeKind::Branch(ref branch) = node.kind {
             self.root.matches(branch, &mut context) + context.match_result()
         } else {
             MatchResult::None
@@ -185,16 +185,16 @@ impl<V: PatternValue> PatternOperand<V>
     pub fn matches(&self, node: &mir::Node, context: &mut MatchContext<V>) -> MatchResult<V> {
         match *self {
             PatternOperand::Value { ref name, ref value } => {
-                if let mir::Node::Leaf(ref mir_val) = *node {
+                if let mir::NodeKind::Leaf(ref mir_val) = node.kind {
                     context.track_value(name.clone(), &mir_val);
 
                     value.matches(mir_val)
                 } else {
-                    MatchResult::adjust(Adjustment::demote_to_register(node))
+                    MatchResult::adjust(Adjustment::demote_to_register(&node.kind))
                 }
             },
             PatternOperand::Node(ref pat_node) => {
-                if let mir::Node::Branch(ref mir_branch) = *node {
+                if let mir::NodeKind::Branch(ref mir_branch) = node.kind {
                     pat_node.matches(mir_branch, context)
                 } else {
                     MatchResult::None

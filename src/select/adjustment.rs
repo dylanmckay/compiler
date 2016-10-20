@@ -32,7 +32,7 @@ pub enum Adjustment<V: PatternValue>
 {
     /// Demotes a subnode to a register.
     DemoteToRegister {
-        demotee: mir::Node,
+        demotee: mir::NodeKind,
     },
     CoerceValue {
         from: mir::Value,
@@ -81,9 +81,9 @@ impl AdjustmentApplication
 
 impl<V: PatternValue> Adjustment<V>
 {
-    pub fn demote_to_register(node: &mir::Node) -> Self {
+    pub fn demote_to_register(node_kind: &mir::NodeKind) -> Self {
         Adjustment::DemoteToRegister {
-            demotee: node.clone(),
+            demotee: node_kind.clone(),
         }
     }
 
@@ -101,7 +101,7 @@ impl<V: PatternValue> Adjustment<V>
                 let mut preceding_nodes = Vec::new();
 
                 let adjusted_node = root_node.recursive_map(&mut |node| {
-                    if node == *demotee {
+                    if node.kind == *demotee {
                         let register_ref = mir::Node::new_register_ref(node.ty());
                         preceding_nodes.push(mir::Node::set(register_ref.clone(), node));
                         register_ref
@@ -114,11 +114,14 @@ impl<V: PatternValue> Adjustment<V>
             },
             Adjustment::CoerceValue { ref from, ref to } => {
                 let adjusted_node = root_node.recursive_map(&mut |node| {
-                    match node {
-                        mir::Node::Leaf(value) => {
-                            mir::Node::Leaf(if value == *from { to.clone() } else { value })
+                    match node.kind {
+                        mir::NodeKind::Leaf(value) => {
+                            mir::Node {
+                                kind: mir::NodeKind::Leaf(if value == *from { to.clone() } else { value }),
+                                ..node
+                            }
                         },
-                        node => node,
+                        kind => mir::Node { kind: kind, ..node },
                     }
                 });
 

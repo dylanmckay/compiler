@@ -1,4 +1,4 @@
-use {Dag, Node, Value, Branch, OpCode};
+use {Dag, Node, NodeKind, Value, Branch, OpCode};
 
 use std::collections::HashMap;
 use util;
@@ -51,8 +51,8 @@ impl Context
     }
 
     fn expand_node(&mut self, node: Node) -> Node {
-        match node {
-            Node::Branch(mut branch) => {
+        match node.kind {
+            NodeKind::Branch(mut branch) => {
                 let operands = match branch.opcode {
                     OpCode::Set => {
                         // Only expand the value we're setting.
@@ -66,21 +66,24 @@ impl Context
                     },
                 };
 
-                Node::Branch(Branch {
-                    operands: operands,
-                    ..branch
-                })
+                Node {
+                    kind: NodeKind::Branch(Branch {
+                        operands: operands,
+                        ..branch
+                    }),
+                    ..node
+                }
             },
-            Node::Leaf(value) => {
+            NodeKind::Leaf(value) => {
                 match value {
                     Value::RegisterRef(register_ref) => {
                         if let Some(initial_value) = self.possible_register_substitution(register_ref.register_id) {
                             initial_value
                         } else {
-                            Node::Leaf(Value::RegisterRef(register_ref))
+                            Node { kind: NodeKind::Leaf(Value::RegisterRef(register_ref)), ..node }
                         }
                     },
-                    value => Node::Leaf(value),
+                    value => Node { kind: NodeKind::Leaf(value), ..node },
                 }
             },
         }
@@ -93,9 +96,9 @@ impl Context
     }
 
     fn calculate_node_register_info(&mut self, node: &Node) {
-        match *node {
-            Node::Leaf(ref val) => self.calculate_value_register_info(val),
-            Node::Branch(ref b) => self.calculate_branch_register_info(b),
+        match node.kind {
+            NodeKind::Leaf(ref val) => self.calculate_value_register_info(val),
+            NodeKind::Branch(ref b) => self.calculate_branch_register_info(b),
         }
     }
 
@@ -167,10 +170,10 @@ impl Context
     /// The original set is now dead and we discard it here.
     fn eliminate_dead_nodes(&self, dag: Dag) -> Dag {
         dag.filter_nodes(|node| {
-            if let Node::Branch(ref branch) = *node {
+            if let NodeKind::Branch(ref branch) = node.kind {
                 if branch.opcode == OpCode::Set {
-                    match branch.operands[0] {
-                        Node::Leaf(Value::RegisterRef(ref reg_ref)) => {
+                    match branch.operands[0].kind {
+                        NodeKind::Leaf(Value::RegisterRef(ref reg_ref)) => {
                             !self.was_register_deleted(reg_ref.register_id)
                         },
                         _ => true,

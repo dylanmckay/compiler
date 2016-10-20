@@ -51,7 +51,7 @@ impl select::PatternValue for PatternOperand {
                         select::MatchResult::Perfect
                     } else {
                         // We have to demote it into a register.
-                        select::MatchResult::adjust(select::Adjustment::demote_to_register(&mir::Node::Leaf(value.clone())))
+                        select::MatchResult::adjust(select::Adjustment::demote_to_register(&mir::NodeKind::Leaf(value.clone())))
                     }
                 } else {
                     select::MatchResult::None

@@ -3,6 +3,9 @@ use {OpCode, Value, Type};
 use util;
 use std;
 
+#[derive(Copy, Clone, PartialEq, Eq)]
+pub struct NodeId(pub util::Id);
+
 #[derive(Clone,PartialEq,Eq)]
 pub struct Branch {
     pub opcode: OpCode,
@@ -10,7 +13,14 @@ pub struct Branch {
 }
 
 #[derive(Clone,PartialEq,Eq)]
-pub enum Node
+pub struct Node
+{
+    pub id: NodeId,
+    pub kind: NodeKind,
+}
+
+#[derive(Clone,Debug,PartialEq,Eq)]
+pub enum NodeKind
 {
     /// A branch node contains an opcode and several operands.
     Branch(Branch),
@@ -24,15 +34,21 @@ impl Node
     pub fn branch<I>(opcode: OpCode,
                      operands: I) -> Self
         where I: IntoIterator<Item=Self> {
-        Node::Branch(Branch {
-            opcode: opcode,
-            operands: operands.into_iter().collect(),
-        })
+        Node {
+            id: NodeId(util::Id::next()),
+            kind: NodeKind::Branch(Branch {
+                opcode: opcode,
+                operands: operands.into_iter().collect(),
+            }),
+        }
     }
 
     /// Creates a new leaf node.
     pub fn leaf(value: Value) -> Self {
-        Node::Leaf(value)
+        Node {
+            id: NodeId(util::Id::next()),
+            kind: NodeKind::Leaf(value)
+        }
     }
 
     /// Creates a new constant integer.
@@ -69,8 +85,8 @@ impl Node
     }
 
     pub fn result_types(&self) -> ::std::vec::IntoIter<Type> {
-        match *self {
-            Node::Branch(ref branch) => match branch.opcode {
+        match self.kind {
+            NodeKind::Branch(ref branch) => match branch.opcode {
                 OpCode::Add |
                 OpCode::Sub |
                 OpCode::Mul |
@@ -93,7 +109,7 @@ impl Node
                     vec![Type::Integer { bit_width: bit_width as _ }]
                 },
             },
-            Node::Leaf(ref value) => vec![value.ty()]
+            NodeKind::Leaf(ref value) => vec![value.ty()]
         }.into_iter()
     }
 
@@ -110,20 +126,20 @@ impl Node
         where F: FnMut(Self) -> Self {
         self = f(self);
 
-        match self {
-            Node::Branch(mut branch) => {
+        match self.kind {
+            NodeKind::Branch(mut branch) => {
                 branch.operands = branch.operands.into_iter().map(|operand| {
                     operand.recursive_map(f)
                 }).collect();
 
-                Node::Branch(branch)
+                Node { kind: NodeKind::Branch(branch), ..self }
             },
-            Node::Leaf(value) => Node::Leaf(value),
+            NodeKind::Leaf(value) => Node { kind: NodeKind::Leaf(value), ..self },
         }
     }
 
     pub fn expect_branch(&self) -> &Branch {
-        if let Node::Branch(ref branch) = *self {
+        if let NodeKind::Branch(ref branch) = self.kind {
             branch
         } else {
             panic!("expected a branch but got {:?}", self);
@@ -131,7 +147,7 @@ impl Node
     }
 
     pub fn expect_leaf(&self) -> &Value {
-        if let Node::Leaf(ref value) = *self {
+        if let NodeKind::Leaf(ref value) = self.kind {
             value
         } else {
             panic!("expected a leaf but got {:?}", self);
@@ -142,9 +158,9 @@ impl Node
 impl std::fmt::Debug for Node
 {
     fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        match *self {
-            Node::Branch(ref b) => write!(fmt, "({:?})", b),
-            Node::Leaf(ref v)   => std::fmt::Debug::fmt(v, fmt),
+        match self.kind {
+            NodeKind::Branch(ref b) => write!(fmt, "({:?})", b),
+            NodeKind::Leaf(ref v)   => std::fmt::Debug::fmt(v, fmt),
         }
     }
 }
