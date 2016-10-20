@@ -38,6 +38,14 @@ pub enum Value
     RegisterRef(RegisterRef),
 }
 
+#[derive(Copy, Clone, PartialEq, Eq)]
+pub enum ValueInfo
+{
+    Input,
+    Output,
+    InputOutput,
+}
+
 impl Value
 {
     /// Gets the type of the value.

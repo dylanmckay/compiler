@@ -1,16 +1,10 @@
-use {OpCode, Value, Type};
+use {OpCode, Branch, Value, Type};
 
 use util;
 use std;
 
 #[derive(Copy, Clone, PartialEq, Eq)]
 pub struct NodeId(pub util::Id);
-
-#[derive(Clone,PartialEq,Eq)]
-pub struct Branch {
-    pub opcode: OpCode,
-    pub operands: Vec<Node>,
-}
 
 #[derive(Clone,PartialEq,Eq)]
 pub struct Node
@@ -164,13 +158,3 @@ impl std::fmt::Debug for Node
         }
     }
 }
-
-impl std::fmt::Debug for Branch
-{
-    fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
-        let operands: Vec<_> = self.operands.iter().map(|op| format!("{:?}", op)).collect();
-
-        write!(fmt, "{} {}", self.opcode.mnemonic(), operands.join(", "))
-    }
-}
-

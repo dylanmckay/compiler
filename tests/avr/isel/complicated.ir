@@ -1,0 +1,15 @@
+; RUN: asm --target avr @file
+
+; CHECK:      add_8_reg_imm:
+; CHECK-NEXT: ldi r16, 5
+; CHECK:  add r0, r16
+; CHECK:  ldi r17, 5
+; CHECK:  add r0, r17
+; CHECK:  ret
+fn @add_8_reg_imm() {
+  %foo = i8 3
+  %a = add %foo, i8 5
+  %b = add %a, i8 5
+  ret
+}
+

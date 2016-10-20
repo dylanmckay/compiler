@@ -1,10 +1,12 @@
 pub use self::opcodes::OpCode;
-pub use self::value::{Value, RegisterRef, ConstantInteger};
-pub use self::node::{Node, NodeKind, Branch};
+pub use self::branch::Branch;
+pub use self::value::{Value, RegisterRef, ConstantInteger, ValueInfo};
+pub use self::node::{Node, NodeKind};
 pub use self::dag::Dag;
 pub use self::ty::Type;
 
 pub mod opcodes;
+pub mod branch;
 pub mod value;
 pub mod node;
 pub mod dag;

@@ -44,7 +44,7 @@ pub enum Adjustment<V: PatternValue>
 
 /// The result of an adjustment application.
 #[derive(Clone,Debug,PartialEq,Eq)]
-pub struct AdjustmentApplication
+pub struct AdjustmentApplication<V: PatternValue>
 {
     /// An adjustment may create extra nodes preceding the node
     /// that was adjusted. For example, promoting an operand
@@ -53,14 +53,18 @@ pub struct AdjustmentApplication
 
     /// The original node that was adjusted.
     pub adjusted_node: mir::Node,
+
+    /// Adjustments that need to be applied to the entire function.
+    pub function_adjustments: Vec<Adjustment<V>>,
 }
 
-impl AdjustmentApplication
+impl<V: PatternValue> AdjustmentApplication<V>
 {
     pub fn unadjusted(node: mir::Node) -> Self {
         AdjustmentApplication {
             preceding_nodes: Vec::new(),
             adjusted_node: node,
+            function_adjustments: Vec::new(),
         }
     }
 
@@ -75,6 +79,7 @@ impl AdjustmentApplication
     pub fn merge(mut self, other: Self) -> Self {
         self.preceding_nodes.extend(other.preceding_nodes);
         self.adjusted_node = other.adjusted_node;
+        self.function_adjustments.extend(other.function_adjustments);
         self
     }
 }
@@ -87,7 +92,7 @@ impl<V: PatternValue> Adjustment<V>
         }
     }
 
-    pub fn apply_several_to(root_node: mir::Node, adjustments: &[Self]) -> AdjustmentApplication {
+    pub fn apply_several_to(root_node: mir::Node, adjustments: &[Self]) -> AdjustmentApplication<V> {
         adjustments.iter().fold(AdjustmentApplication::unadjusted(root_node), |last_application, adjustment| {
             let current_node = last_application.adjusted_node.clone();
             last_application.merge(adjustment.apply_to(current_node))
@@ -95,7 +100,7 @@ impl<V: PatternValue> Adjustment<V>
     }
 
     /// Applies an adjustment to a node.
-    pub fn apply_to(&self, root_node: mir::Node) -> AdjustmentApplication {
+    pub fn apply_to(&self, root_node: mir::Node) -> AdjustmentApplication<V> {
         match *self {
             Adjustment::DemoteToRegister { ref demotee } => {
                 let mut preceding_nodes = Vec::new();
@@ -110,30 +115,43 @@ impl<V: PatternValue> Adjustment<V>
                     }
                 });
 
-                AdjustmentApplication { preceding_nodes: preceding_nodes, adjusted_node: adjusted_node }
+                AdjustmentApplication {
+                    preceding_nodes: preceding_nodes,
+                    adjusted_node: adjusted_node,
+                    function_adjustments: Vec::new(),
+                }
             },
             Adjustment::CoerceValue { ref from, ref to } => {
-                let adjusted_node = root_node.recursive_map(&mut |node| {
-                    match node.kind {
-                        mir::NodeKind::Leaf(value) => {
-                            mir::Node {
-                                kind: mir::NodeKind::Leaf(if value == *from { to.clone() } else { value }),
-                                ..node
-                            }
-                        },
-                        kind => mir::Node { kind: kind, ..node },
-                    }
-                });
+                let adjusted_node = self::coerce_value(root_node, from, to);
 
-                println!("applied {:?}=>{:?} == {:?}", from, to, adjusted_node);
-
-                AdjustmentApplication { preceding_nodes: Vec::new(), adjusted_node: adjusted_node }
+                AdjustmentApplication {
+                    preceding_nodes: Vec::new(),
+                    adjusted_node: adjusted_node,
+                    function_adjustments: vec![Adjustment::CoerceValue {
+                        from: from.clone(),
+                        to: to.clone(),
+                    }],
+                }
             },
             Adjustment::Target(ref _adjustment) => {
                 unimplemented!();
             },
         }
     }
+}
+
+pub fn coerce_value(node: mir::Node, from: &mir::Value, to: &mir::Value) -> mir::Node {
+    node.recursive_map(&mut |node| {
+        match node.kind {
+            mir::NodeKind::Leaf(value) => {
+                mir::Node {
+                    kind: mir::NodeKind::Leaf(if value == *from { to.clone() } else { value }),
+                    ..node
+                }
+            },
+            kind => mir::Node { kind: kind, ..node },
+        }
+    })
 }
 
 #[cfg(test)]

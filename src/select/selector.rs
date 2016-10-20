@@ -1,5 +1,6 @@
 use {Pattern, PatternValue, MatchResult, Adjustment, AdjustmentApplication};
 use mir;
+use adjustment;
 
 pub trait Selectable : ::std::fmt::Debug
 {
@@ -32,8 +33,20 @@ pub struct MatchedPattern<S: Selectable + 'static, V: PatternValue>
 #[derive(Debug,Clone)]
 pub struct Permutation<S: Selectable + 'static, V: PatternValue>
 {
+    /// The nodes of the permutation.
     pub nodes: Vec<mir::Node>,
+    /// The pattern that was matched,
     pub pattern: Pattern<S, V>,
+    /// Adjustments that need to be applied to the entire function.
+    pub function_adjustments: Vec<Adjustment<V>>,
+}
+
+pub struct SelectedPermutation<V: PatternValue>
+{
+    /// The nodes of the permutation.
+    pub nodes: Vec<mir::Node>,
+    /// Adjustments that need to be applied to the entire function.
+    pub function_adjustments: Vec<Adjustment<V>>,
 }
 
 impl<S: Selectable, V> Selector<S, V>
@@ -49,18 +62,35 @@ impl<S: Selectable, V> Selector<S, V>
     pub fn select(&mut self, dag: mir::Dag) -> Vec<S> {
         dag.expect_valid();
 
+        let mut function_adjustments = Vec::new();
+
         let dag = dag.expand();
-        let nodes: Vec<_> = dag.nodes.iter().flat_map(|node| self.select_node(node)).collect();
+        let mut nodes: Vec<_> = dag.nodes.iter().flat_map(|node| {
+            let permutation = self.select_node(node);
+            function_adjustments.extend(permutation.function_adjustments);
+            permutation.nodes
+        }).collect();
+
+        for adjustment in function_adjustments {
+            match adjustment {
+                Adjustment::CoerceValue { ref from, ref to } => {
+                    nodes = nodes.into_iter().map(|node| adjustment::coerce_value(node, from, to)).collect();
+                },
+                _ => panic!("invalid function-level adjustment"),
+            }
+        }
 
         nodes.iter().map(|node| self.select_legal_node(&node)).collect()
     }
 
-    pub fn select_node(&mut self, node: &mir::Node) -> Vec<mir::Node> {
+    pub fn select_node(&mut self, node: &mir::Node) -> SelectedPermutation<V> {
         let permutations = self.find_matching_permutations(node);
-        println!("permutations: {:#?}", permutations);
 
         match self::find_optimal_permutation(&permutations) {
-            Some(permutation) => permutation.nodes.clone(),
+            Some(permutation) => SelectedPermutation {
+                nodes: permutation.nodes.clone(),
+                function_adjustments: permutation.function_adjustments.clone(),
+            },
             None => panic!("no patterns matching for this node: {:#?}", node),
         }
     }
@@ -71,7 +101,11 @@ impl<S: Selectable, V> Selector<S, V>
         similar_matches.into_iter().filter_map(|pat_match| {
             match pat_match.result {
                 MatchResult::Perfect => {
-                    Some(Permutation { nodes: vec![node.clone()], pattern: pat_match.pattern.clone() })
+                    Some(Permutation {
+                        nodes: vec![node.clone()],
+                        pattern: pat_match.pattern.clone(),
+                        function_adjustments: Vec::new(),
+                    })
                 },
                 MatchResult::Partial(mut adjustments) => {
                     let mut current_application = AdjustmentApplication::unadjusted(node.clone());
@@ -79,21 +113,28 @@ impl<S: Selectable, V> Selector<S, V>
                     // Try to legalize the permutation.
                     for _ in 0..8 {
                         let new_application = Adjustment::apply_several_to(current_application.adjusted_node.clone(), &adjustments);
+
                         current_application = current_application.merge(new_application);
 
                         match pat_match.pattern.matches(&current_application.adjusted_node) {
                             MatchResult::Perfect => {
+                                let mut new_function_adjustments = Vec::new();
+
                                 current_application.preceding_nodes = current_application.preceding_nodes.into_iter().flat_map(|preceding_node| {
-                                    self.select_node(&preceding_node)
+                                    let permutation = self.select_node(&preceding_node);
+                                    new_function_adjustments.extend(permutation.function_adjustments);
+                                    permutation.nodes
                                 }).collect();
+
+                                current_application.function_adjustments.extend(new_function_adjustments);
 
                                 return Some(Permutation {
                                     nodes: current_application.nodes(),
                                     pattern: pat_match.pattern.clone(),
+                                    function_adjustments: current_application.function_adjustments,
                                 });
                             }
                             MatchResult::Partial(new_adjustments) => {
-                                println!("partial with {:?}", new_adjustments);
                                 adjustments = new_adjustments;
                             },
                             MatchResult::None => return None,

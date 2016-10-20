@@ -1,6 +1,4 @@
-use Adjustment;
-use Selectable;
-
+use {Adjustment, Selectable};
 use {mir, util};
 
 use std::collections::HashMap;
@@ -57,15 +55,25 @@ pub enum MatchResult<V: PatternValue>
 /// A matching context.
 pub struct MatchContext<V: PatternValue>
 {
-    pub values: HashMap<String, Vec<mir::Value>>,
+    values: HashMap<String, Vec<TrackedValue>>,
     pub phantom: std::marker::PhantomData<V>,
+}
+
+/// Some information on a value we track internally.
+struct TrackedValue
+{
+    value: mir::Value,
+    direction: mir::ValueInfo,
 }
 
 impl<V: PatternValue> MatchContext<V>
 {
-    pub fn track_value(&mut self, name: String, value: &mir::Value) {
+    pub fn track_value(&mut self, name: String, value: &mir::Value, direction: mir::ValueInfo) {
         let mut values = self.values.entry(name).or_insert_with(|| Vec::new());
-        values.push(value.clone());
+        values.push(TrackedValue {
+            value: value.clone(),
+            direction: direction,
+        });
     }
 
     pub fn match_result(&self) -> MatchResult<V> {
@@ -74,11 +82,20 @@ impl<V: PatternValue> MatchContext<V>
         let mut adjustments = Vec::new();
 
         for (_, values) in repeated_name_values {
-            let (cannonical_value, duplicate_values) = values.split_last().unwrap();
+            // We 'normalize' all other values of the same name to one 'cannonical' value.
+            //
+            // This is used for situations like:
+            // (set %foo, (add %bar, i8 5))
+            //
+            // Where %foo and %bar must be the same register due to the target.
+            let cannonical_value = values.iter().find(|value| value.direction == mir::ValueInfo::Input).unwrap();
 
-            for value in duplicate_values {
-                if value != cannonical_value {
-                    adjustments.push(Adjustment::CoerceValue { from: value.clone(), to: cannonical_value.clone() });
+            for value in values {
+                if value.value != cannonical_value.value {
+                    adjustments.push(Adjustment::CoerceValue {
+                        from: value.value.clone(),
+                        to: cannonical_value.value.clone(),
+                    });
                 }
             }
         }
@@ -150,6 +167,14 @@ impl<S: Selectable, V: PatternValue> Pattern<S, V>
 impl<V: PatternValue> PatternNode<V>
 {
     pub fn matches(&self, branch: &mir::Branch, context: &mut MatchContext<V>) -> MatchResult<V> {
+        for ((node, info), pat) in branch.operands.iter().zip(branch.value_infos()).zip(self.operands.iter()) {
+            if let PatternOperand::Value { ref name, .. } = *pat {
+                if let mir::NodeKind::Leaf(ref value) = node.kind {
+                    context.track_value(name.clone(), value, info);
+                }
+            }
+        }
+
         if self.opcode == branch.opcode && self.operands.len() == branch.operands.len() {
             self.operands.iter().zip(branch.operands.iter()).
                 fold(MatchResult::Perfect, |result, (pat_op, mir_op)| result + pat_op.matches(mir_op, context))
@@ -184,10 +209,8 @@ impl<V: PatternValue> PatternOperand<V>
 {
     pub fn matches(&self, node: &mir::Node, context: &mut MatchContext<V>) -> MatchResult<V> {
         match *self {
-            PatternOperand::Value { ref name, ref value } => {
+            PatternOperand::Value { ref value, .. } => {
                 if let mir::NodeKind::Leaf(ref mir_val) = node.kind {
-                    context.track_value(name.clone(), &mir_val);
-
                     value.matches(mir_val)
                 } else {
                     MatchResult::adjust(Adjustment::demote_to_register(&node.kind))
