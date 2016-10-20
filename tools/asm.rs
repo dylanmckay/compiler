@@ -36,7 +36,7 @@ fn main() {
     let mut files: Vec<String> = Vec::new();
 
     let mut task = Task::Assemble;
-    let mut target_name = "".to_owned();
+    let mut target_name = "avr".to_owned();
 
     {
         let mut ap = ArgumentParser::new();
