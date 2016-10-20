@@ -1,4 +1,4 @@
-use {Register, RegisterClass};
+use {TargetRegister, TargetRegisterClass};
 
 use util;
 use std;
@@ -18,8 +18,8 @@ pub trait TargetInstruction : std::fmt::Debug
 
 pub trait TargetOperand : Clone + std::fmt::Debug
 {
-    type Register: Register;
-    type RegisterClass: RegisterClass;
+    type Register: TargetRegister;
+    type RegisterClass: TargetRegisterClass;
 
     fn is_virtual(&self) -> bool;
     fn virtual_register_id(&self) -> util::Id;

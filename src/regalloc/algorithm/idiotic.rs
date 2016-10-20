@@ -1,4 +1,4 @@
-use {Target, Algorithm, Program, TargetInstruction, TargetOperand, Operand, RegisterClass};
+use {Target, Algorithm, Program, TargetInstruction, TargetOperand, Operand, TargetRegisterClass};
 use std::collections::HashMap;
 
 use util;

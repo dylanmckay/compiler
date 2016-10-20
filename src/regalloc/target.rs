@@ -1,11 +1,11 @@
-use {TargetInstruction, RegisterClass, Register, TargetOperand};
+use {TargetInstruction, TargetRegisterClass, TargetRegister, TargetOperand};
 
 pub trait Target : Sized + InstructionBuilder<Target=Self>
 {
     type Instruction: TargetInstruction<TargetOperand=Self::Operand>;
     type Operand: TargetOperand<Register=Self::Register, RegisterClass=Self::RegisterClass>+'static;
-    type RegisterClass: RegisterClass<Register=Self::Register>;
-    type Register: Register;
+    type RegisterClass: TargetRegisterClass<TargetRegister=Self::Register>;
+    type Register: TargetRegister;
 }
 
 pub trait InstructionBuilder : Sized

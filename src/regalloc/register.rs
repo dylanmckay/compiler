@@ -1,17 +1,17 @@
 use std;
 
-pub trait RegisterClass : Clone + PartialEq + Eq + std::fmt::Debug
+pub trait TargetRegisterClass : Clone + PartialEq + Eq + std::fmt::Debug
 {
-    type Register: Register;
+    type TargetRegister: TargetRegister;
 
-    fn registers(&self) -> Vec<Self::Register>;
+    fn registers(&self) -> Vec<Self::TargetRegister>;
 
-    fn contains(&self, register: Self::Register) -> bool {
+    fn contains(&self, register: Self::TargetRegister) -> bool {
         self.registers().into_iter().any(|r| r == register)
     }
 }
 
-pub trait Register : Clone + PartialEq + Eq + std::fmt::Debug
+pub trait TargetRegister : Clone + PartialEq + Eq + std::fmt::Debug
 {
 }
 
