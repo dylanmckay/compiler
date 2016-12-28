@@ -85,13 +85,3 @@ impl Legalizer
         }
     }
 }
-
-#[cfg(test)]
-mod test
-{
-    use super::*;
-
-    pub mod legalization {
-    }
-}
-
