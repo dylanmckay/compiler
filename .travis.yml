@@ -4,18 +4,4 @@ rust:
   - nightly
 
 script:
-  - cargo build
-
-  # Run tests for individual crates
-  - cargo test -p compiler_ir
-  - cargo test -p compiler_machine
-  - cargo test -p compiler_mir
-  - cargo test -p compiler_pass
-  - cargo test -p compiler_select
-  - cargo test -p compiler_target
-  - cargo test -p compiler_test
-  - cargo test -p compiler_util
-
-  # Run test suite
-  - cargo run --bin test tests
-
+  - cargo test --all
