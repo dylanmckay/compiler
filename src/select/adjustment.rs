@@ -168,7 +168,7 @@ mod test
             let example_node = mir::Node::set(register_ref.clone(), mir::Node::i(8, 2));
 
             let adjustment: Adjustment<DummyPatternValue> = Adjustment::DemoteToRegister {
-                demotee: mir::Node::i(8, 2)
+                demotee: mir::Node::i(8, 2).kind,
             };
 
             let application = adjustment.apply_to(example_node);
@@ -177,7 +177,7 @@ mod test
 
             let new_set_node = application.preceding_nodes[0].expect_branch();
             let new_register_ref = new_set_node.operands[0].clone();
-            assert_eq!(new_set_node.operands[1], mir::Node::i(8, 2));
+            assert_eq!(new_set_node.operands[1].kind, mir::Node::i(8, 2).kind);
 
             let permuted_node = application.adjusted_node.expect_branch();
             assert_eq!(permuted_node.operands[1], new_register_ref);

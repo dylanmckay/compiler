@@ -4,6 +4,8 @@ name = "compiler"
 version = "0.0.1"
 authors = ["Dylan McKay <dylanmckay34@gmail.com"]
 
+[workspace]
+
 [dependencies]
 argparse = "0.2.1"
 term = "0.4.4"
