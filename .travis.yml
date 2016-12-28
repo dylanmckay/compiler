@@ -3,7 +3,6 @@ language: rust
 rust:
   - nightly
   - beta
-  - stable
 
 script:
   - cargo test --all
