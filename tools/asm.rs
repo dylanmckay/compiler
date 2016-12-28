@@ -1,5 +1,3 @@
-#![feature(io)]
-
 extern crate compiler;
 extern crate argparse;
 
@@ -115,9 +113,10 @@ fn open_file(path: &str) -> std::fs::File {
 }
 
 fn parse_module(file_name: &str) -> ir::Module {
-    let chars = open_file(file_name).chars().map(|c| c.unwrap());
+    let mut text = String::new();
+    open_file(file_name).read_to_string(&mut text).unwrap();
 
-    match ir::read::textual(chars) {
+    match ir::read::textual(text.chars()) {
         Ok(module) => module,
         Err(e) => abort(format!("could not parse IR file: {}", e)),
     }

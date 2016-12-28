@@ -1,5 +1,3 @@
-#![feature(io)]
-
 extern crate compiler;
 extern crate argparse;
 extern crate term;
@@ -75,8 +73,9 @@ mod util
     }
 
     pub fn parse_test(file_name: &str) -> Result<Test,String> {
-        let chars = open_file(file_name).chars().map(|c| c.unwrap());
-        Test::parse(file_name, chars)
+        let mut text = String::new();
+        open_file(file_name).read_to_string(&mut text).unwrap();
+        Test::parse(file_name, text.chars())
     }
 
     fn open_file(path: &str) -> std::fs::File {
