@@ -10,8 +10,6 @@ pub extern crate compiler_pass as pass;
 pub extern crate compiler_regalloc as regalloc;
 /// The instruction selector.
 pub extern crate compiler_select as select;
-/// The new instruction selector.
-pub extern crate compiler_select2 as select2;
 /// The backend.
 pub extern crate compiler_target as target;
 /// The integrated tester.
