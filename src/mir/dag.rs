@@ -1,7 +1,7 @@
 use Node;
 use ir;
 
-use build;
+use builder;
 use verifier;
 use expand;
 
@@ -21,7 +21,7 @@ impl Dag
     }
 
     pub fn from_function(function: &ir::Function) -> Vec<Dag> {
-        build::from_function(function)
+        builder::from_function(function)
     }
 
     /// Expands this DAG from a flat structure into a tree structure

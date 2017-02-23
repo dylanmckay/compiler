@@ -12,7 +12,7 @@ pub mod node;
 pub mod dag;
 pub mod ty;
 
-pub mod build;
+pub mod builder;
 pub mod verifier;
 pub mod expand;
 
