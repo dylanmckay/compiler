@@ -10,7 +10,6 @@ pub mod analysis;
 pub mod registrar;
 
 extern crate compiler_ir as ir;
-#[macro_use]
 extern crate compiler_util as util;
 
 extern crate num;
