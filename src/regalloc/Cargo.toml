@@ -2,7 +2,7 @@
 
 name = "compiler_regalloc"
 version = "0.0.1"
-authors = ["Dylan McKay <dylanmckay34@gmail.com"]
+authors = ["Dylan McKay <me@dylanmckay.io>"]
 
 [dependencies.compiler_util]
 path = "../util"
