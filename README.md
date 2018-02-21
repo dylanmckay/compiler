@@ -17,8 +17,7 @@ fairly fast generated programs.
 
 So far the only target supported is [AVR](https://en.wikipedia.org/wiki/Atmel_AVR).
 
-The compiler can currently parse IR and generate assembly code for very basic
-programs.
+The compiler can currently parse IR and generate assembly code for very, very basic programs (think very trivial addition and load).
 
 ## Running the compiler
 
